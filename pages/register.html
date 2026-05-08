@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Register — SwiftShip</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="../assets/css/style.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/dexie@4.0.8/dist/dexie.min.js" defer></script>
+  <script src="../js/utils.js" defer></script>
+  <script src="../js/db.js" defer></script>
+  <script src="../js/register.js" defer></script>
+</head>
+<body class="min-h-screen flex items-center justify-center bg-[var(--bg-page)]">
+  <main class="max-w-lg w-full p-8 bg-white rounded-2xl shadow-xl">
+    <div class="flex items-center gap-4 mb-6">
+      <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background:linear-gradient(135deg,#F59000,#FFAA1A);">
+        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M20 21H4l-2-7h20l-2 7zM4.5 12l1.5-6h12l1.5 6H4.5zM9 6V4h6v2H9z"/></svg>
+      </div>
+      <div>
+        <h1 class="text-2xl font-display font-700" style="color:var(--text-head);">Create your account</h1>
+        <p class="text-sm" style="color:var(--text-muted);">Sign up to start creating shipments and tracking in real-time.</p>
+      </div>
+    </div>
+
+    <form id="register-form" class="space-y-4" novalidate>
+      <div>
+        <label class="block text-sm font-medium" style="color:var(--text-head);">Full name</label>
+        <input id="full_name" required class="mt-1 block w-full px-4 py-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-amber-200" placeholder="Your full name" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium" style="color:var(--text-head);">Phone</label>
+        <input id="phone" type="tel" required pattern="[0-9+\- ()]{7,}" class="mt-1 block w-full px-4 py-3 border rounded-lg shadow-sm" placeholder="+1 555 555 5555" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium" style="color:var(--text-head);">Email</label>
+        <input id="email" type="email" required class="mt-1 block w-full px-4 py-3 border rounded-lg shadow-sm" placeholder="you@company.com" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium" style="color:var(--text-head);">Password</label>
+        <input id="password" type="password" required minlength="6" class="mt-1 block w-full px-4 py-3 border rounded-lg shadow-sm" placeholder="Create a password" />
+      </div>
+
+      <div class="pt-2">
+        <button type="submit" class="w-full px-4 py-3 rounded-lg text-white" style="background:linear-gradient(135deg,#F59000,#FFAA1A);">Create account</button>
+      </div>
+
+      <p id="msg" class="text-sm mt-2 text-center"></p>
+
+      <p class="text-center text-sm mt-4" style="color:var(--text-muted);">Already registered? <a href="login.html" class="text-amber-600">Sign in</a></p>
+    </form>
+  </main>
+
+  <script defer>
+    // register.js is loaded separately; this page only contains markup and shared assets.
+  </script>
+</body>
+</html>

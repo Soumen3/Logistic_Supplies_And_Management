@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Customer Dashboard — SwiftShip</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="../../assets/css/style.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/dexie@4.0.8/dist/dexie.min.js" defer></script>
+  <script src="../../js/utils.js" defer></script>
+  <script src="../../js/db.js" defer></script>
+  <script src="../../js/customer-dashboard.js" defer></script>
+</head>
+<body class="min-h-screen bg-[var(--bg-page)]">
+  <!-- Navbar -->
+  <header class="bg-white shadow">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16 items-center">
+        <div class="flex items-center gap-4">
+          <a href="../../index.html" class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-md flex items-center justify-center" style="background:linear-gradient(135deg,#F59000,#FFAA1A);">
+              <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M20 21H4l-2-7h20l-2 7zM4.5 12l1.5-6h12l1.5 6H4.5zM9 6V4h6v2H9z"/></svg>
+            </div>
+            <span class="font-bold text-lg" style="color:var(--text-head);">SwiftShip</span>
+          </a>
+          <nav class="hidden md:flex gap-4 text-sm" style="color:var(--text-body);">
+            <a href="#" class="hover:underline">My Shipments</a>
+            <a href="#" class="hover:underline">Create Shipment</a>
+            <a href="#" class="hover:underline">Estimates</a>
+          </nav>
+        </div>
+
+        <div class="flex items-center gap-4">
+          <div id="user-greeting" class="text-sm text-[var(--text-body)]">Customer</div>
+          <button id="logout-btn" class="px-3 py-2 rounded-md text-white" style="background:linear-gradient(135deg,#F59000,#FFAA1A);">Logout</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="max-w-6xl mx-auto p-6">
+    <h2 class="text-2xl font-semibold mb-4" style="color:var(--text-head);">Dashboard</h2>
+
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="bg-white p-4 rounded-lg shadow">
+        <h3 class="font-medium">Active Shipments</h3>
+        <p class="text-sm text-[var(--text-muted)] mt-2">You have <strong id="active-count">0</strong> active shipments.</p>
+      </div>
+      <div class="bg-white p-4 rounded-lg shadow">
+        <h3 class="font-medium">Recent Activity</h3>
+        <p class="text-sm text-[var(--text-muted)] mt-2">No recent activity.</p>
+      </div>
+      <div class="bg-white p-4 rounded-lg shadow">
+        <h3 class="font-medium">Account</h3>
+        <p class="text-sm text-[var(--text-muted)] mt-2">Member since <span id="member-since">—</span></p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

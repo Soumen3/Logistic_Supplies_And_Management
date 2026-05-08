@@ -1,0 +1,65 @@
+/* Base */
+*, *::before, *::after { box-sizing: border-box; }
+body { font-family: 'DM Sans', sans-serif; }
+
+/* Theme CSS variables */
+:root {
+	--bg-page: #F4F6FB;
+	--bg-card: #FFFFFF;
+	--bg-glass: rgba(255,255,255,0.70);
+	--text-head: #0D183E;
+	--text-body: #2E3A5A;
+	--text-muted: #6B7A99;
+	--border: rgba(14,24,62,0.10);
+	--shadow: 0 8px 40px rgba(14,24,62,0.10);
+}
+
+.dark {
+	--bg-page: #070E24;
+	--bg-card: #0D183E;
+	--bg-glass: rgba(13,24,62,0.75);
+	--text-head: #EEF1F8;
+	--text-body: #A8B8DC;
+	--text-muted: #4E6EAE;
+	--border: rgba(255,255,255,0.07);
+	--shadow: 0 8px 40px rgba(0,0,0,0.45);
+}
+
+/* Loader ring */
+.loader-ring {
+	width: 72px;
+	height: 72px;
+	border-radius: 50%;
+	border: 3px solid transparent;
+	border-top-color: #F59000;
+	border-right-color: #FFAA1A;
+	animation: spin-slow 1s linear infinite;
+}
+
+/* Shimmer card */
+.shimmer-line {
+	background: linear-gradient(90deg, var(--bg-card) 25%, var(--border) 50%, var(--bg-card) 75%);
+	background-size: 200% 100%;
+	animation: shimmer 2.5s linear infinite;
+	border-radius: 6px;
+}
+
+/* Dot grid background */
+.dot-grid {
+	background-image: radial-gradient(circle, rgba(245,144,0,0.18) 1px, transparent 1px);
+	background-size: 28px 28px;
+}
+
+/* Glassmorphism card */
+.glass {
+	background: var(--bg-glass);
+	backdrop-filter: blur(16px);
+	-webkit-backdrop-filter: blur(16px);
+	border: 1px solid var(--border);
+	box-shadow: var(--shadow);
+}
+
+/* Theme toggle removed — styles omitted */
+
+/* Redirect message */
+#redirect-msg { display: none; }
