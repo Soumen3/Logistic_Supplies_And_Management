@@ -1,57 +1,61 @@
-(function initAuth(global) {
-	function initLandingAuth() {
-		const loadingEl = document.getElementById('loading-state');
-		const mainEl = document.getElementById('main-content');
-		const redirectEl = document.getElementById('redirect-msg');
+import { SwiftShipDB } from './db.module.js';
 
-		const showMain = () => {
-			if (loadingEl) loadingEl.classList.add('hidden');
-			if (mainEl) {
-				mainEl.classList.remove('hidden');
-				mainEl.classList.add('flex');
-			}
-		};
+function initLandingAuth() {
+	const loadingEl = document.getElementById('loading-state');
+	const mainEl = document.getElementById('main-content');
+	const redirectEl = document.getElementById('redirect-msg');
+	const authButtonsEl = document.getElementById('auth-buttons');
 
-		const showRedirect = () => {
-			if (loadingEl) loadingEl.classList.add('hidden');
-			if (redirectEl) {
-				redirectEl.style.display = 'flex';
-				redirectEl.style.flexDirection = 'column';
-			}
-		};
-
-		const checkSession = async () => {
-			try {
-				const getActiveSession = global.SwiftShipDB?.getActiveSession;
-				if (!getActiveSession) {
-					showMain();
-					return;
-				}
-
-				const active = await getActiveSession();
-
-				if (!active) {
-					showMain();
-					return;
-				}
-
-				showRedirect();
-				setTimeout(() => {
-					window.location.href =
-						active.role === 'admin'
-							? 'pages/admin/dashboard.html'
-							: 'pages/customer/dashboard.html';
-				}, 1600);
-			} catch (error) {
-				console.warn('Session check failed:', error);
-				showMain();
-			}
-		};
-
-		setTimeout(checkSession, 600);
-	}
-
-	global.SwiftShipAuth = {
-		initLandingAuth,
+	const showMain = () => {
+		if (loadingEl) loadingEl.classList.add('hidden');
+		if (redirectEl) redirectEl.style.display = 'none';
+		if (mainEl) {
+			mainEl.classList.remove('hidden');
+			mainEl.classList.add('flex');
+		}
 	};
-})(window);
+
+	const setLoggedInNav = () => {
+		if (!authButtonsEl) return;
+		authButtonsEl.innerHTML = `
+			<button id="home-logout-btn"
+				class="px-4 py-1.5 text-sm font-500 rounded-lg transition-all duration-200 hover:opacity-90"
+				style="background:#F59000; color:#fff;">
+				Logout
+			</button>
+		`;
+
+		const logoutBtn = document.getElementById('home-logout-btn');
+		if (!logoutBtn) return;
+
+		logoutBtn.addEventListener('click', async () => {
+			try {
+				await SwiftShipDB.db.sessions.where('is_active').equals(1).modify({ is_active: 0 });
+			} catch (error) {
+				console.warn('Logout failed:', error);
+			}
+			window.location.reload();
+		});
+	};
+
+	const checkSession = async () => {
+		try {
+			const active = await SwiftShipDB.getActiveSession();
+			showMain();
+			if (active) {
+				setLoggedInNav();
+			}
+		} catch (error) {
+			console.warn('Session check failed:', error);
+			showMain();
+		}
+	};
+
+	setTimeout(checkSession, 300);
+}
+
+export { initLandingAuth };
+
+window.SwiftShipAuth = {
+	initLandingAuth,
+};

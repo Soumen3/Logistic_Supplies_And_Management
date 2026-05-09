@@ -310,19 +310,13 @@
   <!-- ════════════════════════════════════════════
        SCRIPTS
   ════════════════════════════════════════════ -->
-  <script src="https://cdn.jsdelivr.net/npm/dexie@4.0.8/dist/dexie.min.js" defer></script>
-  <script src="js/utils.js" defer></script>
-  <script src="js/db.js" defer></script>
-  <script src="js/auth.js" defer></script>
-  <script defer>
-    window.addEventListener('DOMContentLoaded', () => {
-      if (window.SwiftShipUtils) {
-        window.SwiftShipUtils.renderFeaturePills();
-      }
+  <script type="module">
+    import { renderFeaturePills } from './js/utils.js';
+    import { initLandingAuth } from './js/auth.js';
 
-      if (window.SwiftShipAuth) {
-        window.SwiftShipAuth.initLandingAuth();
-      }
+    window.addEventListener('DOMContentLoaded', () => {
+      renderFeaturePills();
+      initLandingAuth();
     });
   </script>
 </body>

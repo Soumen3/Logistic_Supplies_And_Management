@@ -1,15 +1,10 @@
-window.addEventListener('DOMContentLoaded', async () => {
-  if (!window.SwiftShipDB) {
-    console.error('DB not ready');
-    // Wait for db to initialize then reload
-    setTimeout(() => location.href = '../login.html', 500);
-    return;
-  }
+import { SwiftShipDB } from './db.module.js';
 
-  const session = await window.SwiftShipDB.getActiveSession();
+window.addEventListener('DOMContentLoaded', async () => {
+  const session = await SwiftShipDB.getActiveSession();
   if (!session) {
     // no active session — redirect to login
-    location.href = '../login.html';
+    location.href = '/pages/login.html';
     return;
   }
 
@@ -30,11 +25,11 @@ window.addEventListener('DOMContentLoaded', async () => {
   if (logoutBtn) {
     logoutBtn.addEventListener('click', async () => {
       try {
-        await window.SwiftShipDB.db.sessions.where('is_active').equals(1).modify({ is_active: 0 });
+        await SwiftShipDB.db.sessions.where('is_active').equals(1).modify({ is_active: 0 });
       } catch (e) {
         console.warn('Logout cleanup failed', e);
       }
-      location.href = '../login.html';
+      location.href = '/pages/login.html';
     });
   }
 });

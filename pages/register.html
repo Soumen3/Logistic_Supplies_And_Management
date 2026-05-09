@@ -5,14 +5,12 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Register — SwiftShip</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="../assets/css/style.css" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/dexie@4.0.8/dist/dexie.min.js" defer></script>
-  <script src="../js/utils.js" defer></script>
-  <script src="../js/db.js" defer></script>
-  <script src="../js/register.js" defer></script>
+  <link href="/assets/css/style.css" rel="stylesheet" />
+  <script type="module" src="/js/register.js"></script>
 </head>
 <body class="min-h-screen flex items-center justify-center bg-[var(--bg-page)]">
   <main class="max-w-lg w-full p-8 bg-white rounded-2xl shadow-xl">
+    <a href="/index.html" class="inline-block text-sm text-amber-600 hover:underline mb-4">← Back to Home</a>
     <div class="flex items-center gap-4 mb-6">
       <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background:linear-gradient(135deg,#F59000,#FFAA1A);">
         <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M20 21H4l-2-7h20l-2 7zM4.5 12l1.5-6h12l1.5 6H4.5zM9 6V4h6v2H9z"/></svg>
@@ -54,8 +52,5 @@
     </form>
   </main>
 
-  <script defer>
-    // register.js is loaded separately; this page only contains markup and shared assets.
-  </script>
 </body>
 </html>
