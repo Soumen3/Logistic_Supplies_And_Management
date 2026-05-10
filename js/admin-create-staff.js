@@ -1,4 +1,4 @@
-import { SwiftShipDB, getDashboardPathForRole } from './db.module.js';
+import { SwiftShipDB } from '../js/db.module.js';
 
 function el(id) {
   return document.getElementById(id);
@@ -48,23 +48,28 @@ function clearErrors() {
   if (msg) msg.textContent = '';
 }
 
-async function redirectIfLoggedIn() {
+async function redirectIfNotAdmin() {
   try {
     const session = await SwiftShipDB.getActiveSession();
-    if (session) {
-      window.location.href = getDashboardPathForRole(session.role);
+    // If no session or not admin role, redirect to login
+    if (!session || (session.role !== 'admin' && session.role !== 1)) {
+      window.location.href = '/pages/login.html';
       return true;
     }
+    return false;
   } catch (e) {
-    // ignore and allow registration
+    // If any error, redirect to login for safety
+    window.location.href = '/pages/login.html';
+    return true;
   }
-  return false;
 }
 
 async function init() {
-  await redirectIfLoggedIn();
+  // Only admins can access this page
+  const isNotAdmin = await redirectIfNotAdmin();
+  if (isNotAdmin) return;
 
-  const form = el('register-form');
+  const form = el('create-staff-form');
   const msg = el('msg');
   if (!form || !msg) return;
 
@@ -79,7 +84,7 @@ async function init() {
     const passwordConfirm = el('password_confirm').value;
 
     if (!fullName || fullName.length < 2) {
-      setError('full_name', 'Please enter your full name (2+ characters).');
+      setError('full_name', 'Please enter staff full name (2+ characters).');
       return;
     }
 
@@ -116,14 +121,14 @@ async function init() {
         password_hash: passwordHash,
         full_name: fullName,
         phone,
-        role: 'customer',
+        role: 'staff',
       });
 
       msg.style.color = 'green';
-      msg.textContent = 'Account created - redirecting to login...';
+      msg.textContent = 'Staff user created successfully! Redirecting...';
       setTimeout(() => {
-        window.location.href = '/pages/login.html';
-      }, 900);
+        window.location.href = '/pages/admin/dashboard.html';
+      }, 1500);
     } catch (error) {
       console.error(error);
       if (error && error.message === 'phone_required') {
@@ -132,7 +137,7 @@ async function init() {
       }
 
       msg.style.color = 'red';
-      msg.textContent = 'Registration failed. Try again.';
+      msg.textContent = 'Failed to create staff user. Try again.';
     }
   });
 }

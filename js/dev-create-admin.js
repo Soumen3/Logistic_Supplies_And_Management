@@ -1,4 +1,8 @@
-import { SwiftShipDB, getDashboardPathForRole } from './db.module.js';
+import { SwiftShipDB } from '../js/db.module.js';
+
+// Developer token - Change this to a strong secret!
+// In production, this could come from environment variables or config
+const DEVELOPER_TOKEN = 'SwiftShipDevSecret2026';
 
 function el(id) {
   return document.getElementById(id);
@@ -39,7 +43,7 @@ function setError(fieldId, message) {
 }
 
 function clearErrors() {
-  ['full_name', 'phone', 'email', 'password', 'password_confirm'].forEach((id) => {
+  ['dev_token', 'full_name', 'phone', 'email', 'password', 'password_confirm'].forEach((id) => {
     const input = el(id);
     if (input) input.classList.remove('border-red-500');
   });
@@ -48,23 +52,8 @@ function clearErrors() {
   if (msg) msg.textContent = '';
 }
 
-async function redirectIfLoggedIn() {
-  try {
-    const session = await SwiftShipDB.getActiveSession();
-    if (session) {
-      window.location.href = getDashboardPathForRole(session.role);
-      return true;
-    }
-  } catch (e) {
-    // ignore and allow registration
-  }
-  return false;
-}
-
 async function init() {
-  await redirectIfLoggedIn();
-
-  const form = el('register-form');
+  const form = el('dev-create-admin-form');
   const msg = el('msg');
   if (!form || !msg) return;
 
@@ -72,14 +61,21 @@ async function init() {
     event.preventDefault();
     clearErrors();
 
+    const devToken = el('dev_token').value;
     const fullName = el('full_name').value.trim();
     const phone = el('phone').value.trim();
     const email = el('email').value.trim().toLowerCase();
     const password = el('password').value;
     const passwordConfirm = el('password_confirm').value;
 
+    // Verify developer token
+    if (devToken !== DEVELOPER_TOKEN) {
+      setError('dev_token', 'Invalid developer token.');
+      return;
+    }
+
     if (!fullName || fullName.length < 2) {
-      setError('full_name', 'Please enter your full name (2+ characters).');
+      setError('full_name', 'Please enter admin full name (2+ characters).');
       return;
     }
 
@@ -116,14 +112,14 @@ async function init() {
         password_hash: passwordHash,
         full_name: fullName,
         phone,
-        role: 'customer',
+        role: 'admin',
       });
 
       msg.style.color = 'green';
-      msg.textContent = 'Account created - redirecting to login...';
+      msg.textContent = 'Admin user created successfully! Redirecting to login...';
       setTimeout(() => {
         window.location.href = '/pages/login.html';
-      }, 900);
+      }, 1500);
     } catch (error) {
       console.error(error);
       if (error && error.message === 'phone_required') {
@@ -132,7 +128,7 @@ async function init() {
       }
 
       msg.style.color = 'red';
-      msg.textContent = 'Registration failed. Try again.';
+      msg.textContent = 'Failed to create admin. Try again.';
     }
   });
 }

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Create Staff User — SwiftShip</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="/assets/css/style.css" rel="stylesheet" />
+  <script type="module" src="/js/admin-create-staff.js"></script>
+</head>
+<body class="min-h-screen flex items-center justify-center bg-[var(--bg-page)]">
+  <main class="max-w-lg w-full p-8 bg-white rounded-2xl shadow-xl">
+    <a href="/pages/admin/dashboard.html" class="inline-block text-sm text-amber-600 hover:underline mb-4">← Back to Dashboard</a>
+    <div class="flex items-center gap-4 mb-6">
+      <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background:linear-gradient(135deg,#F59000,#FFAA1A);">
+        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+      </div>
+      <div>
+        <h1 class="text-2xl font-display font-700" style="color:var(--text-head);">Create Staff User</h1>
+        <p class="text-sm" style="color:var(--text-muted);">Add a new staff member to the system.</p>
+      </div>
+    </div>
+
+    <form id="create-staff-form" class="space-y-4" novalidate>
+      <div>
+        <label class="block text-sm font-medium" style="color:var(--text-head);">Full Name</label>
+        <input id="full_name" required class="mt-1 block w-full px-4 py-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-amber-200" placeholder="Staff member name" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium" style="color:var(--text-head);">Phone</label>
+        <input id="phone" type="tel" required pattern="[0-9+\- ()]{7,}" class="mt-1 block w-full px-4 py-3 border rounded-lg shadow-sm" placeholder="+1 555 555 5555" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium" style="color:var(--text-head);">Email</label>
+        <input id="email" type="email" required class="mt-1 block w-full px-4 py-3 border rounded-lg shadow-sm" placeholder="staff@company.com" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium" style="color:var(--text-head);">Password</label>
+        <input id="password" type="password" required minlength="6" class="mt-1 block w-full px-4 py-3 border rounded-lg shadow-sm" placeholder="Create a strong password" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium" style="color:var(--text-head);">Confirm Password</label>
+        <input id="password_confirm" type="password" required minlength="6" class="mt-1 block w-full px-4 py-3 border rounded-lg shadow-sm" placeholder="Re-enter password" />
+      </div>
+
+      <div class="pt-2">
+        <button type="submit" class="w-full px-4 py-3 rounded-lg text-white" style="background:linear-gradient(135deg,#F59000,#FFAA1A);">Create Staff User</button>
+      </div>
+
+      <p id="msg" class="text-sm mt-2 text-center"></p>
+    </form>
+  </main>
+
+</body>
+</html>

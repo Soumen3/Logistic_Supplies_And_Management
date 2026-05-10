@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Developer: Create Admin — SwiftShip</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="/assets/css/style.css" rel="stylesheet" />
+  <script type="module" src="/js/dev-create-admin.js"></script>
+</head>
+<body class="min-h-screen flex items-center justify-center bg-[var(--bg-page)]">
+  <main class="max-w-lg w-full p-8 bg-white rounded-2xl shadow-xl">
+    <a href="/index.html" class="inline-block text-sm text-amber-600 hover:underline mb-4">← Back to Home</a>
+    <div class="flex items-center gap-4 mb-6">
+      <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background:linear-gradient(135deg,#F59000,#FFAA1A);">
+        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M20 21H4l-2-7h20l-2 7zM4.5 12l1.5-6h12l1.5 6H4.5zM9 6V4h6v2H9z"/></svg>
+      </div>
+      <div>
+        <h1 class="text-2xl font-display font-700" style="color:var(--text-head);">Developer Panel</h1>
+        <p class="text-sm" style="color:var(--text-muted);">Create admin user with developer token.</p>
+      </div>
+    </div>
+
+    <form id="dev-create-admin-form" class="space-y-4" novalidate>
+      <div>
+        <label class="block text-sm font-medium" style="color:var(--text-head);">Developer Token</label>
+        <input id="dev_token" type="password" required class="mt-1 block w-full px-4 py-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-amber-200" placeholder="Enter developer token" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium" style="color:var(--text-head);">Admin Full Name</label>
+        <input id="full_name" required class="mt-1 block w-full px-4 py-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-amber-200" placeholder="Admin name" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium" style="color:var(--text-head);">Admin Phone</label>
+        <input id="phone" type="tel" required pattern="[0-9+\- ()]{7,}" class="mt-1 block w-full px-4 py-3 border rounded-lg shadow-sm" placeholder="+1 555 555 5555" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium" style="color:var(--text-head);">Admin Email</label>
+        <input id="email" type="email" required class="mt-1 block w-full px-4 py-3 border rounded-lg shadow-sm" placeholder="admin@company.com" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium" style="color:var(--text-head);">Admin Password</label>
+        <input id="password" type="password" required minlength="6" class="mt-1 block w-full px-4 py-3 border rounded-lg shadow-sm" placeholder="Create a strong password" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium" style="color:var(--text-head);">Confirm Password</label>
+        <input id="password_confirm" type="password" required minlength="6" class="mt-1 block w-full px-4 py-3 border rounded-lg shadow-sm" placeholder="Re-enter password" />
+      </div>
+
+      <div class="pt-2">
+        <button type="submit" class="w-full px-4 py-3 rounded-lg text-white" style="background:linear-gradient(135deg,#F59000,#FFAA1A);">Create Admin User</button>
+      </div>
+
+      <p id="msg" class="text-sm mt-2 text-center"></p>
+    </form>
+  </main>
+
+</body>
+</html>
