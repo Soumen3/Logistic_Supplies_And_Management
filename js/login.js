@@ -50,8 +50,11 @@ window.addEventListener('DOMContentLoaded', async () => {
       }
 
       // create session
-      const session = { is_active: 1, expires_at: Date.now() + 1000 * 60 * 60 * 24 * 7, role: user.role };
-      await SwiftShipDB.db.sessions.add(session);
+      await SwiftShipDB.createSession({
+        user_id: user.id,
+        role: user.role,
+        expires_at: Date.now() + 1000 * 60 * 60 * 24 * 7,
+      });
       await SwiftShipDB.updateLastLogin(user.id);
 
       msg.style.color = 'green';

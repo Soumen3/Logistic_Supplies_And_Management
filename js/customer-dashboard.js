@@ -25,7 +25,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   if (logoutBtn) {
     logoutBtn.addEventListener('click', async () => {
       try {
-        await SwiftShipDB.db.sessions.where('is_active').equals(1).modify({ is_active: 0 });
+        await SwiftShipDB.deactivateActiveSessions();
       } catch (e) {
         console.warn('Logout cleanup failed', e);
       }

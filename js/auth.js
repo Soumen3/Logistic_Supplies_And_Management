@@ -30,7 +30,7 @@ function initLandingAuth() {
 
 		logoutBtn.addEventListener('click', async () => {
 			try {
-				await SwiftShipDB.db.sessions.where('is_active').equals(1).modify({ is_active: 0 });
+				await SwiftShipDB.deactivateActiveSessions();
 			} catch (error) {
 				console.warn('Logout failed:', error);
 			}
