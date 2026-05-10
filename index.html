@@ -142,7 +142,7 @@
                 filter:blur(80px);"></div>
 
     <!-- ── Loading state (shown while session check runs) ── -->
-    <div id="loading-state" class="flex flex-col items-center gap-5 animate-fade-up">
+    <div id="loading-state" class="fixed inset-0 z-[9999] flex flex-col items-center justify-center gap-5 animate-fade-up" style="background:var(--bg-page);">
       <div class="relative">
         <div class="loader-ring"></div>
         <div class="absolute inset-0 flex items-center justify-center">

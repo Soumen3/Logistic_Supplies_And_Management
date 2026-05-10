@@ -6,6 +6,10 @@ function initLandingAuth() {
 	const redirectEl = document.getElementById('redirect-msg');
 	const authButtonsEl = document.getElementById('auth-buttons');
 
+	// Lock body scroll while checking session
+	document.body.style.overflow = 'hidden';
+	document.documentElement.style.overflow = 'hidden';
+
 	const showMain = () => {
 		if (loadingEl) loadingEl.classList.add('hidden');
 		if (redirectEl) redirectEl.style.display = 'none';
@@ -13,6 +17,9 @@ function initLandingAuth() {
 			mainEl.classList.remove('hidden');
 			mainEl.classList.add('flex');
 		}
+		// Restore body scroll
+		document.body.style.overflow = '';
+		document.documentElement.style.overflow = '';
 	};
 
 	const setLoggedInNav = () => {

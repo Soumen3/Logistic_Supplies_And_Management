@@ -10,12 +10,12 @@ db.version(1).stores({
   status_history: '++id, shipment_id, status, updated_by, notes, timestamp',
 });
 
-// Open immediately so schema upgrades run as soon as this module is imported.
-try {
-  await db.open();
-} catch (error) {
-  console.warn('DB open/upgrade failed:', error);
-}
+// Attempt to open the DB but do not block module evaluation.
+// Using a non-blocking open prevents a hung/slow db.open() from stopping
+// other modules (like auth) from initializing and updating UI.
+db.open().catch((error) => {
+  console.warn('DB open/upgrade failed (non-blocking):', error);
+});
 
 async function getActiveSession() {
   const now = Date.now();
