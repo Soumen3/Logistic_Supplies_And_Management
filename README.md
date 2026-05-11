@@ -18,6 +18,7 @@ A comprehensive web-based logistics management platform for creating, tracking, 
 
 ---
 
+<a id="project-overview"></a>
 ## 🎯 Project Overview
 
 **SwiftShip** is a modern shipment tracking platform designed for logistics companies and businesses. It provides:
@@ -32,6 +33,7 @@ A comprehensive web-based logistics management platform for creating, tracking, 
 
 ---
 
+<a id="features"></a>
 ## ✨ Features
 
 ### Core Features
@@ -56,6 +58,7 @@ A comprehensive web-based logistics management platform for creating, tracking, 
 
 ---
 
+<a id="tech-stack"></a>
 ## 🛠️ Tech Stack
 
 | Technology | Purpose |
@@ -70,6 +73,7 @@ A comprehensive web-based logistics management platform for creating, tracking, 
 
 ---
 
+<a id="project-structure"></a>
 ## 📁 Project Structure
 
 ```
@@ -121,6 +125,7 @@ shipment-tracker/
 
 ---
 
+<a id="setup-installation"></a>
 ## 🚀 Setup & Installation
 
 ### Prerequisites
@@ -131,7 +136,7 @@ shipment-tracker/
 ### Step 1: Clone Repository
 ```bash
 git clone https://github.com/Soumen3/Logistic_Supplies_And_Management.git
-cd shipment-tracker
+cd Logistic_Supplies_And_Management
 ```
 
 ### Step 2: Start Local Server
@@ -166,6 +171,7 @@ await SwiftShipDB.addUser({
 
 ---
 
+<a id="user-roles-permissions"></a>
 ## 👥 User Roles & Permissions
 
 ### 1️⃣ Developer Role
@@ -298,6 +304,7 @@ await SwiftShipDB.addUser({
 
 ---
 
+<a id="database-schema"></a>
 ## 🗄️ Database Schema
 
 ### Database: `SwiftShipDB_New` (IndexedDB)
@@ -377,6 +384,7 @@ await SwiftShipDB.addUser({
 
 ---
 
+<a id="authentication"></a>
 ## 🔐 Authentication
 
 ### Registration Flow
@@ -424,6 +432,7 @@ await SwiftShipDB.addUser({
 
 ---
 
+<a id="pages-routes"></a>
 ## 📄 Pages & Routes
 
 ### Public Pages (No Authentication Required)

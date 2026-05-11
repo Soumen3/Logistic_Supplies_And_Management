@@ -31,6 +31,30 @@ window.addEventListener('DOMContentLoaded', async () => {
   if (userGreeting) userGreeting.textContent = 'Welcome,';
   if (userNameEl) userNameEl.textContent = userName;
 
+  // Load sidebar component and populate user info there
+  const sidebarContainer = document.getElementById('sidebar-container');
+  if (sidebarContainer) {
+    try {
+      const resp = await fetch('/components/sidebar.html');
+      if (resp.ok) {
+        const html = await resp.text();
+        sidebarContainer.innerHTML = html;
+
+        // Populate sidebar user info and stats
+        const sidebarName = document.getElementById('sidebar-user-name');
+        const sidebarEmail = document.getElementById('sidebar-user-email');
+        const sidebarActive = document.getElementById('sidebar-active-count');
+        const sidebarPending = document.getElementById('sidebar-pending-count');
+        if (sidebarName) sidebarName.textContent = userName;
+        if (sidebarEmail && session && session.email) sidebarEmail.textContent = session.email;
+        if (sidebarActive) sidebarActive.textContent = '3';
+        if (sidebarPending) sidebarPending.textContent = '1';
+      }
+    } catch (e) {
+      console.warn('Failed to load sidebar component', e);
+    }
+  }
+
   // Mobile menu toggle
   const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
   const mobileMenu = document.getElementById('mobile-menu');

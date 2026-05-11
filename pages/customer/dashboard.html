@@ -84,23 +84,29 @@
   </div>
 
   <!-- Main (with top padding for fixed navbar) -->
-  <main class="pt-20 max-w-6xl mx-auto p-6">
-    <h2 class="text-2xl font-semibold mb-4" style="color:var(--text-head);">Dashboard</h2>
+  <main class="pt-20 max-w-6xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-4 gap-6">
+    <!-- Sidebar (loaded via JS from /components/sidebar.html) -->
+    <div id="sidebar-container" class="lg:col-span-1"></div>
 
-    <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div class="bg-white p-4 rounded-lg shadow">
-        <h3 class="font-medium">Active Shipments</h3>
-        <p class="text-sm text-[var(--text-muted)] mt-2">You have <strong id="active-count">0</strong> active shipments.</p>
-      </div>
-      <div class="bg-white p-4 rounded-lg shadow">
-        <h3 class="font-medium">Recent Activity</h3>
-        <p class="text-sm text-[var(--text-muted)] mt-2">No recent activity.</p>
-      </div>
-      <div class="bg-white p-4 rounded-lg shadow">
-        <h3 class="font-medium">Account</h3>
-        <p class="text-sm text-[var(--text-muted)] mt-2">Member since <span id="member-since">—</span></p>
-      </div>
-    </section>
+    <!-- Content -->
+    <div class="lg:col-span-3">
+      <h2 class="text-2xl font-semibold mb-4" style="color:var(--text-head);">Dashboard</h2>
+
+      <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white p-4 rounded-lg shadow">
+          <h3 class="font-medium">Active Shipments</h3>
+          <p class="text-sm text-[var(--text-muted)] mt-2">You have <strong id="active-count">0</strong> active shipments.</p>
+        </div>
+        <div class="bg-white p-4 rounded-lg shadow">
+          <h3 class="font-medium">Recent Activity</h3>
+          <p class="text-sm text-[var(--text-muted)] mt-2">No recent activity.</p>
+        </div>
+        <div class="bg-white p-4 rounded-lg shadow">
+          <h3 class="font-medium">Account</h3>
+          <p class="text-sm text-[var(--text-muted)] mt-2">Member since <span id="member-since">—</span></p>
+        </div>
+      </section>
+    </div>
   </main>
 </body>
 </html>
