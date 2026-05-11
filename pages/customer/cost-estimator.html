@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Cost Estimator — SwiftShip</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="/assets/css/style.css" rel="stylesheet" />
+  <script type="module" src="/js/customer-cost-estimator.js"></script>
+</head>
+<body class="min-h-screen bg-[var(--bg-page)]">
+  <!-- Navbar -->
+  <header class="fixed top-0 inset-x-0 z-50 glass px-6 py-3 flex items-center justify-between border-b" style="border-color:var(--border);">
+    <!-- Left: Logo -->
+    <a href="/pages/customer/dashboard.html" class="flex items-center gap-2.5 group">
+      <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background:linear-gradient(135deg,#F59000,#FFAA1A);">
+        <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M20 21H4l-2-7h20l-2 7zM4.5 12l1.5-6h12l1.5 6H4.5zM9 6V4h6v2H9z"/></svg>
+      </div>
+      <span class="font-display text-lg font-700 tracking-tight" style="color:var(--text-head);">
+        Swift<span style="color:#F59000;">Ship</span>
+      </span>
+    </a>
+
+    <!-- Center: Navigation Links -->
+    <nav class="hidden lg:flex items-center gap-1">
+      <a href="/pages/customer/dashboard.html" class="px-4 py-2 rounded-lg text-sm font-500 transition-all hover:opacity-80" style="color:var(--text-body);">
+        Dashboard
+      </a>
+      <a href="/pages/customer/my-shipments.html" class="px-4 py-2 rounded-lg text-sm font-500 transition-all hover:opacity-80" style="color:var(--text-body);">
+        My Shipments
+      </a>
+      <a href="/pages/customer/create-shipment.html" class="px-4 py-2 rounded-lg text-sm font-500 transition-all hover:opacity-80" style="color:var(--text-body);">
+        Create Shipment
+      </a>
+      <a href="/pages/customer/track-shipment.html" class="px-4 py-2 rounded-lg text-sm font-500 transition-all hover:opacity-80" style="color:var(--text-body);">
+        Track Shipment
+      </a>
+      <a href="/pages/customer/cost-estimator.html" class="px-4 py-2 rounded-lg text-sm font-500 transition-all" style="color:var(--text-body); background:var(--bg-hover);">
+        Estimator
+      </a>
+    </nav>
+
+    <!-- Right: User Info & Actions -->
+    <div class="flex items-center gap-4">
+      <!-- Mobile Menu Toggle -->
+      <button id="mobile-menu-toggle" class="lg:hidden p-2 rounded-lg transition-all hover:opacity-90" style="background:linear-gradient(135deg,#F59000,#FFAA1A); color:#fff;">
+        <svg class="w-5 h-5" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24">
+          <path d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+
+      <!-- User Greeting -->
+      <div class="hidden sm:block text-right">
+        <div id="user-greeting" class="text-sm font-500" style="color:var(--text-head);">Welcome,</div>
+        <div id="user-name" class="text-xs" style="color:var(--text-muted);">Customer</div>
+      </div>
+
+      <!-- Logout Button -->
+      <button id="logout-btn" class="px-4 py-2 rounded-lg text-sm font-500 transition-all hover:opacity-90" style="background:linear-gradient(135deg,#F59000,#FFAA1A); color:#fff;">
+        Logout
+      </button>
+    </div>
+  </header>
+
+  <!-- Mobile Menu (hidden by default) -->
+  <div id="mobile-menu" class="hidden fixed top-14 inset-x-0 z-40 bg-white shadow-lg border-b" style="border-color:var(--border);">
+    <nav class="flex flex-col p-4 space-y-2">
+      <a href="/pages/customer/dashboard.html" class="px-4 py-2 rounded-lg text-sm font-500 transition-all hover:opacity-80" style="color:var(--text-body);">
+        Dashboard
+      </a>
+      <a href="/pages/customer/my-shipments.html" class="px-4 py-2 rounded-lg text-sm font-500 transition-all hover:opacity-80" style="color:var(--text-body);">
+        My Shipments
+      </a>
+      <a href="/pages/customer/create-shipment.html" class="px-4 py-2 rounded-lg text-sm font-500 transition-all hover:opacity-80" style="color:var(--text-body);">
+        Create Shipment
+      </a>
+      <a href="/pages/customer/track-shipment.html" class="px-4 py-2 rounded-lg text-sm font-500 transition-all hover:opacity-80" style="color:var(--text-body);">
+        Track Shipment
+      </a>
+      <a href="/pages/customer/cost-estimator.html" class="px-4 py-2 rounded-lg text-sm font-500 transition-all" style="color:var(--text-body); background:var(--bg-hover);">
+        Estimator
+      </a>
+    </nav>
+  </div>
+
+  <!-- Main Content -->
+  <main class="pt-20 max-w-6xl mx-auto p-6">
+    <h1 class="text-3xl font-display font-700 mb-6" style="color:var(--text-head);">Cost Estimator</h1>
+
+    <div class="bg-white rounded-lg shadow-lg p-6">
+      <div class="space-y-4">
+        <p style="color:var(--text-muted);">Cost estimation form will appear here.</p>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

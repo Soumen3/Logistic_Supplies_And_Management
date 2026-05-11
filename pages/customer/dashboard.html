@@ -10,33 +10,81 @@
 </head>
 <body class="min-h-screen bg-[var(--bg-page)]">
   <!-- Navbar -->
-  <header class="bg-white shadow">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between h-16 items-center">
-        <div class="flex items-center gap-4">
-          <a href="/index.html" class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-md flex items-center justify-center" style="background:linear-gradient(135deg,#F59000,#FFAA1A);">
-              <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M20 21H4l-2-7h20l-2 7zM4.5 12l1.5-6h12l1.5 6H4.5zM9 6V4h6v2H9z"/></svg>
-            </div>
-            <span class="font-bold text-lg" style="color:var(--text-head);">SwiftShip</span>
-          </a>
-          <nav class="hidden md:flex gap-4 text-sm" style="color:var(--text-body);">
-            <a href="#" class="hover:underline">My Shipments</a>
-            <a href="#" class="hover:underline">Create Shipment</a>
-            <a href="#" class="hover:underline">Estimates</a>
-          </nav>
-        </div>
-
-        <div class="flex items-center gap-4">
-          <div id="user-greeting" class="text-sm text-[var(--text-body)]">Customer</div>
-          <button id="logout-btn" class="px-3 py-2 rounded-md text-white" style="background:linear-gradient(135deg,#F59000,#FFAA1A);">Logout</button>
-        </div>
+  <header class="fixed top-0 inset-x-0 z-50 glass px-6 py-3 flex items-center justify-between border-b" style="border-color:var(--border);">
+    <!-- Left: Logo -->
+    <a href="/pages/customer/dashboard.html" class="flex items-center gap-2.5 group">
+      <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background:linear-gradient(135deg,#F59000,#FFAA1A);">
+        <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M20 21H4l-2-7h20l-2 7zM4.5 12l1.5-6h12l1.5 6H4.5zM9 6V4h6v2H9z"/></svg>
       </div>
+      <span class="font-display text-lg font-700 tracking-tight" style="color:var(--text-head);">
+        Swift<span style="color:#F59000;">Ship</span>
+      </span>
+    </a>
+
+    <!-- Center: Navigation Links -->
+    <nav class="hidden lg:flex items-center gap-1">
+      <a href="/pages/customer/dashboard.html" class="px-4 py-2 rounded-lg text-sm font-500 transition-all" style="color:var(--text-body); background:var(--bg-hover);">
+        Dashboard
+      </a>
+      <a href="/pages/customer/my-shipments.html" class="px-4 py-2 rounded-lg text-sm font-500 transition-all hover:opacity-80" style="color:var(--text-body);">
+        My Shipments
+      </a>
+      <a href="/pages/customer/create-shipment.html" class="px-4 py-2 rounded-lg text-sm font-500 transition-all hover:opacity-80" style="color:var(--text-body);">
+        Create Shipment
+      </a>
+      <a href="/pages/customer/track-shipment.html" class="px-4 py-2 rounded-lg text-sm font-500 transition-all hover:opacity-80" style="color:var(--text-body);">
+        Track Shipment
+      </a>
+      <a href="/pages/customer/cost-estimator.html" class="px-4 py-2 rounded-lg text-sm font-500 transition-all hover:opacity-80" style="color:var(--text-body);">
+        Estimator
+      </a>
+    </nav>
+
+    <!-- Right: User Info & Actions -->
+    <div class="flex items-center gap-4">
+      <!-- Mobile Menu Toggle -->
+      <button id="mobile-menu-toggle" class="lg:hidden p-2 rounded-lg transition-all hover:opacity-90" style="background:linear-gradient(135deg,#F59000,#FFAA1A); color:#fff;">
+          <svg class="w-5 h-5" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24">
+           <path d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+      </button>
+
+      <!-- User Greeting -->
+      <div class="hidden sm:block text-right">
+        <div id="user-greeting" class="text-sm font-500" style="color:var(--text-head);">Welcome,</div>
+        <div id="user-name" class="text-xs" style="color:var(--text-muted);">Customer</div>
+      </div>
+
+      <!-- Logout Button -->
+      <button id="logout-btn" class="px-4 py-2 rounded-lg text-sm font-500 transition-all hover:opacity-90" style="background:linear-gradient(135deg,#F59000,#FFAA1A); color:#fff;">
+        Logout
+      </button>
     </div>
   </header>
 
-  <!-- Main -->
-  <main class="max-w-6xl mx-auto p-6">
+  <!-- Mobile Menu (hidden by default) -->
+  <div id="mobile-menu" class="hidden fixed top-14 inset-x-0 z-40 bg-white shadow-lg border-b" style="border-color:var(--border);">
+    <nav class="flex flex-col p-4 space-y-2">
+      <a href="/pages/customer/dashboard.html" class="px-4 py-2 rounded-lg text-sm font-500 transition-all" style="color:var(--text-body); background:var(--bg-hover);">
+        Dashboard
+      </a>
+      <a href="/pages/customer/my-shipments.html" class="px-4 py-2 rounded-lg text-sm font-500 transition-all hover:opacity-80" style="color:var(--text-body);">
+        My Shipments
+      </a>
+      <a href="/pages/customer/create-shipment.html" class="px-4 py-2 rounded-lg text-sm font-500 transition-all hover:opacity-80" style="color:var(--text-body);">
+        Create Shipment
+      </a>
+      <a href="/pages/customer/track-shipment.html" class="px-4 py-2 rounded-lg text-sm font-500 transition-all hover:opacity-80" style="color:var(--text-body);">
+        Track Shipment
+      </a>
+      <a href="/pages/customer/cost-estimator.html" class="px-4 py-2 rounded-lg text-sm font-500 transition-all hover:opacity-80" style="color:var(--text-body);">
+        Estimator
+      </a>
+    </nav>
+  </div>
+
+  <!-- Main (with top padding for fixed navbar) -->
+  <main class="pt-20 max-w-6xl mx-auto p-6">
     <h2 class="text-2xl font-semibold mb-4" style="color:var(--text-head);">Dashboard</h2>
 
     <section class="grid grid-cols-1 md:grid-cols-3 gap-6">

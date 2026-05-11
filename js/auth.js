@@ -1,4 +1,4 @@
-import { SwiftShipDB } from './db.module.js';
+import { SwiftShipDB, getDashboardPathForRole } from './db.module.js';
 
 function initLandingAuth() {
 	const loadingEl = document.getElementById('loading-state');
@@ -22,9 +22,17 @@ function initLandingAuth() {
 		document.documentElement.style.overflow = '';
 	};
 
-	const setLoggedInNav = () => {
+	const setLoggedInNav = (session) => {
 		if (!authButtonsEl) return;
+		
+		const dashboardPath = getDashboardPathForRole(session.role);
+		
 		authButtonsEl.innerHTML = `
+			<a href="${dashboardPath}"
+				class="px-4 py-1.5 text-sm font-500 rounded-lg border transition-all duration-200 hover:opacity-80"
+				style="color:var(--text-head); border-color:var(--border);">
+				Dashboard
+			</a>
 			<button id="home-logout-btn"
 				class="px-4 py-1.5 text-sm font-500 rounded-lg transition-all duration-200 hover:opacity-90"
 				style="background:#F59000; color:#fff;">
@@ -50,7 +58,7 @@ function initLandingAuth() {
 			const active = await SwiftShipDB.getActiveSession();
 			showMain();
 			if (active) {
-				setLoggedInNav();
+				setLoggedInNav(active);
 			}
 		} catch (error) {
 			console.warn('Session check failed:', error);

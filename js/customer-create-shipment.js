@@ -3,35 +3,30 @@ import { SwiftShipDB } from './db.module.js';
 window.addEventListener('DOMContentLoaded', async () => {
   const session = await SwiftShipDB.getActiveSession();
   if (!session) {
-    // no active session — redirect to login
     location.href = '/pages/login.html';
     return;
   }
 
-  // Redirect non-customers to login
   if (session.role !== 'customer') {
     location.href = '/pages/login.html';
     return;
   }
 
-  // Get user details
   let userName = 'Customer';
   try {
     const user = await SwiftShipDB.getUserById(session.user_id);
     if (user && user.full_name) {
-      userName = user.full_name.split(' ')[0]; // First name only
+      userName = user.full_name.split(' ')[0];
     }
   } catch (error) {
     console.warn('Failed to fetch user:', error);
   }
 
-  // Update greeting
   const userGreeting = document.getElementById('user-greeting');
   const userNameEl = document.getElementById('user-name');
   if (userGreeting) userGreeting.textContent = 'Welcome,';
   if (userNameEl) userNameEl.textContent = userName;
 
-  // Mobile menu toggle
   const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
   const mobileMenu = document.getElementById('mobile-menu');
   if (mobileMenuToggle && mobileMenu) {
@@ -39,7 +34,6 @@ window.addEventListener('DOMContentLoaded', async () => {
       mobileMenu.classList.toggle('hidden');
     });
 
-    // Close menu when clicking a link
     const mobileMenuLinks = mobileMenu.querySelectorAll('a');
     mobileMenuLinks.forEach(link => {
       link.addEventListener('click', () => {
@@ -48,13 +42,6 @@ window.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // Populate some demo values
-  const activeCount = document.getElementById('active-count');
-  const memberSince = document.getElementById('member-since');
-  if (activeCount) activeCount.textContent = '3';
-  if (memberSince) memberSince.textContent = new Date(Date.now() - 1000 * 60 * 60 * 24 * 90).toLocaleDateString();
-
-  // Logout handler: deactivate active sessions and go to login
   const logoutBtn = document.getElementById('logout-btn');
   if (logoutBtn) {
     logoutBtn.addEventListener('click', async () => {
