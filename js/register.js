@@ -48,6 +48,66 @@ function clearErrors() {
   if (msg) msg.textContent = '';
 }
 
+function showRecoveryCodes(recoveryCodes) {
+  // Hide form
+  const form = el('register-form');
+  if (form) form.style.display = 'none';
+
+  // Show recovery codes section
+  const section = el('recovery-codes-section');
+  if (section) section.classList.remove('hidden');
+
+  // Populate recovery codes
+  const codesList = el('recovery-codes-list');
+  if (codesList) {
+    codesList.innerHTML = '';
+    recoveryCodes.forEach((rc, idx) => {
+      const codeDiv = document.createElement('div');
+      codeDiv.textContent = `${idx + 1}. ${rc.code}`;
+      codesList.appendChild(codeDiv);
+    });
+  }
+
+  // Setup copy button
+  const copyBtn = el('copy-codes-btn');
+  if (copyBtn) {
+    copyBtn.addEventListener('click', () => {
+      const codesText = recoveryCodes.map((rc, idx) => `${idx + 1}. ${rc.code}`).join('\n');
+      navigator.clipboard.writeText(codesText).then(() => {
+        copyBtn.textContent = 'Copied!';
+        setTimeout(() => {
+          copyBtn.textContent = 'Copy All';
+        }, 2000);
+      });
+    });
+  }
+
+  // Setup download button
+  const downloadBtn = el('download-codes-btn');
+  if (downloadBtn) {
+    downloadBtn.addEventListener('click', () => {
+      const codesText = recoveryCodes.map((rc, idx) => `${idx + 1}. ${rc.code}`).join('\n');
+      const blob = new Blob([`SwiftShip Recovery Codes\n========================\n\nSave these codes in a safe place.\nYou will need one to reset your password.\n\n${codesText}`], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'swiftship-recovery-codes.txt';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+  }
+
+  // Setup continue button
+  const continueBtn = el('continue-login-btn');
+  if (continueBtn) {
+    continueBtn.addEventListener('click', () => {
+      window.location.href = '/pages/login.html';
+    });
+  }
+}
+
 async function redirectIfLoggedIn() {
   try {
     const session = await SwiftShipDB.getActiveSession();
@@ -119,11 +179,18 @@ async function init() {
         role: 'customer',
       });
 
-      msg.style.color = 'green';
-      msg.textContent = 'Account created - redirecting to login...';
-      setTimeout(() => {
-        window.location.href = '/pages/login.html';
-      }, 900);
+      // Get the newly created user to retrieve recovery codes
+      const newUser = await SwiftShipDB.getUserByEmail(email);
+      if (newUser && newUser.recovery_codes) {
+        showRecoveryCodes(newUser.recovery_codes);
+      } else {
+        // Fallback if codes not immediately available
+        msg.style.color = 'green';
+        msg.textContent = 'Account created - redirecting to login...';
+        setTimeout(() => {
+          window.location.href = '/pages/login.html';
+        }, 900);
+      }
     } catch (error) {
       console.error(error);
       if (error && error.message === 'phone_required') {

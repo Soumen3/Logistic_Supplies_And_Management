@@ -5,7 +5,7 @@ const db = new Dexie('SwiftShipDB_New');
 // Fresh schema: single version without legacy migration chain.
 db.version(1).stores({
   sessions: '++id, user_id, is_active, expires_at, role',
-  users: 'id,&email,phone,full_name,role,created_at,last_login',
+  users: 'id,&email,phone,full_name,role,created_at,last_login,recovery_codes',
   shipments: 'id, shipment_code, sender_name, sender_address, receiver_name, receiver_address, source_city, destination_city, weight_kg, distance_km, delivery_type, estimated_cost, estimated_days, status, created_by, created_at, updated_at',
   status_history: '++id, shipment_id, status, updated_by, notes, timestamp',
 });
@@ -51,6 +51,15 @@ async function createSession({ user_id = null, role, expires_at, is_active = 1, 
   });
 }
 
+async function generateRecoveryCodes(count = 10) {
+  const codes = [];
+  for (let i = 0; i < count; i++) {
+    const code = Math.random().toString(36).substring(2, 10).toUpperCase();
+    codes.push({ code, used: 0, created_at: Date.now() });
+  }
+  return codes;
+}
+
 async function addUser({ id, email, password_hash, full_name, phone, role }) {
   if (!phone) {
     throw new Error('phone_required');
@@ -59,7 +68,8 @@ async function addUser({ id, email, password_hash, full_name, phone, role }) {
     id = (crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now());
   }
   const now = Date.now();
-  const record = { id, email, phone, password_hash, full_name, role, created_at: now, last_login: null };
+  const recoveryCodes = await generateRecoveryCodes(10);
+  const record = { id, email, phone, password_hash, full_name, role, recovery_codes: recoveryCodes, created_at: now, last_login: null };
   return db.users.put(record);
 }
 
@@ -158,6 +168,32 @@ async function deleteShipment(id) {
   });
 }
 
+async function verifyRecoveryCode(email, code) {
+  const user = await db.users.where('email').equals(email).first();
+  if (!user) return null;
+  
+  const recoveryCode = user.recovery_codes.find(rc => rc.code === code && rc.used === 0);
+  if (!recoveryCode) return null;
+  
+  return user;
+}
+
+async function resetUserPassword(email, recoveryCode, newPasswordHash) {
+  return db.transaction('rw', db.users, async () => {
+    const user = await verifyRecoveryCode(email, recoveryCode);
+    if (!user) throw new Error('invalid_recovery_code');
+    
+    // Mark code as used
+    const codeIndex = user.recovery_codes.findIndex(rc => rc.code === recoveryCode);
+    user.recovery_codes[codeIndex].used = 1;
+    user.recovery_codes[codeIndex].used_at = Date.now();
+    user.password_hash = newPasswordHash;
+    
+    await db.users.put(user);
+    return true;
+  });
+}
+
 export function getDashboardPathForRole(role) {
   if (role === 1 || role === 'admin') return '/pages/admin/dashboard.html';
   if (role === 'staff') return '/pages/staff/dashboard.html';
@@ -187,6 +223,9 @@ export const SwiftShipDB = {
   deleteShipment,
   addStatusHistory,
   getShipmentHistory,
+  generateRecoveryCodes,
+  verifyRecoveryCode,
+  resetUserPassword,
 };
 
 // Keep global compatibility for any remaining non-module scripts.

@@ -55,6 +55,29 @@
 
       <p class="text-center text-sm mt-4" style="color:var(--text-muted);">Already registered? <a href="login.html" class="text-amber-600">Sign in</a></p>
     </form>
+
+    <!-- Recovery Codes Section (shown after registration) -->
+    <div id="recovery-codes-section" class="hidden p-6 rounded-lg" style="background:#f0fdf4;border:1px solid #86efac;">
+      <div class="mb-4">
+        <h2 class="text-lg font-display font-700" style="color:#15803d;">Save Your Recovery Codes</h2>
+        <p class="text-sm mt-1" style="color:#166534;">Store these codes somewhere safe. You'll need one to reset your password if you forget it.</p>
+      </div>
+
+      <div id="recovery-codes-list" class="bg-white p-4 rounded-lg mb-4 border border-gray-200 font-mono text-sm space-y-2">
+        <!-- Codes will be inserted here -->
+      </div>
+
+      <div class="flex gap-2">
+        <button id="copy-codes-btn" type="button" class="flex-1 px-3 py-2 rounded-lg text-white text-sm" style="background:#10b981;">Copy All</button>
+        <button id="download-codes-btn" type="button" class="flex-1 px-3 py-2 rounded-lg text-white text-sm" style="background:#0ea5e9;">Download</button>
+      </div>
+
+      <div class="mt-4 p-3 rounded-lg text-sm" style="background:#fef3c7;border:1px solid #fcd34d;">
+        <p style="color:#92400e;">⚠️ Save these codes now. You won't see them again.</p>
+      </div>
+
+      <button id="continue-login-btn" type="button" class="w-full mt-4 px-4 py-3 rounded-lg text-white" style="background:linear-gradient(135deg,#F59000,#FFAA1A);">Continue to Login</button>
+    </div>
   </main>
 
 </body>
