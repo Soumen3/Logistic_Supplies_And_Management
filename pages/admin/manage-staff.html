@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manage Staff — SwiftShip</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="/assets/css/style.css" />
+</head>
+
+<body style="background:var(--bg-page); color:var(--text-body);" class="min-h-screen">
+
+<!-- ✅ NAVBAR -->
+<nav class="fixed top-0 inset-x-0 z-50 glass px-6 py-3 flex items-center justify-between border-b"
+     style="border-color:var(--border);">
+
+  <a href="/pages/admin/dashboard.html" class="flex items-center gap-2">
+    <div class="w-9 h-9 rounded-xl flex items-center justify-center"
+         style="background:linear-gradient(135deg,#F59000,#FFAA1A);">
+      <span class="text-white font-bold">S</span>
+    </div>
+    <span class="font-display font-700 text-lg" style="color:var(--text-head);">
+      SwiftShip Admin
+    </span>
+  </a>
+
+  <button id="logout-btn"
+    class="px-4 py-2 rounded-lg text-sm font-500"
+    style="background:#F59000; color:white;">
+    Logout
+  </button>
+
+</nav>
+
+<!-- ✅ MAIN -->
+<main class="pt-20 px-6 max-w-6xl mx-auto">
+
+  <h1 class="text-2xl font-display font-700 mb-6"
+      style="color:var(--text-head);">
+    Manage Staff
+  </h1>
+
+  <!-- ✅ TABLE -->
+  <div class="glass border rounded-lg overflow-hidden"
+       style="border-color:var(--border);">
+
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-left border-collapse">
+
+        <thead style="background:var(--bg-hover);">
+          <tr>
+            <th class="px-6 py-3 text-sm font-600">Name</th>
+            <th class="px-6 py-3 text-sm font-600">Email</th>
+            <th class="px-6 py-3 text-sm font-600">Phone</th>
+            <th class="px-6 py-3 text-sm font-600 text-center">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody id="staff-list"></tbody>
+
+      </table>
+    </div>
+
+  </div>
+
+</main>
+
+<!-- ✅ ✅ ✅ INLINE JS -->
+<script type="module">
+import { SwiftShipDB } from '/js/db.module.js';
+
+function el(id) {
+  return document.getElementById(id);
+}
+
+// ✅ Admin check
+async function redirectIfNotAdmin() {
+  const session = await SwiftShipDB.getActiveSession();
+  if (!session || (session.role !== 'admin' && session.role !== 1)) {
+    window.location.href = '/pages/login.html';
+    return true;
+  }
+  return false;
+}
+
+// ✅ Load staff
+async function loadStaff() {
+
+  const listEl = el('staff-list');
+  if (!listEl) return;
+
+  const users = await SwiftShipDB.db.users.toArray();
+
+  const staff = users.filter(
+    u => (u.role || "").toLowerCase().trim() === 'staff'
+  );
+
+  if (!staff.length) {
+    listEl.innerHTML = `
+      <tr>
+        <td colspan="4" class="px-6 py-4 text-center">
+          No staff found
+        </td>
+      </tr>`;
+    return;
+  }
+
+  listEl.innerHTML = staff.map(user => `
+    <tr style="border-bottom:1px solid var(--border);">
+      <td class="px-6 py-4">${user.full_name}</td>
+      <td class="px-6 py-4">${user.email}</td>
+      <td class="px-6 py-4">${user.phone}</td>
+
+      <td class="px-6 py-4 text-center">
+        <button data-id="${user.id}"
+          class="delete-btn px-3 py-1 rounded"
+          style="background:red; color:white;">
+          Delete
+        </button>
+      </td>
+    </tr>
+  `).join('');
+
+  // ✅ Delete logic
+  document.querySelectorAll('.delete-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const id = Number(btn.getAttribute('data-id'));
+
+      if (confirm('Delete this staff?')) {
+        await SwiftShipDB.db.users.delete(id);
+        loadStaff();
+      }
+    });
+  });
+}
+
+// ✅ Logout
+function setupLogout() {
+  el('logout-btn')?.addEventListener('click', async () => {
+    await SwiftShipDB.deactivateActiveSessions();
+    window.location.href = '/pages/login.html';
+  });
+}
+
+// ✅ INIT
+async function init() {
+  const blocked = await redirectIfNotAdmin();
+  if (blocked) return;
+
+  setupLogout();
+  loadStaff();
+}
+
+window.addEventListener('DOMContentLoaded', init);
+</script>
+
+</body>
+</html>
