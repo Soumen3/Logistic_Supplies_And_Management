@@ -1,54 +1,370 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Login — SwiftShip</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <link href="/assets/css/style.css" rel="stylesheet" />
   <script type="module" src="/js/login.js"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: { extend: { fontFamily: { display: ['Syne','sans-serif'], body: ['DM Sans','sans-serif'] } } }
+    };
+  </script>
+
+  <style>
+    body { font-family: 'DM Sans', sans-serif; background: #1a1f2e; }
+
+    /* ── Left panel animated bg ── */
+    .login-panel-left {
+      position: relative;
+      background: linear-gradient(135deg, #0d1224 0%, #1a2040 50%, #0d1224 100%);
+      overflow: hidden;
+    }
+    .login-panel-left::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(245,144,0,0.15) 1px, transparent 1px);
+      background-size: 32px 32px;
+      animation: grid-shift 12s linear infinite;
+    }
+    @keyframes grid-shift {
+      0%   { transform: translate(0,0); }
+      100% { transform: translate(32px, 32px); }
+    }
+
+    /* ── Glowing orbs ── */
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+    }
+
+    /* ── Card ── */
+    .login-card {
+      background: rgba(30,36,58,0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.4);
+    }
+
+    /* ── Input ── */
+    .login-input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border-radius: 0.75rem;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.10);
+      color: #e8edf5;
+      font-size: 0.875rem;
+      outline: none;
+      transition: border-color 0.25s, box-shadow 0.25s;
+    }
+    .login-input::placeholder { color: #4e6080; }
+    .login-input:focus {
+      border-color: #F59000;
+      box-shadow: 0 0 0 3px rgba(245,144,0,0.18);
+    }
+    .login-input.error { border-color: #ef4444; box-shadow: 0 0 0 3px rgba(239,68,68,0.15); }
+
+    /* ── Password toggle ── */
+    .pw-toggle {
+      position: absolute;
+      right: 0.875rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #4e6080;
+      padding: 0;
+      transition: color 0.2s;
+    }
+    .pw-toggle:hover { color: #F59000; }
+
+    /* ── Submit btn ── */
+    .btn-submit {
+      width: 100%;
+      padding: 0.875rem;
+      border-radius: 0.875rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: #fff;
+      background: linear-gradient(135deg,#F59000,#FFAA1A);
+      box-shadow: 0 6px 24px rgba(245,144,0,0.35);
+      border: none;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-submit::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,0.15);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(245,144,0,0.45); }
+    .btn-submit:hover::after { opacity: 1; }
+    .btn-submit:active { transform: translateY(0); }
+    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    /* ── Feature badge ── */
+    .feature-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.6rem 1rem;
+      border-radius: 0.75rem;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      font-size: 0.8rem;
+      color: #9baac4;
+      transition: background 0.25s;
+    }
+    .feature-badge:hover { background: rgba(245,144,0,0.08); }
+    .feature-badge-icon {
+      width: 28px; height: 28px;
+      border-radius: 8px;
+      background: rgba(245,144,0,0.15);
+      display: flex; align-items: center; justify-content: center;
+      color: #F59000;
+      flex-shrink: 0;
+    }
+
+    /* ── Separator ── */
+    .separator {
+      display: flex; align-items: center; gap: 0.75rem;
+      color: #4e6080; font-size: 0.75rem;
+    }
+    .separator::before, .separator::after {
+      content: ''; flex: 1;
+      height: 1px; background: rgba(255,255,255,0.07);
+    }
+
+    /* ── Shake animation ── */
+    @keyframes shake {
+      0%,100%{ transform: translateX(0); }
+      20%    { transform: translateX(-8px); }
+      40%    { transform: translateX(8px); }
+      60%    { transform: translateX(-5px); }
+      80%    { transform: translateX(5px); }
+    }
+    .shake { animation: shake 0.4s ease; }
+
+    /* ── Floating label ── */
+    .label-text {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 500;
+      margin-bottom: 0.4rem;
+      color: #9baac4;
+      letter-spacing: 0.02em;
+    }
+  </style>
 </head>
-<body class="min-h-screen flex items-center justify-center bg-[var(--bg-page)]">
-  <main class="max-w-lg w-full p-8 bg-white rounded-2xl shadow-xl">
-    <a href="/index.html" class="inline-block text-sm text-amber-600 hover:underline mb-4">← Back to Home</a>
-    <div class="flex items-center gap-4 mb-6">
-      <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background:linear-gradient(135deg,#F59000,#FFAA1A);">
-        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M20 21H4l-2-7h20l-2 7zM4.5 12l1.5-6h12l1.5 6H4.5zM9 6V4h6v2H9z"/></svg>
+
+<body class="h-screen flex overflow-hidden">
+
+  <!-- ── Left decorative panel ── -->
+  <div class="login-panel-left hidden lg:flex flex-col justify-between w-[44%] p-12 h-full">
+
+    <!-- Ambient orbs -->
+    <div class="orb w-72 h-72 -top-20 -left-20" style="background:#F59000; opacity:0.12; top:-80px; left:-80px;"></div>
+    <div class="orb w-60 h-60" style="background:#2E4F93; opacity:0.18; bottom:-40px; right:-40px;"></div>
+    <div class="orb w-40 h-40" style="background:#F59000; opacity:0.08; top:40%; left:50%;"></div>
+
+    <!-- Top: Logo -->
+    <a href="/" class="flex items-center gap-3 relative z-10">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:linear-gradient(135deg,#F59000,#FFAA1A);">
+        <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M20 21H4l-2-7h20l-2 7zM4.5 12l1.5-6h12l1.5 6H4.5zM9 6V4h6v2H9z"/></svg>
       </div>
-      <div>
-        <h1 class="text-2xl font-display font-700" style="color:var(--text-head);">Welcome back</h1>
-        <p class="text-sm" style="color:var(--text-muted);">Sign in to manage your shipments and view realtime tracking.</p>
+      <span class="font-display text-xl font-700 text-white">Swift<span style="color:#F59000;">Ship</span></span>
+    </a>
+
+    <!-- Middle: headline + features -->
+    <div class="relative z-10">
+      <h2 class="font-display text-4xl font-800 leading-tight mb-3" style="color:#e8edf5;">
+        Your shipments,<br/>
+        <span style="color:#F59000;">always on track.</span>
+      </h2>
+      <p class="text-sm leading-relaxed mb-10" style="color:#6b7fa0;">
+        Manage deliveries, track parcels in real-time, and generate cost estimates — from one clean dashboard.
+      </p>
+
+      <div class="flex flex-col gap-3">
+        <div class="feature-badge">
+          <div class="feature-badge-icon">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+          </div>
+          Real-time shipment tracking with live status updates
+        </div>
+        <div class="feature-badge">
+          <div class="feature-badge-icon">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          Instant delivery cost estimator
+        </div>
+        <div class="feature-badge">
+          <div class="feature-badge-icon">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          </div>
+          Secure SHA-256 authentication &amp; session management
+        </div>
       </div>
     </div>
 
-    <form id="login-form" class="space-y-4">
+    <!-- Bottom: stat strip -->
+    <div class="relative z-10 flex gap-6 pt-8 border-t" style="border-color:rgba(255,255,255,0.07);">
       <div>
-        <label class="block text-sm font-medium" style="color:var(--text-head);">Email</label>
-        <input id="email" type="email" required class="mt-1 block w-full px-4 py-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-amber-200" placeholder="you@company.com" />
+        <div class="font-display font-800 text-xl" style="color:#F59000;">12,400+</div>
+        <div class="text-xs" style="color:#4e6080;">Shipments</div>
       </div>
-
       <div>
-        <label class="block text-sm font-medium" style="color:var(--text-head);">Password</label>
-        <input id="password" type="password" required class="mt-1 block w-full px-4 py-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-amber-200" placeholder="Enter your password" />
+        <div class="font-display font-800 text-xl" style="color:#F59000;">98%</div>
+        <div class="text-xs" style="color:#4e6080;">On-time rate</div>
+      </div>
+      <div>
+        <div class="font-display font-800 text-xl" style="color:#F59000;">340+</div>
+        <div class="text-xs" style="color:#4e6080;">Cities covered</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Right: Login form ── -->
+  <div class="flex-1 flex flex-col items-center justify-center px-6 py-10 h-full relative overflow-y-auto overflow-x-hidden" style="background:#1a1f2e;">
+    <!-- subtle top-right orb -->
+    <div class="orb w-80 h-80 pointer-events-none" style="background:#F59000; opacity:0.05; top:-60px; right:-60px;"></div>
+
+    <div class="login-card rounded-2xl p-8 w-full max-w-md relative z-10">
+
+      <!-- Mobile logo (only shows on small screens) -->
+      <div class="flex items-center gap-2.5 mb-6 lg:hidden">
+        <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background:linear-gradient(135deg,#F59000,#FFAA1A);">
+          <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M20 21H4l-2-7h20l-2 7zM4.5 12l1.5-6h12l1.5 6H4.5zM9 6V4h6v2H9z"/></svg>
+        </div>
+        <span class="font-display text-lg font-700 text-white">Swift<span style="color:#F59000;">Ship</span></span>
       </div>
 
-      <div class="flex items-center justify-between text-sm">
-        <label class="inline-flex items-center gap-2">
-          <input id="remember" type="checkbox" class="form-checkbox" />
-          <span style="color:var(--text-body);">Remember me</span>
-        </label>
-        <a href="/pages/forgot-password.html" class="text-amber-600 hover:underline">Forgot password?</a>
-      </div>
+      <!-- Header -->
+      <div class="mb-7">
+        <h1 class="font-display text-2xl font-700 mb-1" style="color:#e8edf5;">Welcome back 👋</h1>
+        <p class="text-sm" style="color:#6b7fa0;">Sign in to your account to continue</p>
       </div>
 
-      <div class="pt-2">
-        <button type="submit" class="w-full px-4 py-3 rounded-lg text-white" style="background:linear-gradient(135deg,#F59000,#FFAA1A);">Sign in</button>
-      </div>
+      <!-- Form -->
+      <form id="login-form" class="space-y-5" novalidate>
 
-      <p id="msg" class="text-sm mt-2 text-center"></p>
+        <!-- Email -->
+        <div>
+          <label for="email" class="label-text">Email address</label>
+          <input id="email" type="email" required autocomplete="email"
+            class="login-input" placeholder="you@company.com" />
+        </div>
 
-      <p class="text-center text-sm mt-4" style="color:var(--text-muted);">New here? <a href="register.html" class="text-amber-600">Create an account</a></p>
-    </form>
-  </main>
+        <!-- Password -->
+        <div>
+          <label for="password" class="label-text">Password</label>
+          <div class="relative">
+            <input id="password" type="password" required autocomplete="current-password"
+              class="login-input pr-11" placeholder="Enter your password" />
+            <button type="button" id="toggle-pw" class="pw-toggle" aria-label="Toggle password visibility">
+              <svg id="eye-icon" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Remember + Forgot -->
+        <div class="flex items-center justify-between text-sm">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input id="remember" type="checkbox"
+              class="w-4 h-4 rounded accent-amber-500" />
+            <span style="color:#9baac4;">Remember me</span>
+          </label>
+          <a href="/pages/forgot-password.html" class="text-xs font-500 hover:underline" style="color:#F59000;">
+            Forgot password?
+          </a>
+        </div>
+
+        <!-- Error message -->
+        <p id="msg" class="text-xs text-center hidden py-2 px-3 rounded-lg" style="background:rgba(239,68,68,0.12); color:#f87171; border:1px solid rgba(239,68,68,0.2);"></p>
+
+        <!-- Submit -->
+        <button id="submit-btn" type="submit" class="btn-submit">
+          <span id="btn-text">Sign in</span>
+        </button>
+
+        <!-- Separator -->
+        <div class="separator">or</div>
+
+        <!-- Register link -->
+        <p class="text-center text-sm" style="color:#6b7fa0;">
+          Don't have an account?
+          <a href="register.html" class="font-600 hover:underline" style="color:#F59000;">Create one free</a>
+        </p>
+
+      </form>
+    </div>
+
+    <!-- Back link -->
+    <a href="/" class="mt-6 text-xs hover:underline relative z-10" style="color:#4e6080;">
+      ← Back to SwiftShip home
+    </a>
+  </div>
+
+  <script>
+    /* ── Password visibility toggle ── */
+    const toggleBtn = document.getElementById('toggle-pw');
+    const pwInput   = document.getElementById('password');
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', () => {
+        const isText = pwInput.type === 'text';
+        pwInput.type = isText ? 'password' : 'text';
+        document.getElementById('eye-icon').innerHTML = isText
+          ? '<path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>'
+          : '<path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>';
+      });
+    }
+
+    /* ── Show error message with shake ── */
+    function showError(text) {
+      const msg = document.getElementById('msg');
+      msg.textContent = text;
+      msg.classList.remove('hidden');
+      const form = document.getElementById('login-form');
+      form.classList.add('shake');
+      setTimeout(() => form.classList.remove('shake'), 400);
+    }
+
+    /* ── Loading state ── */
+    function setLoading(on) {
+      const btn  = document.getElementById('submit-btn');
+      const text = document.getElementById('btn-text');
+      btn.disabled = on;
+      text.textContent = on ? 'Signing in…' : 'Sign in';
+    }
+
+    /* ── Clear error on input ── */
+    ['email','password'].forEach(id => {
+      document.getElementById(id)?.addEventListener('input', () => {
+        document.getElementById('msg').classList.add('hidden');
+        document.getElementById(id).classList.remove('error');
+      });
+    });
+  </script>
 </body>
 </html>

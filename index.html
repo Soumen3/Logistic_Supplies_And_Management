@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" class="light">
+<html lang="en" class="dark">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -11,7 +12,9 @@
   <!-- Google Fonts: Syne (display) + DM Sans (body) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&display=swap"
+    rel="stylesheet" />
   <link rel="stylesheet" href="assets/css/style.css" />
 
   <script>
@@ -26,7 +29,7 @@
           colors: {
             /* ── Brand palette: deep navy + electric amber ── */
             brand: {
-              50:  '#FFF8EC',
+              50: '#FFF8EC',
               100: '#FFEDC9',
               200: '#FFD98F',
               300: '#FFC04A',
@@ -38,7 +41,7 @@
               900: '#522700',
             },
             navy: {
-              50:  '#EEF1F8',
+              50: '#EEF1F8',
               100: '#D4DCEE',
               200: '#A8B8DC',
               300: '#7591C6',
@@ -52,29 +55,44 @@
           },
           keyframes: {
             'fade-up': {
-              '0%':   { opacity: '0', transform: 'translateY(24px)' },
+              '0%': { opacity: '0', transform: 'translateY(24px)' },
               '100%': { opacity: '1', transform: 'translateY(0)' },
             },
+            'fade-in': {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' },
+            },
             'pulse-ring': {
-              '0%, 100%': { transform: 'scale(1)',   opacity: '0.6' },
-              '50%':       { transform: 'scale(1.15)', opacity: '0.2' },
+              '0%, 100%': { transform: 'scale(1)', opacity: '0.6' },
+              '50%': { transform: 'scale(1.15)', opacity: '0.2' },
             },
             'spin-slow': {
               to: { transform: 'rotate(360deg)' },
             },
             'shimmer': {
-              '0%':   { backgroundPosition: '-200% 0' },
-              '100%': { backgroundPosition:  '200% 0' },
+              '0%': { backgroundPosition: '-200% 0' },
+              '100%': { backgroundPosition: '200% 0' },
+            },
+            'float': {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-12px)' },
+            },
+            'glow-pulse': {
+              '0%, 100%': { boxShadow: '0 0 20px rgba(245,144,0,0.3)' },
+              '50%': { boxShadow: '0 0 40px rgba(245,144,0,0.6)' },
             },
           },
           animation: {
-            'fade-up':    'fade-up 0.6s ease both',
+            'fade-up': 'fade-up 0.6s ease both',
             'fade-up-d1': 'fade-up 0.6s 0.1s ease both',
             'fade-up-d2': 'fade-up 0.6s 0.2s ease both',
             'fade-up-d3': 'fade-up 0.6s 0.35s ease both',
-            'pulse-ring':  'pulse-ring 2s ease-in-out infinite',
-            'spin-slow':   'spin-slow 12s linear infinite',
-            'shimmer':     'shimmer 2.5s linear infinite',
+            'fade-in': 'fade-in 1s ease both',
+            'pulse-ring': 'pulse-ring 2s ease-in-out infinite',
+            'spin-slow': 'spin-slow 12s linear infinite',
+            'shimmer': 'shimmer 2.5s linear infinite',
+            'float': 'float 4s ease-in-out infinite',
+            'glow-pulse': 'glow-pulse 2s ease-in-out infinite',
           },
         },
       },
@@ -83,8 +101,10 @@
 
 </head>
 
-<body style="background:var(--bg-page); color:var(--text-body);"
-      class="min-h-screen transition-colors duration-300">
+<body style="background:var(--bg-page); color:var(--text-body);" class="min-h-screen transition-colors duration-300">
+
+  <!-- Scroll Progress Bar -->
+  <div id="scroll-progress"></div>
 
   <!-- ════════════════════════════════════════════
        TOP NAV BAR
@@ -93,14 +113,13 @@
     <!-- Logo -->
     <a href="index.html" class="flex items-center gap-2.5 group">
       <div class="w-9 h-9 rounded-xl flex items-center justify-center"
-           style="background:linear-gradient(135deg,#F59000,#FFAA1A);">
+        style="background:linear-gradient(135deg,#F59000,#FFAA1A);">
         <!-- Ship icon -->
         <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M20 21H4l-2-7h20l-2 7zM4.5 12l1.5-6h12l1.5 6H4.5zM9 6V4h6v2H9z"/>
+          <path d="M20 21H4l-2-7h20l-2 7zM4.5 12l1.5-6h12l1.5 6H4.5zM9 6V4h6v2H9z" />
         </svg>
       </div>
-      <span class="font-display text-lg font-700 tracking-tight"
-            style="color:var(--text-head);">
+      <span class="font-display text-lg font-700 tracking-tight" style="color:#ffffff;">
         Swift<span style="color:#F59000;">Ship</span>
       </span>
     </a>
@@ -112,13 +131,13 @@
       <!-- Auth buttons (hidden when redirecting) -->
       <div id="auth-buttons" class="flex items-center gap-2">
         <a href="pages/login.html"
-           class="px-4 py-1.5 text-sm font-500 rounded-lg border transition-all duration-200 hover:opacity-80"
-           style="color:var(--text-head); border-color:var(--border);">
+          class="px-4 py-1.5 text-sm font-500 rounded-lg border transition-all duration-200 hover:opacity-80"
+          style="color:#ffffff; border-color:rgba(255,255,255,0.3);">
           Login
         </a>
         <a href="pages/register.html"
-           class="px-4 py-1.5 text-sm font-500 rounded-lg transition-all duration-200 hover:opacity-90"
-           style="background:#F59000; color:#fff;">
+          class="px-4 py-1.5 text-sm font-500 rounded-lg transition-all duration-200 hover:opacity-90"
+          style="background:#F59000; color:#fff;">
           Register
         </a>
       </div>
@@ -131,27 +150,33 @@
   <main class="relative min-h-screen flex flex-col items-center justify-center pt-20 overflow-hidden">
 
     <!-- Hero background image with overlay -->
-    <div class="absolute inset-0 z-0" style="background-image: url('https://images.unsplash.com/photo-1552664730-d307ca884978?w=1920&fit=crop'); background-size: cover; background-position: center; background-attachment: fixed;"></div>
-    <div class="absolute inset-0 z-1" style="background:rgba(2, 14, 36, 0.75);"></div>
+    <div class="absolute inset-0 z-0"
+      style="background-image: url('https://img.magnific.com/free-photo/aerial-view-cargo-ship-cargo-container-harbor_335224-1380.jpg'); background-size: cover; background-position: center; background-attachment: fixed;">
+    </div>
+    <div class="absolute inset-0 z-1"
+      style="background:linear-gradient(to bottom, rgba(2,14,36,0.82) 0%, rgba(2,14,36,0.70) 60%, rgba(2,14,36,0.88) 100%);">
+    </div>
 
     <!-- Dot grid bg -->
     <div class="dot-grid absolute inset-0 pointer-events-none opacity-60 z-10"></div>
 
     <!-- Decorative blobs -->
     <div class="absolute -top-32 -left-32 w-96 h-96 rounded-full pointer-events-none opacity-20 animate-spin-slow z-10"
-         style="background:conic-gradient(from 0deg, #F59000, #FFAA1A, #2E4F93, #F59000);
+      style="background:conic-gradient(from 0deg, #F59000, #FFAA1A, #2E4F93, #F59000);
                 filter:blur(60px);"></div>
     <div class="absolute -bottom-40 -right-40 w-[500px] h-[500px] rounded-full pointer-events-none opacity-15 z-10"
-         style="background:radial-gradient(circle, #2E4F93, transparent 70%);
+      style="background:radial-gradient(circle, #2E4F93, transparent 70%);
                 filter:blur(80px);"></div>
 
     <!-- ── Loading state (shown while session check runs) ── -->
-    <div id="loading-state" class="fixed inset-0 z-[9999] flex flex-col items-center justify-center gap-5 animate-fade-up" style="background:rgba(var(--bg-page-rgb, 20, 24, 32), 0.95);">
+    <div id="loading-state"
+      class="fixed inset-0 z-[9999] flex flex-col items-center justify-center gap-5 animate-fade-up"
+      style="background:rgba(var(--bg-page-rgb, 20, 24, 32), 0.95);">
       <div class="relative">
         <div class="loader-ring"></div>
         <div class="absolute inset-0 flex items-center justify-center">
           <svg class="w-6 h-6" style="color:#F59000;" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M20 21H4l-2-7h20l-2 7zM4.5 12l1.5-6h12l1.5 6H4.5zM9 6V4h6v2H9z"/>
+            <path d="M20 21H4l-2-7h20l-2 7zM4.5 12l1.5-6h12l1.5 6H4.5zM9 6V4h6v2H9z" />
           </svg>
         </div>
       </div>
@@ -161,25 +186,26 @@
     </div>
 
     <!-- ── Main content (shown if no session) ── -->
-    <div id="main-content" class="hidden flex flex-col items-center text-center px-6 max-w-3xl mx-auto gap-8 relative z-20">
+    <div id="main-content"
+      class="hidden flex flex-col items-center text-center px-6 max-w-3xl mx-auto gap-8 relative z-20">
 
       <!-- Badge -->
-      <div class="animate-fade-up inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-500 tracking-wider uppercase glass"
-           style="color:#F59000;">
-        <span class="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse-ring inline-block"></span>
+      <div
+        class="animate-fade-up inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-500 tracking-wider uppercase"
+        style="background:rgba(245,144,0,0.18); border:1px solid rgba(245,144,0,0.4); color:#FFCA6A;">
+        <span class="w-1.5 h-1.5 rounded-full animate-pulse-ring inline-block" style="background:#F59000;"></span>
         Logistics Management Platform
       </div>
 
       <!-- Headline -->
       <h1 class="animate-fade-up-d1 font-display text-5xl md:text-7xl font-800 leading-[1.05] tracking-tight"
-          style="color:var(--text-head);">
-        Ship Smarter.<br/>
-        <span style="color:#F59000;">Track Faster.</span>
+        style="color:#ffffff; text-shadow: 0 2px 20px rgba(0,0,0,0.4);">
+        Ship Smarter.<br />
+        <span class="typewriter-target" style="color:#FFAA1A;">Track Faster.</span>
       </h1>
 
       <!-- Sub -->
-      <p class="animate-fade-up-d2 text-lg md:text-xl leading-relaxed max-w-xl"
-         style="color:var(--text-muted);">
+      <p class="animate-fade-up-d2 text-lg md:text-xl leading-relaxed max-w-xl" style="color:rgba(210,220,240,0.92);">
         Create shipments, estimate delivery costs, and track parcels in real-time —
         all from one clean dashboard.
       </p>
@@ -187,19 +213,21 @@
       <!-- CTA buttons -->
       <div class="animate-fade-up-d3 flex flex-wrap items-center justify-center gap-4">
         <a href="pages/register.html"
-           class="group flex items-center gap-2 px-7 py-3.5 rounded-xl text-base font-500 transition-all duration-200 hover:scale-105 hover:shadow-lg"
-           style="background:linear-gradient(135deg,#F59000,#FFAA1A); color:#fff;
+          class="group flex items-center gap-2 px-7 py-3.5 rounded-xl text-base font-500 transition-all duration-200 hover:scale-105 hover:shadow-lg"
+          style="background:linear-gradient(135deg,#F59000,#FFAA1A); color:#fff;
                   box-shadow: 0 4px 20px rgba(245,144,0,0.35);">
           Get Started Free
-          <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
+          <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor"
+            stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
           </svg>
         </a>
         <a href="pages/login.html"
-           class="flex items-center gap-2 px-7 py-3.5 rounded-xl text-base font-500 glass transition-all duration-200 hover:scale-105"
-           style="color:var(--text-head);">
+          class="flex items-center gap-2 px-7 py-3.5 rounded-xl text-base font-500 transition-all duration-200 hover:scale-105"
+          style="color:#ffffff; background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.25); backdrop-filter:blur(12px);">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"/>
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
           </svg>
           Login to Dashboard
         </a>
@@ -212,9 +240,10 @@
     <!-- ── Redirect message ── -->
     <div id="redirect-msg" class="flex flex-col items-center gap-4 animate-fade-up relative z-20">
       <div class="w-16 h-16 rounded-2xl flex items-center justify-center"
-           style="background:linear-gradient(135deg,#F59000,#FFAA1A);">
+        style="background:linear-gradient(135deg,#F59000,#FFAA1A);">
         <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
       </div>
       <p class="font-display text-xl font-600" style="color:var(--text-head);">Session found!</p>
@@ -227,122 +256,482 @@
 
   </main>
 
-  <!-- ════════════════════════════════════════════
-       ADDITIONAL HOME CONTENT
-  ════════════════════════════════════════════ -->
-  <section class="py-16">
+  <!-- ════ STATS ════ -->
+  <section class="py-14" style="background:#1a1f2e;">
+    <div class="max-w-5xl mx-auto px-6">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div class="stat-card glass rounded-2xl p-6 text-center reveal delay-1">
+          <div class="text-4xl font-display font-800 mb-1" style="color:#F59000;" data-count="12400">0</div>
+          <div class="text-xs uppercase tracking-widest mt-1" style="color:var(--text-muted);">Shipments Delivered</div>
+        </div>
+        <div class="stat-card glass rounded-2xl p-6 text-center reveal delay-2">
+          <div class="text-4xl font-display font-800 mb-1" style="color:#F59000;" data-count="98">0</div>
+          <div class="text-xs uppercase tracking-widest mt-1" style="color:var(--text-muted);">% On-Time Rate</div>
+        </div>
+        <div class="stat-card glass rounded-2xl p-6 text-center reveal delay-3">
+          <div class="text-4xl font-display font-800 mb-1" style="color:#F59000;" data-count="340">0</div>
+          <div class="text-xs uppercase tracking-widest mt-1" style="color:var(--text-muted);">Cities Covered</div>
+        </div>
+        <div class="stat-card glass rounded-2xl p-6 text-center reveal delay-4">
+          <div class="text-4xl font-display font-800 mb-1" style="color:#F59000;" data-count="4800">0</div>
+          <div class="text-xs uppercase tracking-widest mt-1" style="color:var(--text-muted);">Happy Customers</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════ FEATURES ════ -->
+  <section class="py-16" style="background:#1a1f2e;">
     <div class="max-w-6xl mx-auto px-6">
-      <h2 class="text-3xl font-display font-700 mb-6" style="color:var(--text-head);">Powerful features</h2>
-
+      <div class="text-center mb-12 reveal">
+        <span class="inline-block px-4 py-1 rounded-full text-xs font-600 uppercase tracking-widest mb-3"
+          style="background:rgba(245,144,0,0.12);color:#F59000;">Platform Features</span>
+        <h2 class="text-4xl font-display font-800" style="color:var(--text-head);">Built for modern logistics</h2>
+      </div>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="p-6 glass rounded-lg">
-          <img src="https://images.unsplash.com/photo-1771227241320-8fc5388259c7" alt="Real-time tracking" class="w-full h-48 object-cover rounded-lg mb-4" />
-          <h3 class="font-semibold text-lg" style="color:var(--text-head);">Real-time tracking</h3>
-          <p class="text-sm mt-2" style="color:var(--text-body);">Monitor shipments live with automated status updates and location history so you always know where a parcel is.</p>
+        <div class="feature-card p-6 glass rounded-2xl reveal delay-1">
+          <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
+            style="background:rgba(245,144,0,0.15);">
+            <svg class="w-6 h-6" style="color:#F59000;" fill="none" stroke="currentColor" stroke-width="2"
+              viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+            </svg>
+          </div>
+          <img
+            src="https://img.magnific.com/free-photo/shipping-logistic-delivery-freight-cargo-concept_53876-124951.jpg"
+            alt="Real-time tracking" class="w-full h-40 object-cover rounded-xl mb-4" />
+          <h3 class="font-display font-700 text-lg mb-2" style="color:var(--text-head);">Real-time tracking</h3>
+          <p class="text-sm leading-relaxed" style="color:var(--text-body);">Monitor shipments live with automated
+            status updates and full location history.</p>
         </div>
-
-        <div class="p-6 glass rounded-lg">
-          <img src="https://images.unsplash.com/photo-1556740738-b6a63e27c4df" alt="Cost estimates" class="w-full h-48 object-cover rounded-lg mb-4" />
-          <h3 class="font-semibold text-lg" style="color:var(--text-head);">Accurate cost estimates</h3>
-          <p class="text-sm mt-2" style="color:var(--text-body);">Estimate delivery costs instantly with our cost estimator — factors weight, distance, and service level for precise quotes.</p>
+        <div class="feature-card p-6 glass rounded-2xl reveal delay-2">
+          <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
+            style="background:rgba(245,144,0,0.15);">
+            <svg class="w-6 h-6" style="color:#F59000;" fill="none" stroke="currentColor" stroke-width="2"
+              viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <img src="https://img.magnific.com/free-photo/high-angle-woman-working-as-economist_23-2150062320.jpg"
+            alt="Cost estimates" class="w-full h-40 object-cover rounded-xl mb-4" />
+          <h3 class="font-display font-700 text-lg mb-2" style="color:var(--text-head);">Accurate cost estimates</h3>
+          <p class="text-sm leading-relaxed" style="color:var(--text-body);">Estimate delivery costs instantly — factors
+            weight, distance, and service level.</p>
         </div>
-
-        <div class="p-6 glass rounded-lg">
-          <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71" alt="Notifications" class="w-full h-48 object-cover rounded-lg mb-4" />
-          <h3 class="font-semibold text-lg" style="color:var(--text-head);">Notifications & reports</h3>
-          <p class="text-sm mt-2" style="color:var(--text-body);">Get push and email notifications, plus exportable analytics reports to measure delivery performance over time.</p>
+        <div class="feature-card p-6 glass rounded-2xl reveal delay-3">
+          <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
+            style="background:rgba(245,144,0,0.15);">
+            <svg class="w-6 h-6" style="color:#F59000;" fill="none" stroke="currentColor" stroke-width="2"
+              viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+            </svg>
+          </div>
+          <img
+            src="https://img.magnific.com/free-photo/business-report-graphs-charts-business-reports-pile-documents-business-concept_1150-2254.jpg"
+            alt="Notifications" class="w-full h-40 object-cover rounded-xl mb-4" />
+          <h3 class="font-display font-700 text-lg mb-2" style="color:var(--text-head);">Notifications & reports</h3>
+          <p class="text-sm leading-relaxed" style="color:var(--text-body);">Push notifications and exportable analytics
+            reports for delivery performance.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="py-16 bg-[var(--bg-card)]">
+  <!-- ════ HOW IT WORKS ════ -->
+  <section class="py-20" style="background:#222840;">
     <div class="max-w-5xl mx-auto px-6 text-center">
-      <h2 class="text-3xl font-display font-700 mb-6" style="color:var(--text-head);">How it works</h2>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="p-6">
-          <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40" alt="Create shipment" class="w-full h-48 object-cover rounded-lg mb-4" />
-          <div class="w-12 h-12 mx-auto rounded-full flex items-center justify-center" style="background:#F59000;color:#fff">1</div>
-          <h4 class="mt-4 font-semibold text-center" style="color:var(--text-head);">Create shipment</h4>
-          <p class="text-sm mt-2 text-center" style="color:var(--text-body);">Enter sender, recipient and parcel details — choose speed and insurance options.</p>
+      <div class="reveal mb-14">
+        <span class="inline-block px-4 py-1 rounded-full text-xs font-600 uppercase tracking-widest mb-3"
+          style="background:rgba(245,144,0,0.12);color:#F59000;">Simple Process</span>
+        <h2 class="text-4xl font-display font-800" style="color:var(--text-head);">How SwiftShip works</h2>
+      </div>
+      <div class="relative grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- connector line desktop -->
+        <div class="hidden md:block absolute top-10 left-1/4 right-1/4 h-0.5"
+          style="background:linear-gradient(90deg,#F59000,rgba(245,144,0,0.2));"></div>
+        <div class="step-card reveal-left delay-1">
+          <div class="step-num">1</div>
+          <img
+            src="https://img.magnific.com/free-photo/concentrated-online-store-employee-working-portable-computer_259150-60577.jpg"
+            alt="Create" class="w-full h-44 object-cover rounded-2xl mb-4 shadow-lg" />
+          <h4 class="font-display font-700 text-lg mb-2" style="color:var(--text-head);">Create shipment</h4>
+          <p class="text-sm leading-relaxed" style="color:var(--text-body);">Enter sender, recipient and parcel details
+            — choose speed and insurance options.</p>
         </div>
-
-        <div class="p-6">
-          <img src="https://images.unsplash.com/photo-1613690399151-65ea69478674" alt="Track shipment" class="w-full h-48 object-cover rounded-lg mb-4" />
-          <div class="w-12 h-12 mx-auto rounded-full flex items-center justify-center" style="background:#F59000;color:#fff">2</div>
-          <h4 class="mt-4 font-semibold text-center" style="color:var(--text-head);">Track in real-time</h4>
-          <p class="text-sm mt-2 text-center" style="color:var(--text-body);">Follow the parcel on the map and receive milestone notifications as the item moves through the network.</p>
+        <div class="step-card reveal delay-2">
+          <div class="step-num">2</div>
+          <img src="https://img.magnific.com/free-photo/online-logistics_53876-95310.jpg" alt="Track"
+            class="w-full h-44 object-cover rounded-2xl mb-4 shadow-lg" />
+          <h4 class="font-display font-700 text-lg mb-2" style="color:var(--text-head);">Track in real-time</h4>
+          <p class="text-sm leading-relaxed" style="color:var(--text-body);">Follow the parcel and receive milestone
+            notifications as it moves through the network.</p>
         </div>
-
-        <div class="p-6">
-          <img src="https://images.unsplash.com/photo-1659353739926-4c7df1a645a6" alt="Deliver & report" class="w-full h-48 object-cover rounded-lg mb-4" />
-          <div class="w-12 h-12 mx-auto rounded-full flex items-center justify-center" style="background:#F59000;color:#fff">3</div>
-          <h4 class="mt-4 font-semibold text-center" style="color:var(--text-head);">Deliver & report</h4>
-          <p class="text-sm mt-2 text-center" style="color:var(--text-body);">Confirm delivery, collect signatures, and generate performance reports for accounting and audits.</p>
+        <div class="step-card reveal-right delay-3">
+          <div class="step-num">3</div>
+          <img
+            src="https://img.magnific.com/free-photo/happy-woman-taking-package-from-courier-while-receiving-home-delivery_637285-10203.jpg"
+            alt="Deliver" class="w-full h-44 object-cover rounded-2xl mb-4 shadow-lg" />
+          <h4 class="font-display font-700 text-lg mb-2" style="color:var(--text-head);">Deliver & report</h4>
+          <p class="text-sm leading-relaxed" style="color:var(--text-body);">Confirm delivery, collect signatures, and
+            generate performance reports for audits.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="py-16">
+  <!-- ════ TESTIMONIALS ════ -->
+  <section class="py-20" style="background:#1a1f2e;">
     <div class="max-w-4xl mx-auto px-6">
-      <h2 class="text-3xl font-display font-700 mb-6 text-center" style="color:var(--text-head);">What customers say</h2>
+      <div class="text-center mb-12 reveal">
+        <span class="inline-block px-4 py-1 rounded-full text-xs font-600 uppercase tracking-widest mb-3"
+          style="background:rgba(245,144,0,0.12);color:#F59000;">Testimonials</span>
+        <h2 class="text-4xl font-display font-800" style="color:var(--text-head);">What customers say</h2>
+      </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="p-6 glass rounded-lg">
-          <div class="flex items-center gap-4 mb-4">
-            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=48&h=48&fit=crop" alt="Jordan T." class="w-12 h-12 rounded-full object-cover" />
+        <div class="testimonial-card p-6 glass rounded-2xl reveal-left delay-1">
+          <div class="flex gap-1 mb-4">
+            <span style="color:#F59000;">★★★★★</span>
+          </div>
+          <p class="italic mb-6 leading-relaxed" style="color:var(--text-body);">"SwiftShip reduced our delivery
+            enquiries by 60% — the realtime tracking and notifications are reliable and clear."</p>
+          <div class="flex items-center gap-3">
+            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=48&h=48&fit=crop" alt="Jordan T."
+              class="w-11 h-11 rounded-full object-cover ring-2" />
             <div>
-              <p class="font-semibold" style="color:var(--text-head);">Jordan T.</p>
+              <p class="font-600 text-sm" style="color:var(--text-head);">Jordan T.</p>
               <p class="text-xs" style="color:var(--text-muted);">Operations Manager</p>
             </div>
           </div>
-          <p class="italic" style="color:var(--text-body);">"SwiftShip reduced our delivery enquiries by 60% — the realtime tracking and notifications are reliable and clear."</p>
         </div>
-
-        <div class="p-6 glass rounded-lg">
-          <div class="flex items-center gap-4 mb-4">
-            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=48&h=48&fit=crop" alt="Priya S." class="w-12 h-12 rounded-full object-cover" />
+        <div class="testimonial-card p-6 glass rounded-2xl reveal-right delay-2">
+          <div class="flex gap-1 mb-4">
+            <span style="color:#F59000;">★★★★★</span>
+          </div>
+          <p class="italic mb-6 leading-relaxed" style="color:var(--text-body);">"Reporting tools helped us optimize
+            routes and cut costs. The dashboard is clean and blazing fast."</p>
+          <div class="flex items-center gap-3">
+            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=48&h=48&fit=crop" alt="Priya S."
+              class="w-11 h-11 rounded-full object-cover ring-2" />
             <div>
-              <p class="font-semibold" style="color:var(--text-head);">Priya S.</p>
+              <p class="font-600 text-sm" style="color:var(--text-head);">Priya S.</p>
               <p class="text-xs" style="color:var(--text-muted);">Logistics Lead</p>
             </div>
           </div>
-          <p class="italic" style="color:var(--text-body);">"Reporting tools helped us optimize routes and cut costs. The dashboard is clean and fast."</p>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="py-12">
-    <div class="max-w-4xl mx-auto px-6 glass rounded-lg p-8 relative overflow-hidden">
-      <div class="absolute inset-0 opacity-10 -z-0" style="background-image: url('https://images.unsplash.com/photo-1552664730-d307ca884978?w=1200&fit=crop'); background-size: cover; background-position: center;"></div>
-      <div class="relative z-10">
-        <h3 class="text-2xl font-display font-700 mb-3" style="color:var(--text-head);">Ready to simplify shipping?</h3>
-        <p class="text-sm mb-4" style="color:var(--text-body);">Sign up and start creating shipments in seconds — manage everything from one dashboard.</p>
-        <a href="pages/register.html" class="inline-block px-6 py-3 rounded-full" style="background:linear-gradient(135deg,#F59000,#FFAA1A); color:#fff;">Get started — it's free</a>
-      </div>
+  <!-- ════ FOOTER ════ -->
+  <footer class="relative overflow-hidden" style="background:var(--navy-900, #070E24); color:#A8B8DC;">
+
+    <!-- Wave divider top -->
+    <div class="wave-divider" style="line-height:0; transform:scaleY(-1);">
+      <svg viewBox="0 0 1440 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"
+        style="width:100%;height:60px;">
+        <path d="M0,30 C360,60 1080,0 1440,30 L1440,60 L0,60 Z" fill="var(--bg-page)" />
+      </svg>
     </div>
-  </section>
-  <!-- ════════════════════════════════════════════
-       FOOTER
-  ════════════════════════════════════════════ -->
-  <footer class="bottom-0 inset-x-0 py-3 text-center text-xs"
-          style="color:var(--text-muted);">
-    © 2026 SwiftShip &nbsp;·&nbsp; Shipment Tracking &amp; Delivery Cost Estimator
+
+    <!-- Ambient glow orbs -->
+    <div
+      style="position:absolute;top:-80px;left:-60px;width:300px;height:300px;border-radius:50%;background:#F59000;filter:blur(120px);opacity:0.06;pointer-events:none;">
+    </div>
+    <div
+      style="position:absolute;bottom:-60px;right:-40px;width:260px;height:260px;border-radius:50%;background:#2E4F93;filter:blur(100px);opacity:0.1;pointer-events:none;">
+    </div>
+
+    <div class="relative z-10 max-w-6xl mx-auto px-6 pt-4 pb-10">
+
+      <!-- Top grid -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
+
+        <!-- Brand column -->
+        <div class="md:col-span-1">
+          <a href="/" class="flex items-center gap-2.5 mb-4 group w-fit">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center"
+              style="background:linear-gradient(135deg,#F59000,#FFAA1A);">
+              <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M20 21H4l-2-7h20l-2 7zM4.5 12l1.5-6h12l1.5 6H4.5zM9 6V4h6v2H9z" />
+              </svg>
+            </div>
+            <span class="font-display text-lg font-700 tracking-tight text-white">Swift<span
+                style="color:#F59000;">Ship</span></span>
+          </a>
+          <p class="text-sm leading-relaxed mb-5" style="color:#6B7A99;">Modern logistics platform for creating,
+            tracking, and managing shipments — all from one dashboard.</p>
+          <!-- Social icons -->
+          <div class="flex gap-3">
+            <a href="#" class="footer-social" aria-label="Twitter">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                <path
+                  d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.261 5.632L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z" />
+              </svg>
+            </a>
+            <a href="#" class="footer-social" aria-label="LinkedIn">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                <path
+                  d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+              </svg>
+            </a>
+            <a href="#" class="footer-social" aria-label="GitHub">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                <path
+                  d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Product links -->
+        <div>
+          <h4 class="footer-heading">Product</h4>
+          <ul class="space-y-2.5">
+            <li><a href="/pages/register.html" class="footer-link">Get Started</a></li>
+            <li><a href="/pages/login.html" class="footer-link">Login</a></li>
+            <li><a href="/pages/customer/create-shipment.html" class="footer-link">Create Shipment</a></li>
+            <li><a href="/pages/customer/track-shipment.html" class="footer-link">Track Shipment</a></li>
+            <li><a href="/pages/customer/cost-estimator.html" class="footer-link">Cost Estimator</a></li>
+          </ul>
+        </div>
+
+        <!-- Company links -->
+        <div>
+          <h4 class="footer-heading">Company</h4>
+          <ul class="space-y-2.5">
+            <li><a href="#" class="footer-link">About Us</a></li>
+            <li><a href="#" class="footer-link">Careers</a></li>
+            <li><a href="#" class="footer-link">Blog</a></li>
+            <li><a href="#" class="footer-link">Privacy Policy</a></li>
+            <li><a href="#" class="footer-link">Terms of Service</a></li>
+          </ul>
+        </div>
+
+        <!-- Newsletter -->
+        <div>
+          <h4 class="footer-heading">Stay in the loop</h4>
+          <p class="text-sm mb-4" style="color:#6B7A99;">Get updates on new features and logistics tips.</p>
+          <div id="footer-newsletter" class="flex flex-col gap-2">
+            <input id="footer-email" type="email" placeholder="your@email.com"
+              class="footer-input w-full px-4 py-2.5 rounded-xl text-sm outline-none"
+              style="background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1); color:#EEF1F8;" />
+            <button id="footer-subscribe-btn"
+              class="w-full py-2.5 rounded-xl text-sm font-600 text-white transition-all duration-300 hover:scale-105 hover:opacity-90"
+              style="background:linear-gradient(135deg,#F59000,#FFAA1A); box-shadow:0 4px 15px rgba(245,144,0,0.3);">
+              Subscribe →
+            </button>
+            <p id="footer-subscribe-msg" class="text-xs hidden" style="color:#22c55e;">✓ You're subscribed!</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Divider -->
+      <div class="border-t mb-6" style="border-color:rgba(255,255,255,0.07);"></div>
+
+      <!-- Bottom bar -->
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs" style="color:#4E6EAE;">
+        <p>© 2026 <span style="color:#F59000;font-weight:600;">SwiftShip</span> · Shipment Tracking &amp; Delivery Cost
+          Estimator</p>
+        <div class="flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse inline-block"></span>
+          <span>All systems operational</span>
+        </div>
+      </div>
+
+    </div>
   </footer>
 
-  <!-- ════════════════════════════════════════════
-       SCRIPTS
-  ════════════════════════════════════════════ -->
+  <style>
+    .footer-heading {
+      font-weight: 700;
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #EEF1F8;
+      margin-bottom: 1rem;
+    }
+
+    .footer-link {
+      display: inline-block;
+      font-size: 0.875rem;
+      color: #6B7A99;
+      text-decoration: none;
+      transition: color 0.2s ease, transform 0.2s ease;
+      position: relative;
+    }
+
+    .footer-link::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: #F59000;
+      transition: width 0.25s ease;
+    }
+
+    .footer-link:hover {
+      color: #F59000;
+      transform: translateX(4px);
+    }
+
+    .footer-link:hover::after {
+      width: 100%;
+    }
+
+    .footer-social {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      color: #6B7A99;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: background 0.25s, color 0.25s, transform 0.25s, box-shadow 0.25s;
+      text-decoration: none;
+    }
+
+    .footer-social:hover {
+      background: #F59000;
+      color: #fff;
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(245, 144, 0, 0.4);
+    }
+
+    .footer-input::placeholder {
+      color: #4E6EAE;
+    }
+
+    .footer-input:focus {
+      border-color: #F59000 !important;
+      box-shadow: 0 0 0 3px rgba(245, 144, 0, 0.15);
+    }
+  </style>
+
+  <!-- ════ MODULE SCRIPT ════ -->
   <script type="module">
     import { renderFeaturePills } from './js/utils.js';
     import { initLandingAuth } from './js/auth.js';
-
     window.addEventListener('DOMContentLoaded', () => {
       renderFeaturePills();
       initLandingAuth();
     });
   </script>
+
+  <!-- ════ INTERACTION SCRIPT ════ -->
+  <script>
+    (function () {
+      /* ── Scroll progress bar ── */
+      const bar = document.getElementById('scroll-progress');
+      window.addEventListener('scroll', () => {
+        const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+        if (bar) bar.style.width = pct + '%';
+      }, { passive: true });
+
+      /* ── Scroll-reveal (IntersectionObserver) ── */
+      const revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale');
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+        });
+      }, { threshold: 0.15 });
+      revealEls.forEach(el => observer.observe(el));
+
+      /* ── Animated counter ── */
+      function animateCount(el, target, duration) {
+        let start = 0, startTime = null;
+        function step(ts) {
+          if (!startTime) startTime = ts;
+          const progress = Math.min((ts - startTime) / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          el.textContent = Math.floor(eased * target).toLocaleString();
+          if (progress < 1) requestAnimationFrame(step);
+          else el.textContent = target.toLocaleString();
+        }
+        requestAnimationFrame(step);
+      }
+
+      const counterObserver = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            const target = parseInt(e.target.dataset.count, 10);
+            animateCount(e.target, target, 1800);
+            counterObserver.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.5 });
+      document.querySelectorAll('[data-count]').forEach(el => counterObserver.observe(el));
+
+      /* ── Floating particles in hero ── */
+      const hero = document.querySelector('main');
+      if (hero) {
+        const colors = ['rgba(245,144,0,0.6)', 'rgba(255,170,26,0.5)', 'rgba(46,79,147,0.5)'];
+        for (let i = 0; i < 18; i++) {
+          const p = document.createElement('div');
+          p.className = 'particle';
+          const size = Math.random() * 6 + 3;
+          p.style.cssText = `
+          width:${size}px; height:${size}px;
+          left:${Math.random() * 100}%;
+          background:${colors[Math.floor(Math.random() * colors.length)]};
+          animation-duration:${Math.random() * 10 + 8}s;
+          animation-delay:${Math.random() * 8}s;
+        `;
+          hero.appendChild(p);
+        }
+      }
+
+      /* ── Typewriter in hero headline ── */
+      const phrases = ['Track Faster.', 'Deliver Better.', 'Scale Globally.'];
+      const twEl = document.querySelector('.typewriter-target');
+      if (twEl) {
+        let pi = 0, ci = 0, deleting = false;
+        const cursor = document.createElement('span');
+        cursor.className = 'typewriter-cursor';
+        twEl.after(cursor);
+        (function type() {
+          const phrase = phrases[pi];
+          twEl.textContent = deleting ? phrase.slice(0, ci--) : phrase.slice(0, ci++);
+          if (!deleting && ci > phrase.length) { deleting = true; setTimeout(type, 1200); return; }
+          if (deleting && ci < 0) { deleting = false; pi = (pi + 1) % phrases.length; ci = 0; }
+          setTimeout(type, deleting ? 60 : 90);
+        })();
+      }
+
+      /* ── Navbar shadow on scroll ── */
+      const nav = document.querySelector('nav');
+      window.addEventListener('scroll', () => {
+        if (nav) nav.style.boxShadow = window.scrollY > 20 ? '0 4px 30px rgba(0,0,0,0.15)' : '';
+      }, { passive: true });
+
+      /* ── Newsletter subscribe ── */
+      const subBtn = document.getElementById('footer-subscribe-btn');
+      if (subBtn) {
+        subBtn.addEventListener('click', () => {
+          const email = document.getElementById('footer-email').value.trim();
+          const msg = document.getElementById('footer-subscribe-msg');
+          if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            document.getElementById('footer-email').style.borderColor = '#ef4444';
+            return;
+          }
+          subBtn.textContent = '✓ Subscribed!';
+          subBtn.style.background = 'linear-gradient(135deg,#22c55e,#16a34a)';
+          subBtn.disabled = true;
+          if (msg) msg.classList.remove('hidden');
+        });
+        document.getElementById('footer-email')?.addEventListener('input', () => {
+          document.getElementById('footer-email').style.borderColor = 'rgba(255,255,255,0.1)';
+        });
+      }
+    })();
+  </script>
 </body>
+
 </html>

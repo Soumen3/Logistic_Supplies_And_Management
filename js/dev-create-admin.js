@@ -23,8 +23,8 @@ function validateEmail(email) {
 }
 
 function validatePhone(phone) {
-  const cleaned = phone.replace(/[^0-9]/g, '');
-  return cleaned.length >= 7;
+  const pattern = /^\+?[0-9\s\-()]{7,20}$/;
+  return pattern.test(phone);
 }
 
 function validatePassword(password) {
@@ -34,25 +34,58 @@ function validatePassword(password) {
 
 function setError(fieldId, message) {
   const input = el(fieldId);
-  const msg = el('msg');
-  if (input) input.classList.add('border-red-500');
-  if (msg) {
+  const msg = el('msg'); // fallback message box
+  const inlineError = el('error_' + fieldId);
+
+  if (input) input.classList.add('error');
+  
+  if (inlineError) {
+    inlineError.textContent = message;
+    inlineError.classList.remove('hidden');
+  } else if (msg) {
     msg.style.color = 'red';
     msg.textContent = message;
+    msg.classList.remove('hidden');
   }
 }
 
 function clearErrors() {
   ['dev_token', 'full_name', 'phone', 'email', 'password', 'password_confirm'].forEach((id) => {
     const input = el(id);
-    if (input) input.classList.remove('border-red-500');
+    if (input) input.classList.remove('error');
+    const inlineError = el('error_' + id);
+    if (inlineError) {
+      inlineError.textContent = '';
+      inlineError.classList.add('hidden');
+    }
   });
 
   const msg = el('msg');
-  if (msg) msg.textContent = '';
+  if (msg) {
+    msg.textContent = '';
+    msg.classList.add('hidden');
+  }
 }
 
 async function init() {
+  // If user is already logged in, redirect them
+  try {
+    const session = await SwiftShipDB.getActiveSession();
+    if (session) {
+      const roleStr = String(session.role).toLowerCase();
+      if (roleStr === 'admin' || roleStr === '1') {
+        window.location.href = '/pages/admin/dashboard.html';
+      } else if (roleStr === 'staff' || roleStr === '2') {
+        window.location.href = '/pages/staff/dashboard.html';
+      } else {
+        window.location.href = '/pages/customer/dashboard.html';
+      }
+      return;
+    }
+  } catch (e) {
+    console.error("Session check failed", e);
+  }
+
   const form = el('dev-create-admin-form');
   const msg = el('msg');
   if (!form || !msg) return;
@@ -68,36 +101,40 @@ async function init() {
     const password = el('password').value;
     const passwordConfirm = el('password_confirm').value;
 
+    let isValid = true;
+
     // Verify developer token
     if (devToken !== DEVELOPER_TOKEN) {
       setError('dev_token', 'Invalid developer token.');
-      return;
+      isValid = false;
     }
 
     if (!fullName || fullName.length < 2) {
       setError('full_name', 'Please enter admin full name (2+ characters).');
-      return;
+      isValid = false;
     }
 
     if (!validatePhone(phone)) {
       setError('phone', 'Please enter a valid phone number (minimum 7 digits).');
-      return;
+      isValid = false;
     }
 
     if (!validateEmail(email)) {
       setError('email', 'Please enter a valid email address.');
-      return;
+      isValid = false;
     }
 
     if (!validatePassword(password)) {
       setError('password', 'Password must be 6+ chars and include letters and numbers.');
-      return;
+      isValid = false;
     }
 
     if (password !== passwordConfirm) {
       setError('password_confirm', 'Passwords do not match.');
-      return;
+      isValid = false;
     }
+
+    if (!isValid) return;
 
     try {
       const existing = await SwiftShipDB.getUserByEmail(email);

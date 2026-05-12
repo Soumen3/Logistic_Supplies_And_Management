@@ -15,21 +15,37 @@ async function hashPassword(password) {
 
 function setError(fieldId, message) {
   const input = el(fieldId);
-  const msg = el('msg');
-  if (input) input.classList.add('border-red-500');
-  if (msg) {
+  const msg = el('msg'); // fallback message box
+  const inlineError = el('error_' + fieldId);
+
+  if (input) input.classList.add('error');
+  
+  if (inlineError) {
+    inlineError.textContent = message;
+    inlineError.classList.remove('hidden');
+  } else if (msg) {
     msg.style.color = '#dc2626';
     msg.textContent = message;
+    msg.classList.remove('hidden');
   }
 }
 
 function clearErrors() {
   ['email', 'recovery_code', 'password', 'password_confirm'].forEach((id) => {
     const input = el(id);
-    if (input) input.classList.remove('border-red-500');
+    if (input) input.classList.remove('error');
+    const inlineError = el('error_' + id);
+    if (inlineError) {
+      inlineError.textContent = '';
+      inlineError.classList.add('hidden');
+    }
   });
+
   const msg = el('msg');
-  if (msg) msg.textContent = '';
+  if (msg) {
+    msg.textContent = '';
+    msg.classList.add('hidden');
+  }
 }
 
 async function init() {
@@ -46,28 +62,32 @@ async function init() {
     const password = el('password').value;
     const passwordConfirm = el('password_confirm').value;
 
+    let isValid = true;
+
     // Email validation
     if (!email || !email.includes('@')) {
       setError('email', 'Please enter a valid email address');
-      return;
+      isValid = false;
     }
 
     // Recovery code validation
     if (!recoveryCode || recoveryCode.length < 6) {
       setError('recovery_code', 'Please enter a valid recovery code');
-      return;
+      isValid = false;
     }
 
     // Password validation
     if (!password || password.length < 6) {
       setError('password', 'Password must be at least 6 characters');
-      return;
+      isValid = false;
     }
 
     if (password !== passwordConfirm) {
       setError('password_confirm', 'Passwords do not match');
-      return;
+      isValid = false;
     }
+
+    if (!isValid) return;
 
     try {
       msg.style.color = '#6b7280';
