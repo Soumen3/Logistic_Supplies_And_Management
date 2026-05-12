@@ -1,64 +1,359 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Developer: Create Admin — SwiftShip</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <link href="/assets/css/style.css" rel="stylesheet" />
   <script type="module" src="/js/dev-create-admin.js"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: { extend: { fontFamily: { display: ['Syne','sans-serif'], body: ['DM Sans','sans-serif'] } } }
+    };
+  </script>
+  <style>
+    body { font-family: 'DM Sans', sans-serif; background: #1a1f2e; }
+
+    .reg-panel-left {
+      position: relative;
+      background: linear-gradient(160deg, #0d1224 0%, #1a2040 60%, #0d1224 100%);
+      overflow: hidden;
+    }
+    .reg-panel-left::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image: radial-gradient(circle, rgba(245,144,0,0.13) 1px, transparent 1px);
+      background-size: 30px 30px;
+      animation: grid-shift 14s linear infinite;
+    }
+    @keyframes grid-shift { 100% { transform: translate(30px,30px); } }
+
+    .orb { position: absolute; border-radius: 50%; filter: blur(80px); pointer-events: none; }
+
+    /* Card */
+    .reg-card {
+      background: rgba(30,36,58,0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.4);
+    }
+
+    /* Input */
+    .reg-input {
+      width: 100%; padding: 0.72rem 1rem;
+      border-radius: 0.75rem;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.10);
+      color: #e8edf5; font-size: 0.875rem;
+      outline: none;
+      transition: border-color 0.25s, box-shadow 0.25s;
+    }
+    .reg-input::placeholder { color: #4e6080; }
+    .reg-input:focus { border-color: #F59000; box-shadow: 0 0 0 3px rgba(245,144,0,0.18); }
+    .reg-input.error { border-color: #ef4444; box-shadow: 0 0 0 3px rgba(239,68,68,0.15); }
+
+    /* Password strength bar */
+    .strength-bar { height: 4px; border-radius: 2px; background: rgba(255,255,255,0.08); overflow: hidden; }
+    .strength-fill { height: 100%; border-radius: 2px; width: 0%; transition: width 0.4s ease, background 0.4s ease; }
+
+    /* Password toggle */
+    .pw-toggle {
+      position: absolute; right: 0.875rem; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; color: #4e6080; padding: 0;
+      transition: color 0.2s;
+    }
+    .pw-toggle:hover { color: #F59000; }
+
+    /* Submit btn */
+    .btn-submit {
+      width: 100%; padding: 0.875rem; border-radius: 0.875rem;
+      font-weight: 600; font-size: 0.95rem; color: #fff;
+      background: linear-gradient(135deg,#F59000,#FFAA1A);
+      box-shadow: 0 6px 24px rgba(245,144,0,0.35);
+      border: none; cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative; overflow: hidden;
+    }
+    .btn-submit::after {
+      content: ''; position: absolute; inset: 0;
+      background: rgba(255,255,255,0.15); opacity: 0; transition: opacity 0.2s;
+    }
+    .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(245,144,0,0.45); }
+    .btn-submit:hover::after { opacity: 1; }
+    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    /* Label */
+    .label-text { display: block; font-size: 0.78rem; font-weight: 500; margin-bottom: 0.4rem; color: #9baac4; }
+
+    /* Shake */
+    @keyframes shake {
+      0%,100%{ transform:translateX(0); } 20%{ transform:translateX(-8px); }
+      40%{ transform:translateX(8px); } 60%{ transform:translateX(-5px); } 80%{ transform:translateX(5px); }
+    }
+    .shake { animation: shake 0.4s ease; }
+
+    /* Separator */
+    .separator {
+      display: flex; align-items: center; gap: 0.75rem; color: #4e6080; font-size: 0.75rem;
+    }
+    .separator::before,.separator::after { content:''; flex:1; height:1px; background:rgba(255,255,255,0.07); }
+  </style>
 </head>
-<body class="min-h-screen flex items-center justify-center bg-[var(--bg-page)]">
-  <main class="max-w-lg w-full p-8 bg-white rounded-2xl shadow-xl">
-    <a href="/index.html" class="inline-block text-sm text-amber-600 hover:underline mb-4">← Back to Home</a>
-    <div class="flex items-center gap-4 mb-6">
-      <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background:linear-gradient(135deg,#F59000,#FFAA1A);">
-        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M20 21H4l-2-7h20l-2 7zM4.5 12l1.5-6h12l1.5 6H4.5zM9 6V4h6v2H9z"/></svg>
+
+<body class="h-screen flex overflow-hidden">
+
+  <!-- ── Left decorative panel ── -->
+  <div class="reg-panel-left hidden lg:flex flex-col justify-between w-[44%] p-12 h-full">
+    <div class="orb w-64 h-64" style="background:#F59000;opacity:0.10;top:-60px;left:-60px;"></div>
+    <div class="orb w-52 h-52" style="background:#2E4F93;opacity:0.15;bottom:-40px;right:-30px;"></div>
+    <div class="orb w-36 h-36" style="background:#F59000;opacity:0.07;top:45%;right:10%;"></div>
+
+    <!-- Logo -->
+    <a href="/" class="flex items-center gap-3 relative z-10">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:linear-gradient(135deg,#F59000,#FFAA1A);">
+        <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M20 21H4l-2-7h20l-2 7zM4.5 12l1.5-6h12l1.5 6H4.5zM9 6V4h6v2H9z"/></svg>
       </div>
-      <div>
-        <h1 class="text-2xl font-display font-700" style="color:var(--text-head);">Developer Panel</h1>
-        <p class="text-sm" style="color:var(--text-muted);">Create admin user with developer token.</p>
+      <span class="font-display text-xl font-700 text-white">Swift<span style="color:#F59000;">Ship</span></span>
+    </a>
+
+    <!-- Middle content -->
+    <div class="relative z-10">
+      <h2 class="font-display text-4xl font-800 leading-tight mb-3" style="color:#e8edf5;">
+        Admin Provisioning<br/>
+        <span style="color:#F59000;">Portal.</span>
+      </h2>
+      <p class="text-sm leading-relaxed mb-10" style="color:#6b7fa0;">
+        Secure environment for generating top-tier administrator accounts using Developer credentials.
+      </p>
+
+      <!-- What you get -->
+      <div class="space-y-3">
+        <div class="flex items-center gap-3">
+          <div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0" style="background:rgba(34,197,94,0.15);">
+            <svg class="w-3.5 h-3.5" style="color:#22c55e;" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+          </div>
+          <span class="text-sm" style="color:#9baac4;">Requires secure developer token</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0" style="background:rgba(34,197,94,0.15);">
+            <svg class="w-3.5 h-3.5" style="color:#22c55e;" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+          </div>
+          <span class="text-sm" style="color:#9baac4;">Full access to dashboard and analytics</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0" style="background:rgba(34,197,94,0.15);">
+            <svg class="w-3.5 h-3.5" style="color:#22c55e;" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+          </div>
+          <span class="text-sm" style="color:#9baac4;">Elevated permissions & management tools</span>
+        </div>
       </div>
     </div>
 
-    <form id="dev-create-admin-form" class="space-y-4" novalidate>
+    <!-- Stats strip -->
+    <div class="relative z-10 flex gap-6 pt-8 border-t" style="border-color:rgba(255,255,255,0.07);">
       <div>
-        <label class="block text-sm font-medium" style="color:var(--text-head);">Developer Token</label>
-        <input id="dev_token" type="password" required class="mt-1 block w-full px-4 py-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-amber-200" placeholder="Enter developer token" />
+        <div class="font-display font-800 text-xl" style="color:#F59000;">Level 1</div>
+        <div class="text-xs" style="color:#4e6080;">Access</div>
       </div>
-
       <div>
-        <label class="block text-sm font-medium" style="color:var(--text-head);">Admin Full Name</label>
-        <input id="full_name" required class="mt-1 block w-full px-4 py-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-amber-200" placeholder="Admin name" />
+        <div class="font-display font-800 text-xl" style="color:#F59000;">Root</div>
+        <div class="text-xs" style="color:#4e6080;">Permissions</div>
       </div>
-
       <div>
-        <label class="block text-sm font-medium" style="color:var(--text-head);">Admin Phone</label>
-        <input id="phone" type="tel" required pattern="[0-9+\- ()]{7,}" class="mt-1 block w-full px-4 py-3 border rounded-lg shadow-sm" placeholder="+1 555 555 5555" />
+        <div class="font-display font-800 text-xl" style="color:#F59000;">Secured</div>
+        <div class="text-xs" style="color:#4e6080;">Token Auth</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Right: Form ── -->
+  <div class="flex-1 flex flex-col items-center justify-center px-6 py-10 h-full relative overflow-y-auto overflow-x-hidden" style="background:#1a1f2e;">
+    <div class="orb w-80 h-80 pointer-events-none" style="background:#F59000;opacity:0.05;top:-60px;right:-60px;"></div>
+    <div class="orb w-60 h-60 pointer-events-none" style="background:#2E4F93;opacity:0.07;bottom:-40px;left:-40px;"></div>
+
+    <div class="reg-card rounded-2xl p-8 w-full max-w-md relative z-10">
+
+      <!-- Mobile logo -->
+      <div class="flex items-center gap-2.5 mb-6 lg:hidden">
+        <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background:linear-gradient(135deg,#F59000,#FFAA1A);">
+          <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M20 21H4l-2-7h20l-2 7zM4.5 12l1.5-6h12l1.5 6H4.5zM9 6V4h6v2H9z"/></svg>
+        </div>
+        <span class="font-display text-lg font-700 text-white">Swift<span style="color:#F59000;">Ship</span></span>
       </div>
 
-      <div>
-        <label class="block text-sm font-medium" style="color:var(--text-head);">Admin Email</label>
-        <input id="email" type="email" required class="mt-1 block w-full px-4 py-3 border rounded-lg shadow-sm" placeholder="admin@company.com" />
+      <!-- Header -->
+      <div class="mb-6">
+        <h1 class="font-display text-2xl font-700 mb-1" style="color:#e8edf5;">Developer Panel ⚙️</h1>
+        <p class="text-sm" style="color:#6b7fa0;">Create admin user with developer token.</p>
       </div>
 
-      <div>
-        <label class="block text-sm font-medium" style="color:var(--text-head);">Admin Password</label>
-        <input id="password" type="password" required minlength="6" class="mt-1 block w-full px-4 py-3 border rounded-lg shadow-sm" placeholder="Create a strong password" />
-      </div>
+      <!-- Form -->
+      <form id="dev-create-admin-form" class="space-y-4" novalidate>
+        
+        <!-- Dev Token -->
+        <div>
+          <label for="dev_token" class="label-text">Developer Token</label>
+          <input id="dev_token" type="password" required
+            class="reg-input" placeholder="Enter developer token" />
+          <p id="error_dev_token" class="text-xs mt-1 hidden" style="color:#ef4444;"></p>
+        </div>
 
-      <div>
-        <label class="block text-sm font-medium" style="color:var(--text-head);">Confirm Password</label>
-        <input id="password_confirm" type="password" required minlength="6" class="mt-1 block w-full px-4 py-3 border rounded-lg shadow-sm" placeholder="Re-enter password" />
-      </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Full Name -->
+          <div>
+            <label for="full_name" class="label-text">Admin Full Name</label>
+            <input id="full_name" type="text" required autocomplete="name"
+              class="reg-input" placeholder="Admin name" />
+            <p id="error_full_name" class="text-xs mt-1 hidden" style="color:#ef4444;"></p>
+          </div>
 
-      <div class="pt-2">
-        <button type="submit" class="w-full px-4 py-3 rounded-lg text-white" style="background:linear-gradient(135deg,#F59000,#FFAA1A);">Create Admin User</button>
-      </div>
+          <!-- Phone -->
+          <div>
+            <label for="phone" class="label-text">Admin Phone</label>
+            <input id="phone" type="tel" required
+              class="reg-input" placeholder="+1 555 000 0000" />
+            <p id="error_phone" class="text-xs mt-1 hidden" style="color:#ef4444;"></p>
+          </div>
+        </div>
 
-      <p id="msg" class="text-sm mt-2 text-center"></p>
-    </form>
-  </main>
+        <!-- Email -->
+        <div>
+          <label for="email" class="label-text">Admin Email</label>
+          <input id="email" type="email" required autocomplete="email"
+            class="reg-input" placeholder="admin@company.com" />
+          <p id="error_email" class="text-xs mt-1 hidden" style="color:#ef4444;"></p>
+        </div>
 
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Password -->
+          <div>
+            <label for="password" class="label-text">Admin Password</label>
+            <div class="relative">
+              <input id="password" type="password" required minlength="6" autocomplete="new-password"
+                class="reg-input pr-11" placeholder="Min 6 chars" />
+              <button type="button" id="toggle-pw" class="pw-toggle" aria-label="Toggle password">
+                <svg id="eye-icon" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                </svg>
+              </button>
+            </div>
+            <!-- Strength bar -->
+            <div class="mt-2 strength-bar">
+              <div id="strength-fill" class="strength-fill"></div>
+            </div>
+            <p id="strength-label" class="text-xs mt-1" style="color:#4e6080;"></p>
+            <p id="error_password" class="text-xs mt-1 hidden" style="color:#ef4444;"></p>
+          </div>
+
+          <!-- Confirm Password -->
+          <div>
+            <label for="password_confirm" class="label-text">Confirm Password</label>
+            <div class="relative">
+              <input id="password_confirm" type="password" required minlength="6" autocomplete="new-password"
+                class="reg-input pr-11" placeholder="Re-enter password" />
+              <button type="button" id="toggle-pw2" class="pw-toggle" aria-label="Toggle confirm password">
+                <svg id="eye-icon2" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                </svg>
+              </button>
+            </div>
+            <p id="match-label" class="text-xs mt-1 hidden"></p>
+            <p id="error_password_confirm" class="text-xs mt-1 hidden" style="color:#ef4444;"></p>
+          </div>
+        </div>
+
+        <!-- Error message -->
+        <p id="msg" class="text-xs text-center hidden py-2 px-3 rounded-lg"
+          style="background:rgba(239,68,68,0.12);color:#f87171;border:1px solid rgba(239,68,68,0.2);"></p>
+
+        <!-- Submit -->
+        <button id="submit-btn" type="submit" class="btn-submit mt-4">
+          <span id="btn-text">Create Admin User</span>
+        </button>
+
+      </form>
+    </div>
+
+    <a href="/" class="mt-6 text-xs hover:underline relative z-10" style="color:#4e6080;">
+      ← Back to SwiftShip home
+    </a>
+  </div>
+
+  <script>
+    /* ── Password toggle helper ── */
+    function makeToggle(btnId, inputId, iconId) {
+      const btn = document.getElementById(btnId);
+      const inp = document.getElementById(inputId);
+      if (!btn) return;
+      btn.addEventListener('click', () => {
+        const isText = inp.type === 'text';
+        inp.type = isText ? 'password' : 'text';
+        document.getElementById(iconId).innerHTML = isText
+          ? '<path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>'
+          : '<path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>';
+      });
+    }
+    makeToggle('toggle-pw',  'password',         'eye-icon');
+    makeToggle('toggle-pw2', 'password_confirm', 'eye-icon2');
+
+    /* ── Password strength ── */
+    const pwInput = document.getElementById('password');
+    const fillEl  = document.getElementById('strength-fill');
+    const labelEl = document.getElementById('strength-label');
+    const levels  = [
+      { w:'20%', bg:'#ef4444', text:'Too weak' },
+      { w:'45%', bg:'#f97316', text:'Weak' },
+      { w:'65%', bg:'#eab308', text:'Fair' },
+      { w:'85%', bg:'#22c55e', text:'Strong' },
+      { w:'100%',bg:'#10b981', text:'Very strong' },
+    ];
+    pwInput?.addEventListener('input', () => {
+      const v = pwInput.value;
+      let score = 0;
+      if (v.length >= 6) score++;
+      if (v.length >= 10) score++;
+      if (/[A-Z]/.test(v)) score++;
+      if (/[0-9]/.test(v)) score++;
+      if (/[^A-Za-z0-9]/.test(v)) score++;
+      const l = levels[Math.min(score, 4)];
+      if (v.length === 0) { fillEl.style.width='0'; labelEl.textContent=''; return; }
+      fillEl.style.width  = l.w;
+      fillEl.style.background = l.bg;
+      labelEl.textContent = l.text;
+      labelEl.style.color = l.bg;
+    });
+
+    /* ── Password match indicator ── */
+    const pwConf   = document.getElementById('password_confirm');
+    const matchLbl = document.getElementById('match-label');
+    pwConf?.addEventListener('input', () => {
+      if (!pwConf.value) { matchLbl.classList.add('hidden'); return; }
+      const match = pwConf.value === pwInput.value;
+      matchLbl.classList.remove('hidden');
+      matchLbl.textContent = match ? '✓ Passwords match' : '✗ Passwords do not match';
+      matchLbl.style.color = match ? '#22c55e' : '#ef4444';
+    });
+
+    /* ── Clear errors on input ── */
+    ['dev_token','full_name','phone','email','password','password_confirm'].forEach(id => {
+      document.getElementById(id)?.addEventListener('input', () => {
+        document.getElementById(id).classList.remove('error');
+        document.getElementById('msg').classList.add('hidden');
+        const errEl = document.getElementById('error_' + id);
+        if(errEl) {
+          errEl.classList.add('hidden');
+          errEl.textContent = '';
+        }
+      });
+    });
+  </script>
 </body>
 </html>
