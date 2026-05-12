@@ -148,11 +148,144 @@
       </section>
 
       <div class="glass-card rounded-2xl p-6 md:p-8">
-        <div class="space-y-4">
-          <p style="color:#9baac4;">Create a new shipment form will appear here.</p>
-        </div>
+        <form id="create-shipment-form" class="space-y-6" novalidate>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Source Details -->
+            <div class="space-y-4">
+              <h3 class="text-lg font-700 text-white border-b border-white/10 pb-2">Pickup Details</h3>
+              
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label for="source_city" class="block text-xs font-600 text-[#9baac4] mb-1">Source City *</label>
+                  <input id="source_city" type="text" required class="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:border-[#F59000] focus:ring-1 focus:ring-[#F59000] outline-none transition-all" placeholder="City">
+                  <p id="error_source_city" class="text-xs mt-1 hidden" style="color:#ef4444;"></p>
+                </div>
+                <div>
+                  <label for="source_state" class="block text-xs font-600 text-[#9baac4] mb-1">State *</label>
+                  <input id="source_state" type="text" required class="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:border-[#F59000] focus:ring-1 focus:ring-[#F59000] outline-none transition-all" placeholder="State">
+                  <p id="error_source_state" class="text-xs mt-1 hidden" style="color:#ef4444;"></p>
+                </div>
+              </div>
+
+              <div>
+                <label for="source_pincode" class="block text-xs font-600 text-[#9baac4] mb-1">Pincode *</label>
+                <input id="source_pincode" type="text" required class="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:border-[#F59000] focus:ring-1 focus:ring-[#F59000] outline-none transition-all" placeholder="e.g. 400001">
+                <p id="error_source_pincode" class="text-xs mt-1 hidden" style="color:#ef4444;"></p>
+              </div>
+
+              <div>
+                <label for="source_address" class="block text-xs font-600 text-[#9baac4] mb-1">Street Address *</label>
+                <textarea id="source_address" required rows="2" class="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:border-[#F59000] focus:ring-1 focus:ring-[#F59000] outline-none transition-all resize-none" placeholder="123 Main St..."></textarea>
+                <p id="error_source_address" class="text-xs mt-1 hidden" style="color:#ef4444;"></p>
+              </div>
+            </div>
+
+            <!-- Destination Details -->
+            <div class="space-y-4">
+              <h3 class="text-lg font-700 text-white border-b border-white/10 pb-2">Delivery Details</h3>
+              
+              <div>
+                <label for="receiver_name" class="block text-xs font-600 text-[#9baac4] mb-1">Receiver Name *</label>
+                <input id="receiver_name" type="text" required class="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:border-[#F59000] focus:ring-1 focus:ring-[#F59000] outline-none transition-all" placeholder="John Doe">
+                <p id="error_receiver_name" class="text-xs mt-1 hidden" style="color:#ef4444;"></p>
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label for="destination_city" class="block text-xs font-600 text-[#9baac4] mb-1">Destination City *</label>
+                  <input id="destination_city" type="text" required class="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:border-[#F59000] focus:ring-1 focus:ring-[#F59000] outline-none transition-all" placeholder="City">
+                  <p id="error_destination_city" class="text-xs mt-1 hidden" style="color:#ef4444;"></p>
+                </div>
+                <div>
+                  <label for="destination_state" class="block text-xs font-600 text-[#9baac4] mb-1">State *</label>
+                  <input id="destination_state" type="text" required class="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:border-[#F59000] focus:ring-1 focus:ring-[#F59000] outline-none transition-all" placeholder="State">
+                  <p id="error_destination_state" class="text-xs mt-1 hidden" style="color:#ef4444;"></p>
+                </div>
+              </div>
+
+              <div>
+                <label for="destination_pincode" class="block text-xs font-600 text-[#9baac4] mb-1">Pincode *</label>
+                <input id="destination_pincode" type="text" required class="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:border-[#F59000] focus:ring-1 focus:ring-[#F59000] outline-none transition-all" placeholder="e.g. 110085">
+                <p id="error_destination_pincode" class="text-xs mt-1 hidden" style="color:#ef4444;"></p>
+              </div>
+
+              <div>
+                <label for="destination_address" class="block text-xs font-600 text-[#9baac4] mb-1">Street Address *</label>
+                <textarea id="destination_address" required rows="2" class="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:border-[#F59000] focus:ring-1 focus:ring-[#F59000] outline-none transition-all resize-none" placeholder="123 Main St..."></textarea>
+                <p id="error_destination_address" class="text-xs mt-1 hidden" style="color:#ef4444;"></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Package Details -->
+          <div class="space-y-4 pt-4 border-t border-white/10">
+            <h3 class="text-lg font-700 text-white pb-2">Package Information</h3>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label for="package_type" class="block text-xs font-600 text-[#9baac4] mb-1">Shipment Type *</label>
+                <select id="package_type" required class="w-full px-4 py-2.5 rounded-xl bg-[#1E253A] border border-white/10 text-white focus:border-[#F59000] focus:ring-1 focus:ring-[#F59000] outline-none transition-all appearance-none">
+                  <option value="standard">Standard Delivery</option>
+                  <option value="express">Express Delivery (Priority)</option>
+                </select>
+                <p id="error_package_type" class="text-xs mt-1 hidden" style="color:#ef4444;"></p>
+              </div>
+
+              <div>
+                <label for="package_weight" class="block text-xs font-600 text-[#9baac4] mb-1">Weight (kg) *</label>
+                <input id="package_weight" type="number" step="0.1" min="0.1" required class="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:border-[#F59000] focus:ring-1 focus:ring-[#F59000] outline-none transition-all" placeholder="0.0">
+                <p id="error_package_weight" class="text-xs mt-1 hidden" style="color:#ef4444;"></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Form Message -->
+          <div id="form-msg" class="hidden p-3 rounded-lg text-sm text-center font-600"></div>
+
+          <!-- Submit Button -->
+          <div class="pt-4">
+            <button type="submit" id="submit-btn" class="w-full py-3.5 rounded-xl text-sm font-700 text-white btn-gradient flex justify-center items-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+              Create Shipment
+            </button>
+          </div>
+        </form>
       </div>
     </main>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div id="confirmation-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center">
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" id="modal-overlay"></div>
+    <div class="relative w-full max-w-md bg-[#1a1f2e] border border-white/10 rounded-2xl p-6 shadow-2xl transform scale-95 transition-all">
+      <h3 class="text-xl font-display font-800 text-white mb-4">Confirm Shipment</h3>
+      
+      <div class="space-y-3 mb-6">
+        <div class="flex justify-between items-center p-3 rounded-xl bg-white/5 border border-white/5">
+          <span class="text-sm font-600" style="color:#9baac4;">Estimated Distance</span>
+          <span id="confirm-distance" class="text-sm font-700 text-white">—</span>
+        </div>
+        <div class="flex justify-between items-center p-3 rounded-xl bg-white/5 border border-white/5">
+          <span class="text-sm font-600" style="color:#9baac4;">Estimated Delivery</span>
+          <span id="confirm-time" class="text-sm font-700 text-white">—</span>
+        </div>
+        <div class="flex justify-between items-center p-3 rounded-xl bg-[#F59000]/10 border border-[#F59000]/20">
+          <span class="text-sm font-600 text-[#F59000]">Total Cost</span>
+          <span id="confirm-cost" class="text-lg font-800 text-[#F59000]">—</span>
+        </div>
+        <p id="confirm-error" class="hidden text-xs text-red-400 text-center font-500 mt-2"></p>
+      </div>
+
+      <div class="flex gap-3">
+        <button id="cancel-confirm-btn" class="flex-1 py-2.5 rounded-xl text-sm font-700 text-white bg-white/10 hover:bg-white/20 transition-all">
+          Cancel
+        </button>
+        <button id="proceed-confirm-btn" class="flex-1 py-2.5 rounded-xl text-sm font-700 text-white btn-gradient flex justify-center items-center gap-2">
+          Confirm & Pay
+        </button>
+      </div>
+    </div>
   </div>
   
   <script>
