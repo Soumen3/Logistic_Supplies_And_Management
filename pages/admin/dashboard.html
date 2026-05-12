@@ -57,33 +57,114 @@
   <script type="module" src="/js/admin-dashboard.js"></script>
 </head>
 
+
 <body style="background:var(--bg-page); color:var(--text-body);" class="min-h-screen transition-colors duration-300">
 
   <!-- ════════════════════════════════════════════
        TOP NAV BAR
   ════════════════════════════════════════════ -->
-  <nav class="fixed top-0 inset-x-0 z-50 glass px-6 py-3 flex items-center justify-between border-b" style="border-color:var(--border);">
-    <!-- Logo -->
-    <a href="/index.html" class="flex items-center gap-2.5 group">
-      <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background:linear-gradient(135deg,#F59000,#FFAA1A);">
-        <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M20 21H4l-2-7h20l-2 7zM4.5 12l1.5-6h12l1.5 6H4.5zM9 6V4h6v2H9z"/>
-        </svg>
-      </div>
-      <span class="font-display text-lg font-700 tracking-tight" style="color:var(--text-head);">
-        Swift<span style="color:#F59000;">Ship</span>
-      </span>
-      <span class="text-xs font-500 px-2 py-0.5 rounded-full" style="background:#F59000; color:#fff;">Admin</span>
-    </a>
 
-    <!-- Right side -->
-    <div class="flex items-center gap-4">
-      <div id="user-greeting" class="text-sm" style="color:var(--text-muted);"></div>
-      <button id="logout-btn" class="px-4 py-1.5 text-sm font-500 rounded-lg transition-all duration-200 hover:opacity-90" style="background:#F59000; color:#fff;">
-        Logout
-      </button>
+ <nav class="fixed top-0 inset-x-0 z-50 glass px-6 py-3 flex items-center justify-between border-b"
+     style="border-color:var(--border);">
+
+  <!-- Logo -->
+  <a href="/index.html" class="flex items-center gap-2.5 group">
+    <div class="w-9 h-9 rounded-xl flex items-center justify-center"
+         style="background:linear-gradient(135deg,#F59000,#FFAA1A);">
+      <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M20 21H4l-2-7h20l-2 7zM4.5 12l1.5-6h12l1.5 6H4.5zM9 6V4h6v2H9z"/>
+      </svg>
     </div>
-  </nav>
+
+    <span class="font-display text-lg font-700 tracking-tight"
+          style="color:var(--text-head);">
+      Swift<span style="color:#F59000;">Ship</span>
+    </span>
+
+    <span class="text-xs font-500 px-2 py-0.5 rounded-full"
+          style="background:#F59000; color:#fff;">
+      Admin
+    </span>
+  </a>
+
+  <!-- ✅ Right side (UPDATED) -->
+  <div class="flex items-center gap-3">
+
+    <!-- 🔍 Search Button -->
+    <button id="open-search"
+      class="w-10 h-10 rounded-lg flex items-center justify-center transition-all hover:opacity-90"
+      style="background:#F59000; color:#fff;">
+      🔍
+    </button>
+
+    <!-- ⚙️ Filter Button -->
+    <button id="open-filter"
+      class="w-10 h-10 rounded-lg flex items-center justify-center transition-all hover:opacity-90"
+      style="background:#2E4F93; color:#fff;">
+      ⚙️
+    </button>
+
+    <!-- Greeting -->
+    <div id="user-greeting" class="text-sm"
+         style="color:var(--text-muted);"></div>
+
+    <!-- Logout -->
+    <button id="logout-btn"
+      class="px-4 py-1.5 text-sm font-500 rounded-lg transition-all duration-200 hover:opacity-90"
+      style="background:#F59000; color:#fff;">
+      Logout
+    </button>
+
+  </div>
+
+</nav>
+<!-- ✅ SEARCH PANEL -->
+<div id="search-panel"
+  class="hidden fixed top-20 right-6 w-80 glass border rounded-lg p-4 z-50"
+  style="border-color:var(--border);">
+
+  <h3 class="mb-2 font-medium">Search</h3>
+
+  <input id="search-id" type="text"
+    placeholder="Shipment ID"
+    class="w-full mb-2 p-2 border rounded-lg" />
+
+  <input id="search-customer" type="text"
+    placeholder="Customer Name"
+    class="w-full p-2 border rounded-lg" />
+    <button id="apply-search"
+  class="mt-3 w-full py-2 rounded-lg"
+  style="background:#F59000; color:white;">
+  Search
+</button>
+</div>
+
+
+<!-- ✅ FILTER PANEL -->
+<div id="filter-panel"
+  class="hidden fixed top-20 right-6 w-80 glass border rounded-lg p-4 z-50"
+  style="border-color:var(--border);">
+
+  <h3 class="mb-2 font-medium">Filter</h3>
+
+  <select id="filter-status" class="w-full mb-2 p-2 border rounded-lg">
+    <option value="">All Status</option>
+    <option value="delivered">Delivered</option>
+    <option value="pending">Pending</option>
+  </select>
+
+  <select id="filter-type" class="w-full p-2 border rounded-lg">
+    <option value="">All Type</option>
+    <option value="express">Express</option>
+    <option value="standard">Standard</option>
+  </select>
+  <button id="apply-filter"
+  class="mt-3 w-full py-2 rounded-lg"
+  style="background:#F59000; color:white;">
+  Apply Filter
+</button>
+
+</div>
 
   <!-- ════════════════════════════════════════════
        MAIN CONTENT
@@ -97,92 +178,293 @@
         <p class="text-lg" style="color:var(--text-muted);">Manage shipments, users, and system settings</p>
       </section>
 
-      <!-- Stats cards -->
-      <section class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div class="p-6 glass rounded-lg border" style="border-color:var(--border);">
-          <p class="text-sm font-500 mb-2" style="color:var(--text-muted);">Total Shipments</p>
-          <p class="text-3xl font-700" style="color:#F59000;" id="stat-shipments">0</p>
-        </div>
+ <!-- Stats cards -->
+<section id="admin-cards" class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
 
-        <div class="p-6 glass rounded-lg border" style="border-color:var(--border);">
-          <p class="text-sm font-500 mb-2" style="color:var(--text-muted);">Active Users</p>
-          <p class="text-3xl font-700" style="color:#F59000;" id="stat-users">0</p>
-        </div>
+  <div class="admin-card p-6 glass rounded-lg border cursor-pointer hover:shadow-lg transition-all"
+       style="border-color:var(--border);" data-key="total">
+    <p class="text-sm font-500 mb-2" style="color:var(--text-muted);">Total Shipments</p>
+    <p class="text-3xl font-700" style="color:#F59000;" id="stat-shipments">24</p>
+  </div>
 
-        <div class="p-6 glass rounded-lg border" style="border-color:var(--border);">
-          <p class="text-sm font-500 mb-2" style="color:var(--text-muted);">In Transit</p>
-          <p class="text-3xl font-700" style="color:#F59000;" id="stat-transit">0</p>
-        </div>
+  <div class="admin-card p-6 glass rounded-lg border cursor-pointer hover:shadow-lg transition-all"
+       style="border-color:var(--border);" data-key="users">
+    <p class="text-sm font-500 mb-2" style="color:var(--text-muted);">Active Users</p>
+    <p class="text-3xl font-700" style="color:#F59000;" id="stat-users">10</p>
+  </div>
 
-        <div class="p-6 glass rounded-lg border" style="border-color:var(--border);">
-          <p class="text-sm font-500 mb-2" style="color:var(--text-muted);">Delivered</p>
-          <p class="text-3xl font-700" style="color:#F59000;" id="stat-delivered">0</p>
-        </div>
-      </section>
+  <div class="admin-card p-6 glass rounded-lg border cursor-pointer hover:shadow-lg transition-all"
+       style="border-color:var(--border);" data-key="pending">
+    <p class="text-sm font-500 mb-2" style="color:var(--text-muted);">Pending</p>
+    <p class="text-3xl font-700" style="color:#F59000;" id="stat-transit">6</p>
+  </div>
 
-      <!-- Admin actions -->
-      <section class="mb-8">
-        <h2 class="text-2xl font-display font-700 mb-4" style="color:var(--text-head);">Quick Actions</h2>
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <a href="/pages/admin/create-shipment.html" class="p-6 glass rounded-lg border hover:shadow-lg transition-all" style="border-color:var(--border);">
-            <svg class="w-8 h-8 mb-3" style="color:#F59000;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
-            </svg>
-            <h3 class="font-semibold" style="color:var(--text-head);">Create Shipment</h3>
-            <p class="text-sm mt-1" style="color:var(--text-muted);">Register a new shipment</p>
-          </a>
+  <div class="admin-card p-6 glass rounded-lg border cursor-pointer hover:shadow-lg transition-all"
+       style="border-color:var(--border);" data-key="delivered">
+    <p class="text-sm font-500 mb-2" style="color:var(--text-muted);">Delivered</p>
+    <p class="text-3xl font-700" style="color:#F59000;" id="stat-delivered">18</p>
+  </div>
 
-          <a href="/pages/admin/shipments.html" class="p-6 glass rounded-lg border hover:shadow-lg transition-all" style="border-color:var(--border);">
-            <svg class="w-8 h-8 mb-3" style="color:#F59000;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-            </svg>
-            <h3 class="font-semibold" style="color:var(--text-head);">All Shipments</h3>
-            <p class="text-sm mt-1" style="color:var(--text-muted);">View and manage all shipments</p>
-          </a>
+</section>
 
-          <a href="/pages/admin/reports.html" class="p-6 glass rounded-lg border hover:shadow-lg transition-all" style="border-color:var(--border);">
-            <svg class="w-8 h-8 mb-3" style="color:#F59000;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-            </svg>
-            <h3 class="font-semibold" style="color:var(--text-head);">Reports</h3>
-            <p class="text-sm mt-1" style="color:var(--text-muted);">View analytics and reports</p>
-          </a>
 
-          <a href="/pages/admin/create-staff.html" class="p-6 glass rounded-lg border hover:shadow-lg transition-all" style="border-color:var(--border);">
-            <svg class="w-8 h-8 mb-3" style="color:#F59000;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
-            </svg>
-            <h3 class="font-semibold" style="color:var(--text-head);">Create Staff</h3>
-            <p class="text-sm mt-1" style="color:var(--text-muted);">Add a new staff member</p>
-          </a>
-        </div>
-      </section>
+<!-- Additional Analytics -->
+<section id="admin-extra" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
 
-      <!-- Recent shipments -->
-      <section>
-        <h2 class="text-2xl font-display font-700 mb-4" style="color:var(--text-head);">Recent Shipments</h2>
-        <div id="recent-shipments" class="glass rounded-lg border overflow-hidden" style="border-color:var(--border);">
-          <table class="w-full">
-            <thead>
-              <tr style="border-bottom:1px solid var(--border);">
-                <th class="text-left px-6 py-3 text-sm font-600" style="color:var(--text-head);">Shipment Code</th>
-                <th class="text-left px-6 py-3 text-sm font-600" style="color:var(--text-head);">From</th>
-                <th class="text-left px-6 py-3 text-sm font-600" style="color:var(--text-head);">To</th>
-                <th class="text-left px-6 py-3 text-sm font-600" style="color:var(--text-head);">Status</th>
-                <th class="text-left px-6 py-3 text-sm font-600" style="color:var(--text-head);">Date</th>
-              </tr>
-            </thead>
-            <tbody id="shipments-list">
-              <tr>
-                <td colspan="5" class="text-center px-6 py-4 text-sm" style="color:var(--text-muted);">Loading shipments...</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
+  <div class="admin-card p-6 glass rounded-lg border cursor-pointer hover:shadow-lg transition-all"
+       style="border-color:var(--border);" data-key="pending">
+    <p class="text-sm font-500 mb-2" style="color:var(--text-muted);">Pending Shipments</p>
+    <p class="text-3xl font-700" style="color:#F59000;">6</p>
+    <p class="text-sm mt-2" style="color:var(--text-muted);">Awaiting delivery</p>
+  </div>
 
-    </div>
+  <div class="admin-card p-6 glass rounded-lg border cursor-pointer hover:shadow-lg transition-all"
+       style="border-color:var(--border);" data-key="activity">
+    <p class="text-sm font-500 mb-3" style="color:var(--text-muted);">Recent Activity</p>
+
+    <ul class="text-sm space-y-2" style="color:var(--text-body);">
+      <li>📦 SS1024 created — Mumbai → Delhi</li>
+      <li>🚚 SS1031 in transit — Pune → Bangalore</li>
+      <li>✅ SS1019 delivered — Kolkata → Mumbai</li>
+    </ul>
+  </div>
+
+</section>
+<!-- ✅ ADMIN ACTIONS (ADDED) -->
+<section class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+
+  <!-- Add Staff -->
+  <div class="p-6 glass rounded-lg border cursor-pointer hover:shadow-lg transition-all"
+       style="border-color:var(--border);">
+    <p class="text-sm font-500 mb-2" style="color:var(--text-muted);">Add Staff</p>
+    <p class="text-lg font-700" style="color:#F59000;">➕ Add New</p>
+    <p class="text-xs mt-2" style="color:var(--text-muted);">Create staff account</p>
+  </div>
+
+  <!-- Manage Staff -->
+  <div class="p-6 glass rounded-lg border cursor-pointer hover:shadow-lg transition-all"
+       style="border-color:var(--border);">
+    <p class="text-sm font-500 mb-2" style="color:var(--text-muted);">Manage Staff</p>
+    <p class="text-lg font-700" style="color:#F59000;">👥 Staff List</p>
+    <p class="text-xs mt-2" style="color:var(--text-muted);">View & manage staff</p>
+  </div>
+
+  <!-- Manage Shipments -->
+  <div class="p-6 glass rounded-lg border cursor-pointer hover:shadow-lg transition-all"
+       style="border-color:var(--border);">
+    <p class="text-sm font-500 mb-2" style="color:var(--text-muted);">Shipments</p>
+    <p class="text-lg font-700" style="color:#F59000;">📦 Manage</p>
+    <p class="text-xs mt-2" style="color:var(--text-muted);">Track & update</p>
+  </div>
+
+  <!-- Reports -->
+  <div class="p-6 glass rounded-lg border cursor-pointer hover:shadow-lg transition-all"
+       style="border-color:var(--border);">
+    <p class="text-sm font-500 mb-2" style="color:var(--text-muted);">Reports</p>
+    <p class="text-lg font-700" style="color:#F59000;">📊 View Reports</p>
+    <p class="text-xs mt-2" style="color:var(--text-muted);">Analytics & insights</p>
+  </div>
+
+</section>
+
+<!-- ✅ DETAILS PANEL -->
+<div id="admin-details-panel"
+     class="hidden glass rounded-lg border p-6 mb-8"
+     style="border-color:var(--border);">
+
+  <h3 id="admin-details-title"
+      class="text-xl font-display font-700 mb-4"
+      style="color:var(--text-head);">
+  </h3>
+
+  <div id="admin-details-content" class="space-y-2 text-sm"></div>
+
+</div>
+   </div>
   </main>
 
+  <!-- ✅ SCRIPT MUST BE INSIDE BODY -->
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+
+  const cards = document.querySelectorAll(".admin-card");
+  const panel = document.getElementById("admin-details-panel");
+  const title = document.getElementById("admin-details-title");
+  const content = document.getElementById("admin-details-content");
+
+  const openSearch = document.getElementById("open-search");
+  const openFilter = document.getElementById("open-filter");
+  const searchPanel = document.getElementById("search-panel");
+  const filterPanel = document.getElementById("filter-panel");
+
+  const applyFilterBtn = document.getElementById("apply-filter");
+  const applySearchBtn = document.getElementById("apply-search");
+
+  // ✅ Toggle Panels
+  if (openSearch && openFilter && searchPanel && filterPanel) {
+    openSearch.addEventListener("click", () => {
+      searchPanel.classList.toggle("hidden");
+      filterPanel.classList.add("hidden");
+    });
+
+    openFilter.addEventListener("click", () => {
+      filterPanel.classList.toggle("hidden");
+      searchPanel.classList.add("hidden");
+    });
+  }
+
+  // ✅ FETCH DATA
+  async function getData() {
+    let shipments = [];
+    let users = [];
+
+    try {
+      shipments = await window.SwiftShipDB.listShipments();
+      users = await window.SwiftShipDB.db.users.toArray();
+    } catch {}
+
+    if (!shipments || shipments.length === 0) {
+      shipments = [
+        { shipment_code: "SS1024", source_city: "Mumbai", destination_city: "Delhi", status: "delivered", type: "express", customer: "Amit Sharma" },
+        { shipment_code: "SS1031", source_city: "Pune", destination_city: "Bangalore", status: "pending", type: "standard", customer: "Priya Singh" },
+        { shipment_code: "SS1055", source_city: "Chennai", destination_city: "Hyderabad", status: "pending", type: "express", customer: "Rahul Verma" },
+        { shipment_code: "SS1019", source_city: "Kolkata", destination_city: "Mumbai", status: "delivered", type: "standard", customer: "Neha Patel" }
+      ];
+    }
+
+    if (!users || users.length === 0) {
+      users = [
+        { full_name: "User A" },
+        { full_name: "User B" },
+        { full_name: "User C" }
+      ];
+    }
+
+    return { shipments, users };
+  }
+
+  // ✅ FILTER FUNCTION
+  function applyFilters(shipments) {
+    const id = document.getElementById("search-id")?.value.toLowerCase() || "";
+    const customer = document.getElementById("search-customer")?.value.toLowerCase() || "";
+    const status = document.getElementById("filter-status")?.value || "";
+    const type = document.getElementById("filter-type")?.value || "";
+
+    return shipments.filter(s => {
+      const customerName = (s.customer || "").toLowerCase();
+
+      return (
+        (!id || s.shipment_code.toLowerCase().includes(id)) &&
+        (!customer || customerName.includes(customer)) &&
+        (!status || s.status === status) &&
+        (!type || (s.type || "standard") === type)
+      );
+    });
+  }
+
+  // ✅ SHOW RESULTS
+  async function showFilteredResults() {
+    let data = await getData();
+    const filtered = applyFilters(data.shipments);
+
+    title.textContent = `Search Results (${filtered.length})`;
+
+    content.innerHTML = filtered.length
+      ? filtered.map(s => `
+          <div class="p-3 rounded-lg" style="background:var(--bg-page);">
+            <strong>${s.shipment_code}</strong> — ${s.source_city} → ${s.destination_city}
+            <br/>👤 ${s.customer} • 📦 ${s.status} • 🚚 ${s.type || "standard"}
+          </div>
+        `).join("")
+      : `<p style="color:var(--text-muted)">No matching results</p>`;
+
+    panel.classList.remove("hidden");
+  }
+
+  // ✅ SEARCH (ENTER + BUTTON)
+  const searchIdInput = document.getElementById("search-id");
+  const searchCustomerInput = document.getElementById("search-customer");
+
+  if (searchIdInput) {
+    searchIdInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+        showFilteredResults();
+      }
+    });
+  }
+
+  if (searchCustomerInput) {
+    searchCustomerInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+        showFilteredResults();
+      }
+    });
+  }
+
+  if (applySearchBtn) {
+    applySearchBtn.addEventListener("click", showFilteredResults);
+  }
+
+  // ✅ FILTER (BUTTON ONLY)
+  if (applyFilterBtn) {
+    applyFilterBtn.addEventListener("click", showFilteredResults);
+  }
+
+  // ✅ CARD CLICK (WITH FILTER)
+  cards.forEach(card => {
+    card.addEventListener("click", async () => {
+
+      const key = card.getAttribute("data-key");
+      let data = await getData();
+      const filtered = applyFilters(data.shipments);
+
+      let items = [];
+      let heading = "";
+
+      if (key === "total") {
+        heading = `All Shipments (${filtered.length})`;
+        items = filtered;
+      }
+      else if (key === "delivered") {
+        const delivered = filtered.filter(s => s.status === "delivered");
+        heading = `Delivered Shipments (${delivered.length})`;
+        items = delivered;
+      }
+      else if (key === "pending") {
+        const pending = filtered.filter(s => s.status !== "delivered");
+        heading = `Pending Shipments (${pending.length})`;
+        items = pending;
+      }
+      else if (key === "users") {
+        heading = `Active Users (${data.users.length})`;
+        items = data.users.map(u => ({
+          text: `👤 <strong>${u.full_name}</strong>`
+        }));
+      }
+      else if (key === "activity") {
+        heading = "Recent Activity";
+        items = filtered;
+      }
+
+      title.textContent = heading;
+
+      content.innerHTML = items.length
+        ? items.map(s => `
+          <div class="p-3 rounded-lg" style="background:var(--bg-page);">
+            ${s.text || `
+              <strong>${s.shipment_code}</strong> — ${s.source_city} → ${s.destination_city}
+              <br/>👤 ${s.customer} • 📦 ${s.status} • 🚚 ${s.type || "standard"}
+            `}
+          </div>
+        `).join("")
+        : `<p style="color:var(--text-muted)">No matching results</p>`;
+
+      panel.classList.remove("hidden");
+    });
+  });
+
+});
+</script>
 </body>
 </html>
+

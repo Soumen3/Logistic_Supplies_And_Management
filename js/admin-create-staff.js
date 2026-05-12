@@ -4,83 +4,70 @@ function el(id) {
   return document.getElementById(id);
 }
 
+// ✅ Password Hash
 async function hashPassword(password) {
   const encoder = new TextEncoder();
   const data = encoder.encode(password);
   const hash = await crypto.subtle.digest('SHA-256', data);
   return Array.from(new Uint8Array(hash))
-    .map((byte) => byte.toString(16).padStart(2, '0'))
+    .map(byte => byte.toString(16).padStart(2, '0'))
     .join('');
 }
 
+// ✅ Validators (same logic)
 function validateEmail(email) {
-  const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return pattern.test(email);
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
 function validatePhone(phone) {
-  const pattern = /^\+?[0-9\s\-()]{7,20}$/;
-  return pattern.test(phone);
+  const cleaned = phone.replace(/[^0-9]/g, '');
+  return cleaned.length >= 7;
 }
 
 function validatePassword(password) {
-  if (!password || password.length < 6) return false;
-  return /(?=.*[A-Za-z])(?=.*\d).+/.test(password);
+  return password && password.length >= 6 && /(?=.*[A-Za-z])(?=.*\d)/.test(password);
 }
 
+// ✅ Error UI
 function setError(fieldId, message) {
   const input = el(fieldId);
-  const msg = el('msg'); // fallback message box
-  const inlineError = el('error_' + fieldId);
+  const msg = el('msg');
 
-  if (input) input.classList.add('error');
-  
-  if (inlineError) {
-    inlineError.textContent = message;
-    inlineError.classList.remove('hidden');
-  } else if (msg) {
+  if (input) input.classList.add('border-red-500');
+
+  if (msg) {
     msg.style.color = 'red';
     msg.textContent = message;
-    msg.classList.remove('hidden');
   }
 }
 
 function clearErrors() {
-  ['full_name', 'phone', 'email', 'password', 'password_confirm'].forEach((id) => {
-    const input = el(id);
-    if (input) input.classList.remove('error');
-    const inlineError = el('error_' + id);
-    if (inlineError) {
-      inlineError.textContent = '';
-      inlineError.classList.add('hidden');
-    }
+  ['full_name', 'phone', 'email', 'password', 'password_confirm'].forEach(id => {
+    el(id)?.classList.remove('border-red-500');
   });
 
   const msg = el('msg');
-  if (msg) {
-    msg.textContent = '';
-    msg.classList.add('hidden');
-  }
+  if (msg) msg.textContent = '';
 }
 
+// ✅ Admin check
 async function redirectIfNotAdmin() {
   try {
     const session = await SwiftShipDB.getActiveSession();
-    // If no session or not admin role, redirect to login
     if (!session || (session.role !== 'admin' && session.role !== 1)) {
       window.location.href = '/pages/login.html';
       return true;
     }
     return false;
-  } catch (e) {
-    // If any error, redirect to login for safety
+  } catch {
     window.location.href = '/pages/login.html';
     return true;
   }
 }
 
+// ✅ INIT
 async function init() {
-  // Only admins can access this page
+
   const isNotAdmin = await redirectIfNotAdmin();
   if (isNotAdmin) return;
 
@@ -92,65 +79,72 @@ async function init() {
     event.preventDefault();
     clearErrors();
 
-    const fullName = el('full_name').value.trim();
-    const phone = el('phone').value.trim();
-    const email = el('email').value.trim().toLowerCase();
-    const password = el('password').value;
-    const passwordConfirm = el('password_confirm').value;
+    const fullName = el('full_name')?.value.trim();
+    const phone = el('phone')?.value.trim();
+    const email = el('email')?.value.trim().toLowerCase();
+    const password = el('password')?.value;
+    const passwordConfirm = el('password_confirm')?.value;
 
-    let isValid = true;
-
+    // ✅ VALIDATION
     if (!fullName || fullName.length < 2) {
       setError('full_name', 'Please enter staff full name (2+ characters).');
-      isValid = false;
+      return;
     }
 
     if (!validatePhone(phone)) {
       setError('phone', 'Please enter a valid phone number (minimum 7 digits).');
-      isValid = false;
+      return;
     }
 
     if (!validateEmail(email)) {
       setError('email', 'Please enter a valid email address.');
-      isValid = false;
+      return;
     }
 
     if (!validatePassword(password)) {
       setError('password', 'Password must be 6+ chars and include letters and numbers.');
-      isValid = false;
+      return;
     }
 
     if (password !== passwordConfirm) {
       setError('password_confirm', 'Passwords do not match.');
-      isValid = false;
+      return;
     }
 
-    if (!isValid) return;
-
     try {
+
+      // ✅ EXISTING CHECK
       const existing = await SwiftShipDB.getUserByEmail(email);
       if (existing) {
         setError('email', 'An account with that email already exists.');
         return;
       }
 
+      // ✅ SAVE USER
       const passwordHash = await hashPassword(password);
+
       await SwiftShipDB.addUser({
         email,
         password_hash: passwordHash,
         full_name: fullName,
         phone,
-        role: 'staff',
+        role: 'staff'
       });
 
       msg.style.color = 'green';
       msg.textContent = 'Staff user created successfully! Redirecting...';
+
+      // ✅ RESET FORM
+      form.reset();
+
       setTimeout(() => {
         window.location.href = '/pages/admin/dashboard.html';
       }, 1500);
+
     } catch (error) {
       console.error(error);
-      if (error && error.message === 'phone_required') {
+
+      if (error?.message === 'phone_required') {
         setError('phone', 'Phone number is required.');
         return;
       }
