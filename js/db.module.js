@@ -114,18 +114,14 @@ async function addShipment(shipment) {
     created_at: shipment.created_at || now,
     updated_at: shipment.updated_at || now,
   };
-  
   return db.transaction('rw', db.shipments, db.status_history, async () => {
     await db.shipments.put(record);
-    
-    // Automatically log the initial status in the same transaction
     await addStatusHistory({
       shipment_id: id,
       status: record.status || 'pending',
       updated_by: record.created_by || null,
-      notes: 'Shipment created'
+      notes: 'Shipment created',
     });
-    
     return id;
   });
 }

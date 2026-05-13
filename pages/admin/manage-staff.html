@@ -15,7 +15,6 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600&display=swap"
     rel="stylesheet" />
-  <link href="/assets/css/style.css" rel="stylesheet" />
 
   <script>
     tailwind.config = {
@@ -49,13 +48,7 @@
       background: rgba(255, 255, 255, 0.03);
       backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.08);
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .glass-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
-      border-color: rgba(245, 144, 0, 0.2);
+      transition: box-shadow 0.2s;
     }
 
     .nav-link {
@@ -112,6 +105,93 @@
       opacity: 0.08;
       pointer-events: none;
     }
+
+    /* ── TABLE RESPONSIVE FIX ── */
+
+    /* The card must NOT clip the scrollable child */
+    .table-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 1rem;
+      /* overflow: hidden is intentionally NOT set here — it would break sticky and scroll */
+    }
+
+    /* Scroll wrapper fills the card and scrolls horizontally */
+    .table-scroll-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      border-radius: 1rem;        /* visually clips table corners */
+      /* Subtle scrollbar on WebKit */
+      scrollbar-width: thin;
+      scrollbar-color: rgba(245, 144, 0, 0.4) transparent;
+    }
+
+    .table-scroll-wrapper::-webkit-scrollbar {
+      height: 4px;
+    }
+    .table-scroll-wrapper::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .table-scroll-wrapper::-webkit-scrollbar-thumb {
+      background: rgba(245, 144, 0, 0.4);
+      border-radius: 2px;
+    }
+
+    /* Table itself never shrinks below a comfortable minimum */
+    .staff-table {
+      width: 100%;
+      min-width: 560px;   /* triggers scroll on narrow viewports */
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    .staff-table thead {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .staff-table th {
+      padding: 0.875rem 1.5rem;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: #fff;
+      white-space: nowrap;
+    }
+
+    .staff-table td {
+      padding: 0.875rem 1.5rem;
+      font-size: 0.875rem;
+      white-space: nowrap;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .staff-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .staff-table tbody tr {
+      transition: background 0.15s;
+    }
+
+    .staff-table tbody tr:hover {
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    /* Hint for users that the table scrolls (mobile only) */
+    @media (max-width: 640px) {
+      .scroll-hint {
+        display: flex;
+      }
+    }
+
+    .scroll-hint {
+      display: none;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.72rem;
+      color: #9baac4;
+      margin-bottom: 0.5rem;
+    }
   </style>
 
   <script type="module" src="/js/admin-manage-staff.js"></script>
@@ -122,11 +202,10 @@
   <div class="bg-orb-1"></div>
   <div class="bg-orb-2"></div>
 
-  <!-- ── SIDEBAR (Desktop: fixed left, Mobile: hidden / slide-in) ── -->
+  <!-- ── SIDEBAR ── -->
   <aside id="sidebar"
     class="fixed inset-y-0 left-0 z-50 w-64 glass-panel transform -translate-x-full lg:translate-x-0 transition-transform duration-300 flex flex-col">
 
-    <!-- Logo Area -->
     <div class="h-16 flex items-center px-6 border-b border-white/10">
       <a href="/" class="flex items-center gap-3 group">
         <div class="w-8 h-8 rounded-lg flex items-center justify-center btn-gradient">
@@ -145,7 +224,6 @@
       </button>
     </div>
 
-    <!-- Navigation Links -->
     <nav class="flex-1 py-6 flex flex-col gap-1">
       <a href="/pages/admin/dashboard.html" class="px-6 py-3 text-sm font-600 nav-link">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -154,14 +232,6 @@
           </path>
         </svg>
         Dashboard
-      </a>
-      <a href="/pages/admin/create-shipment.html" class="px-6 py-3 text-sm font-600 nav-link">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2">
-          </path>
-        </svg>
-        Create Shipment
       </a>
       <a href="/pages/admin/create-staff.html" class="px-6 py-3 text-sm font-600 nav-link">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -184,9 +254,15 @@
         </svg>
         Shipments
       </a>
+      <a href="/pages/admin/reports.html" class="px-6 py-3 text-sm font-600 nav-link">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M4 6h16M4 10h10M4 14h16M4 18h7"></path>
+        </svg>
+        Reports
+      </a>
     </nav>
 
-    <!-- User Section -->
     <div class="p-6 border-t border-white/10">
       <div class="mb-4">
         <div id="user-greeting" class="text-sm font-600 text-white">Welcome!</div>
@@ -203,23 +279,24 @@
     </div>
   </aside>
 
-  <!-- Overlay for mobile sidebar -->
-  <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-40 hidden lg:hidden backdrop-blur-sm transition-opacity">
-  </div>
+  <!-- Mobile overlay -->
+  <div id="sidebar-overlay"
+    class="fixed inset-0 bg-black/50 z-40 hidden lg:hidden backdrop-blur-sm transition-opacity"></div>
 
-  <!-- ── MAIN CONTENT WRAPPER ── -->
+  <!-- ── MAIN CONTENT ── -->
   <div class="flex-1 flex flex-col lg:ml-64 min-h-screen relative z-10">
 
     <!-- Mobile Topbar -->
-    <header class="lg:hidden h-16 glass-topbar flex items-center justify-between px-6 sticky top-0 z-30">
-      <a href="/" class="flex items-center gap-2 group">
+    <header class="lg:hidden h-16 glass-topbar flex items-center justify-between px-4 sticky top-0 z-30">
+      <a href="/" class="flex items-center gap-2">
         <div class="w-8 h-8 rounded-lg flex items-center justify-center btn-gradient">
           <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
             <path d="M20 21H4l-2-7h20l-2 7zM4.5 12l1.5-6h12l1.5 6H4.5zM9 6V4h6v2H9z" />
           </svg>
         </div>
-        <span class="font-display text-lg font-700 tracking-tight text-white">Swift<span
-            style="color:#F59000;">Ship</span></span>
+        <span class="font-display text-lg font-700 tracking-tight text-white">
+          Swift<span style="color:#F59000;">Ship</span>
+        </span>
       </a>
       <button id="mobile-menu-toggle" class="p-2 -mr-2 text-white/70 hover:text-white">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -228,140 +305,137 @@
       </button>
     </header>
 
-    <!-- Main Content Area -->
-    <main class="p-6 md:p-10 max-w-7xl w-full mx-auto">
-<div class="max-w-6xl mx-auto pt-4">
-    <h1 class="font-display text-4xl font-800 mb-2" style="color:#fff;">Manage Staff</h1>
-    <p class="text-lg" style="color:#9baac4;">View and manage staff accounts</p>
-<!-- ✅ TABLE -->
-  <div class="glass-card rounded-2xl overflow-hidden mt-6"
-       style="border-color:var(--border);">
+    <!-- Page Content -->
+    <main class="p-4 sm:p-6 md:p-10 w-full max-w-7xl mx-auto">
+      <div class="pt-4">
 
-    <div class="overflow-x-auto">
-      <table class="min-w-full text-left border-collapse">
+        <h1 class="font-display text-3xl sm:text-4xl font-800 mb-1" style="color:#fff;">Manage Staff</h1>
+        <p class="text-base sm:text-lg mb-6" style="color:#9baac4;">View and manage staff accounts</p>
 
-        <thead style="background:rgba(255,255,255,0.05);">
-          <tr>
-            <th class="px-6 py-3 text-sm font-600 text-white">Name</th>
-            <th class="px-6 py-3 text-sm font-600 text-white">Email</th>
-            <th class="px-6 py-3 text-sm font-600 text-white">Phone</th>
-            <th class="px-6 py-3 text-sm font-600 text-center text-white">Actions</th>
-          </tr>
-        </thead>
+        <!-- Scroll hint (visible on mobile only) -->
+        <div class="scroll-hint">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"></path>
+          </svg>
+          Scroll sideways to see all columns
+        </div>
 
-        <tbody id="staff-list"></tbody>
+        <!-- Table card — no overflow:hidden so scroll works -->
+        <div class="table-card">
+          <div class="table-scroll-wrapper">
+            <table class="staff-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th style="text-align:center;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="staff-list"></tbody>
+            </table>
+          </div>
+        </div>
 
-      </table>
-    </div>
-
+      </div>
+    </main>
   </div>
 
+  <!-- Sidebar toggle script -->
+  <script>
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    const toggleBtn = document.getElementById('mobile-menu-toggle');
+    const closeBtn = document.getElementById('close-sidebar');
 
-    </div>
-  </main>
-</div>
-<script>
-  const sidebar = document.getElementById('sidebar');
-  const overlay = document.getElementById('sidebar-overlay');
-  const toggleBtn = document.getElementById('mobile-menu-toggle');
-  const closeBtn = document.getElementById('close-sidebar');
+    function toggleSidebar() {
+      sidebar?.classList.toggle('-translate-x-full');
+      overlay?.classList.toggle('hidden');
+    }
 
-  function toggleSidebar() {
-    sidebar?.classList.toggle('-translate-x-full');
-    overlay?.classList.toggle('hidden');
-  }
+    toggleBtn?.addEventListener('click', toggleSidebar);
+    closeBtn?.addEventListener('click', toggleSidebar);
+    overlay?.addEventListener('click', toggleSidebar);
+  </script>
 
-  toggleBtn?.addEventListener('click', toggleSidebar);
-  closeBtn?.addEventListener('click', toggleSidebar);
-  overlay?.addEventListener('click', toggleSidebar);
-</script>
+  <!-- Data / auth script -->
+  <script type="module">
+    import { SwiftShipDB } from '/js/db.module.js';
 
-<script type="module">
-import { SwiftShipDB } from '/js/db.module.js';
+    function el(id) { return document.getElementById(id); }
 
-function el(id) {
-  return document.getElementById(id);
-}
-
-// ✅ Admin check
-async function redirectIfNotAdmin() {
-  const session = await SwiftShipDB.getActiveSession();
-  if (!session || (session.role !== 'admin' && session.role !== 1)) {
-    window.location.href = '/pages/login.html';
-    return true;
-  }
-  return false;
-}
-
-// ✅ Load staff
-async function loadStaff() {
-
-  const listEl = el('staff-list');
-  if (!listEl) return;
-
-  const users = await SwiftShipDB.db.users.toArray();
-
-  const staff = users.filter(
-    u => (u.role || "").toLowerCase().trim() === 'staff'
-  );
-
-  if (!staff.length) {
-    listEl.innerHTML = `
-      <tr>
-        <td colspan="4" class="px-6 py-4 text-center">
-          No staff found
-        </td>
-      </tr>`;
-    return;
-  }
-
-  listEl.innerHTML = staff.map(user => `
-    <tr style="border-bottom:1px solid rgba(255,255,255,0.1);">
-      <td class="px-6 py-4">${user.full_name}</td>
-      <td class="px-6 py-4">${user.email}</td>
-      <td class="px-6 py-4">${user.phone}</td>
-
-      <td class="px-6 py-4 text-center">
-        <button data-id="${user.id}"
-          class="delete-btn px-3 py-1 rounded"
-          style="background:red; color:white;">
-          Delete
-        </button>
-      </td>
-    </tr>
-  `).join('');
-
-  // ✅ Delete logic
-  document.querySelectorAll('.delete-btn').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      const id = Number(btn.getAttribute('data-id'));
-
-      if (confirm('Delete this staff?')) {
-        await SwiftShipDB.db.users.delete(id);
-        loadStaff();
+    async function redirectIfNotAdmin() {
+      const session = await SwiftShipDB.getActiveSession();
+      if (!session || (session.role !== 'admin' && session.role !== 1)) {
+        window.location.href = '/pages/login.html';
+        return true;
       }
-    });
-  });
-}
+      return false;
+    }
 
-// ✅ Logout
-function setupLogout() {
-  el('logout-btn')?.addEventListener('click', async () => {
-    await SwiftShipDB.deactivateActiveSessions();
-    window.location.href = '/pages/login.html';
-  });
-}
+    async function loadStaff() {
+      const listEl = el('staff-list');
+      if (!listEl) return;
 
-// ✅ INIT
-async function init() {
-  const blocked = await redirectIfNotAdmin();
-  if (blocked) return;
+      const users = await SwiftShipDB.db.users.toArray();
+      const staff = users.filter(u => (u.role || '').toLowerCase().trim() === 'staff');
 
-  setupLogout();
-  loadStaff();
-}
+      if (!staff.length) {
+        listEl.innerHTML = `
+          <tr>
+            <td colspan="4" style="padding:2rem 1.5rem; text-align:center; color:#9baac4;">
+              No staff found
+            </td>
+          </tr>`;
+        return;
+      }
 
-window.addEventListener('DOMContentLoaded', init);
-</script>
+      listEl.innerHTML = staff.map(user => `
+        <tr>
+          <td>${user.full_name}</td>
+          <td>${user.email}</td>
+          <td>${user.phone}</td>
+          <td style="text-align:center;">
+            <button data-id="${user.id}" class="delete-btn"
+              style="background:rgba(239,68,68,0.15); color:#f87171; border:1px solid rgba(239,68,68,0.3);
+                     padding:0.3rem 0.85rem; border-radius:0.5rem; font-size:0.8rem; font-weight:600;
+                     cursor:pointer; transition:background 0.15s;"
+              onmouseover="this.style.background='rgba(239,68,68,0.3)'"
+              onmouseout="this.style.background='rgba(239,68,68,0.15)'">
+              Delete
+            </button>
+          </td>
+        </tr>
+      `).join('');
+
+      document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = Number(btn.getAttribute('data-id'));
+          if (confirm('Delete this staff member?')) {
+            await SwiftShipDB.db.users.delete(id);
+            loadStaff();
+          }
+        });
+      });
+    }
+
+    function setupLogout() {
+      el('logout-btn')?.addEventListener('click', async () => {
+        await SwiftShipDB.deactivateActiveSessions();
+        window.location.href = '/pages/login.html';
+      });
+    }
+
+    async function init() {
+      const blocked = await redirectIfNotAdmin();
+      if (blocked) return;
+      setupLogout();
+      loadStaff();
+    }
+
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+
 </body>
 </html>

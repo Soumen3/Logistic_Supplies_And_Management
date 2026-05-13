@@ -36,8 +36,12 @@ export async function getRecentActivity(limit = 3) {
   try {
     const shipments = await SwiftShipDB.listShipments();
     
-    // Sort by created_at descending (newest first)
-    shipments.sort((a, b) => b.created_at - a.created_at);
+    // Sort by last update time (updated_at) descending; fallback to created_at
+    shipments.sort((a, b) => {
+      const aTime = a.updated_at || a.created_at || 0;
+      const bTime = b.updated_at || b.created_at || 0;
+      return bTime - aTime;
+    });
     
     const recent = shipments.slice(0, limit);
     
@@ -57,7 +61,7 @@ export async function getRecentActivity(limit = 3) {
         id: ship.shipment_code,
         icon,
         text: `${ship.shipment_code} ${actionText} — ${ship.source_city} → ${ship.destination_city}`,
-        timestamp: ship.created_at
+        timestamp: ship.updated_at || ship.created_at
       };
     });
   } catch (error) {

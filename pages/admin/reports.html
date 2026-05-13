@@ -114,7 +114,7 @@
     }
   </style>
 
-  <script type="module" src="/js/admin-dashboard.js"></script>
+  <script type="module" src="/js/admin-reports.js"></script>
 </head>
 <body class="min-h-screen relative overflow-x-hidden flex">
 
@@ -155,14 +155,6 @@
         </svg>
         Dashboard
       </a>
-      <a href="/pages/admin/create-shipment.html" class="px-6 py-3 text-sm font-600 nav-link">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2">
-          </path>
-        </svg>
-        Create Shipment
-      </a>
       <a href="/pages/admin/create-staff.html" class="px-6 py-3 text-sm font-600 nav-link">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -183,6 +175,13 @@
             d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
         </svg>
         Shipments
+      </a>
+      <a href="/pages/admin/reports.html" class="px-6 py-3 text-sm font-600 nav-link active">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M4 6h16M4 10h10M4 14h16M4 18h7"></path>
+        </svg>
+        Reports
       </a>
     </nav>
 
@@ -230,16 +229,188 @@
 
     <!-- Main Content Area -->
     <main class="p-6 md:p-10 max-w-7xl w-full mx-auto">
-    <div class="max-w-6xl mx-auto pt-4">
-        <h1 class="font-display text-4xl font-800 mb-2" style="color:#fff;">Reports</h1>
-        <p class="text-lg" style="color:#9baac4;">Page under construction.</p>
-        
-        <div class="glass-card rounded-2xl p-10 mt-8 flex justify-center items-center">
-            <p style="color:#6b7fa0;" class="text-lg">Coming soon...</p>
+      <div class="max-w-6xl mx-auto pt-4">
+        <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-6">
+          <div>
+            <h1 class="font-display text-4xl font-800 mb-2" style="color:#fff;">Reports</h1>
+            <p class="text-lg" style="color:#9baac4;">Operational insights by lane, status, and delivery speed.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button class="px-4 py-2 rounded-lg text-sm font-600" style="background:rgba(255,255,255,0.08); color:#e8edf5; border:1px solid rgba(255,255,255,0.12);">Export CSV</button>
+            <button class="px-4 py-2 rounded-lg text-sm font-600 btn-gradient text-white">Generate PDF</button>
+          </div>
         </div>
-    
-    </div>
-  </main>
+
+        <div class="glass-card rounded-2xl p-4 mb-6">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div>
+              <label class="text-xs" style="color:#9baac4;">Date Range</label>
+              <select id="report-range" class="w-full mt-1 px-3 py-2 rounded-lg" style="background:#1e2438; border:1px solid rgba(255,255,255,0.12); color:#e8edf5;">
+                <option value="last7">Last 7 days</option>
+                <option value="last30">Last 30 days</option>
+                <option value="last90">Last 90 days</option>
+                <option value="ytd">Year to date</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-xs" style="color:#9baac4;">Status</label>
+              <select id="report-status" class="w-full mt-1 px-3 py-2 rounded-lg" style="background:#1e2438; border:1px solid rgba(255,255,255,0.12); color:#e8edf5;">
+                <option value="">All</option>
+                <option value="pending">Pending</option>
+                <option value="in_transit">In Transit</option>
+                <option value="delivered">Delivered</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-xs" style="color:#9baac4;">Search Shipment</label>
+              <input id="report-search" type="text" placeholder="Shipment code" class="w-full mt-1 px-3 py-2 rounded-lg"
+                     style="background:#1e2438; border:1px solid rgba(255,255,255,0.12); color:#e8edf5;" />
+            </div>
+          </div>
+        </div>
+
+        <section class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div class="glass-card rounded-2xl p-5">
+            <p class="text-xs" style="color:#9baac4;">Total Shipments</p>
+            <p id="stat-total-shipments" class="text-3xl font-700" style="color:#F59000;">0</p>
+            <p class="text-xs mt-2" style="color:#9baac4;">+8.4% vs last period</p>
+          </div>
+          <div class="glass-card rounded-2xl p-5">
+            <p class="text-xs" style="color:#9baac4;">On-Time Rate</p>
+            <p id="stat-on-time" class="text-3xl font-700" style="color:#4ade80;">0%</p>
+            <p class="text-xs mt-2" style="color:#9baac4;">Target 95%</p>
+          </div>
+          <div class="glass-card rounded-2xl p-5">
+            <p class="text-xs" style="color:#9baac4;">Avg Delivery Time</p>
+            <p id="stat-avg-delivery" class="text-3xl font-700" style="color:#60a5fa;">0 days</p>
+            <p class="text-xs mt-2" style="color:#9baac4;">-0.3 days</p>
+          </div>
+          <div class="glass-card rounded-2xl p-5">
+            <p class="text-xs" style="color:#9baac4;">Estimated Revenue</p>
+            <p id="stat-revenue" class="text-3xl font-700" style="color:#F59000;">$0</p>
+            <p class="text-xs mt-2" style="color:#9baac4;">+11.1% MoM</p>
+          </div>
+        </section>
+
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          <div class="glass-card rounded-2xl p-6 lg:col-span-2">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="font-display text-xl font-700" style="color:#fff;">Status Breakdown</h3>
+              <span class="text-xs" style="color:#9baac4;">Last 30 days</span>
+            </div>
+            <div class="space-y-4">
+              <div>
+                <div class="flex items-center justify-between text-xs mb-1" style="color:#9baac4;">
+                  <span>Delivered</span><span id="status-delivered-pct">0%</span>
+                </div>
+                <div class="h-2 rounded-full" style="background:rgba(255,255,255,0.1);">
+                  <div id="status-delivered-bar" class="h-2 rounded-full" style="width:0%; background:#4ade80;"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex items-center justify-between text-xs mb-1" style="color:#9baac4;">
+                  <span>In Transit</span><span id="status-transit-pct">0%</span>
+                </div>
+                <div class="h-2 rounded-full" style="background:rgba(255,255,255,0.1);">
+                  <div id="status-transit-bar" class="h-2 rounded-full" style="width:0%; background:#60a5fa;"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex items-center justify-between text-xs mb-1" style="color:#9baac4;">
+                  <span>Pending</span><span id="status-pending-pct">0%</span>
+                </div>
+                <div class="h-2 rounded-full" style="background:rgba(255,255,255,0.1);">
+                  <div id="status-pending-bar" class="h-2 rounded-full" style="width:0%; background:#fbbf24;"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex items-center justify-between text-xs mb-1" style="color:#9baac4;">
+                  <span>Cancelled</span><span id="status-cancelled-pct">0%</span>
+                </div>
+                <div class="h-2 rounded-full" style="background:rgba(255,255,255,0.1);">
+                  <div id="status-cancelled-bar" class="h-2 rounded-full" style="width:0%; background:#f87171;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="glass-card rounded-2xl p-6">
+            <h3 class="font-display text-xl font-700 mb-4" style="color:#fff;">Exceptions</h3>
+            <div class="space-y-3">
+              <div class="p-3 rounded-xl" style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08);">
+                <p class="text-sm font-600" style="color:#fff;">Late deliveries</p>
+                <p id="exception-late" class="text-xs" style="color:#9baac4;">0 shipments over SLA</p>
+              </div>
+              <div class="p-3 rounded-xl" style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08);">
+                <p class="text-sm font-600" style="color:#fff;">Address issues</p>
+                <p id="exception-address" class="text-xs" style="color:#9baac4;">0 shipments awaiting correction</p>
+              </div>
+              <div class="p-3 rounded-xl" style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08);">
+                <p class="text-sm font-600" style="color:#fff;">Capacity alerts</p>
+                <p id="exception-capacity" class="text-xs" style="color:#9baac4;">0 lanes near threshold</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <div class="glass-card rounded-2xl p-6">
+            <h3 class="font-display text-xl font-700 mb-4" style="color:#fff;">Top Lanes</h3>
+            <div id="top-lanes-list" class="space-y-3"></div>
+          </div>
+
+          <div class="glass-card rounded-2xl p-6">
+            <h3 class="font-display text-xl font-700 mb-4" style="color:#fff;">Carrier Performance</h3>
+            <div class="space-y-4">
+              <div>
+                <div class="flex items-center justify-between text-xs mb-1" style="color:#9baac4;">
+                  <span>SwiftShip Express</span><span id="carrier-express-pct">0%</span>
+                </div>
+                <div class="h-2 rounded-full" style="background:rgba(255,255,255,0.1);">
+                  <div id="carrier-express-bar" class="h-2 rounded-full" style="width:0%; background:#4ade80;"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex items-center justify-between text-xs mb-1" style="color:#9baac4;">
+                  <span>SwiftShip Standard</span><span id="carrier-standard-pct">0%</span>
+                </div>
+                <div class="h-2 rounded-full" style="background:rgba(255,255,255,0.1);">
+                  <div id="carrier-standard-bar" class="h-2 rounded-full" style="width:0%; background:#60a5fa;"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex items-center justify-between text-xs mb-1" style="color:#9baac4;">
+                  <span>Partner Network</span><span id="carrier-partner-pct">0%</span>
+                </div>
+                <div class="h-2 rounded-full" style="background:rgba(255,255,255,0.1);">
+                  <div id="carrier-partner-bar" class="h-2 rounded-full" style="width:0%; background:#fbbf24;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="glass-card rounded-2xl p-6 mb-8">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-display text-xl font-700" style="color:#fff;">Weekly Trend</h3>
+            <div class="text-xs" style="color:#9baac4;">Shipments processed per day</div>
+          </div>
+          <div class="grid grid-cols-7 gap-2 items-end" style="height:160px;">
+            <div id="trend-bar-0" class="rounded-lg" style="height:10%; background:#2E4F93;"></div>
+            <div id="trend-bar-1" class="rounded-lg" style="height:10%; background:#2E4F93;"></div>
+            <div id="trend-bar-2" class="rounded-lg" style="height:10%; background:#F59000;"></div>
+            <div id="trend-bar-3" class="rounded-lg" style="height:10%; background:#2E4F93;"></div>
+            <div id="trend-bar-4" class="rounded-lg" style="height:10%; background:#F59000;"></div>
+            <div id="trend-bar-5" class="rounded-lg" style="height:10%; background:#2E4F93;"></div>
+            <div id="trend-bar-6" class="rounded-lg" style="height:10%; background:#F59000;"></div>
+          </div>
+          <div class="grid grid-cols-7 gap-2 text-xs mt-2" style="color:#9baac4;">
+            <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+          </div>
+        </section>
+      </div>
+    </main>
 </div>
 <script>
   const sidebar = document.getElementById('sidebar');
