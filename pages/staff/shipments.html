@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Staff Shipments — SwiftShip</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/css/style.css" />
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['Syne', 'sans-serif'],
+            body: ['DM Sans', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .ship-table { width: 100%; border-collapse: collapse; }
+    .ship-table th {
+      padding: 0.875rem 1rem;
+      text-align: left;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--border);
+    }
+    .ship-table td {
+      padding: 1rem;
+      font-size: 0.875rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    .ship-table tr:hover td { background: var(--bg-hover); }
+    .ship-table tr:last-child td { border-bottom: none; }
+
+    .badge { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; }
+    .badge-pending  { background: rgba(251,191,36,0.15); color: #fbbf24; border: 1px solid rgba(251,191,36,0.3); }
+    .badge-in_transit { background: rgba(59,130,246,0.15); color: #60a5fa; border: 1px solid rgba(59,130,246,0.3); }
+    .badge-delivered { background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
+    .badge-cancelled { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+
+    .filter-input {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      color: var(--text-body);
+      border-radius: 0.625rem;
+      padding: 0.5rem 0.875rem;
+      font-size: 0.875rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .filter-input:focus { border-color: #F59000; }
+    .filter-input option { background: var(--bg-page); }
+
+    @media (max-width: 640px) {
+      .ship-table th { padding: 0.625rem 0.75rem; font-size: 0.65rem; }
+      .ship-table td { padding: 0.75rem; font-size: 0.78rem; }
+      .ship-table td .badge { font-size: 0.68rem; }
+    }
+  </style>
+
+  <script type="module" src="/js/staff-shipments.js"></script>
+</head>
+
+<body style="background:var(--bg-page); color:var(--text-body);" class="min-h-screen transition-colors duration-300 flex">
+
+  <!-- SIDEBAR -->
+  <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 glass border-r transform -translate-x-full lg:translate-x-0 transition-transform duration-300 flex flex-col" style="border-color:var(--border);">
+    <div class="h-16 flex items-center px-6 border-b" style="border-color:var(--border);">
+      <a href="/index.html" class="flex items-center gap-2.5 group">
+        <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background:linear-gradient(135deg,#F59000,#FFAA1A);">
+          <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M20 21H4l-2-7h20l-2 7zM4.5 12l1.5-6h12l1.5 6H4.5zM9 6V4h6v2H9z"/>
+          </svg>
+        </div>
+        <span class="font-display text-lg font-700 tracking-tight" style="color:var(--text-head);">
+          Swift<span style="color:#F59000;">Ship</span>
+        </span>
+        <span class="text-xs font-500 px-2 py-0.5 rounded-full" style="background:#7591C6; color:#fff;">Staff</span>
+      </a>
+      <button id="close-sidebar" class="ml-auto lg:hidden" style="color:var(--text-muted);">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
+    </div>
+
+    <nav class="flex-1 py-6 flex flex-col gap-1">
+      <a href="/pages/staff/dashboard.html" class="px-6 py-3 text-sm font-600 nav-link" style="color:var(--text-body);">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+        Dashboard
+      </a>
+      <a href="/pages/staff/shipments.html" class="px-6 py-3 text-sm font-600 nav-link active" style="color:var(--text-body);">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>
+        Shipments
+      </a>
+      <a href="/pages/staff/track-shipment.html" class="px-6 py-3 text-sm font-600 nav-link" style="color:var(--text-body);">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+        Track Shipment
+      </a>
+      <a href="/pages/staff/update-shipment.html" class="px-6 py-3 text-sm font-600 nav-link" style="color:var(--text-body);">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+        Update Status
+      </a>
+    </nav>
+
+    <div class="p-6 border-t" style="border-color:var(--border);">
+      <div id="user-greeting" class="text-sm mb-3" style="color:var(--text-muted);"></div>
+      <button id="logout-btn" class="w-full px-4 py-2 text-sm font-500 rounded-lg transition-all duration-200 hover:opacity-90" style="background:#F59000; color:#fff;">
+        Logout
+      </button>
+    </div>
+  </aside>
+
+  <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-40 hidden lg:hidden backdrop-blur-sm"></div>
+
+  <!-- MAIN CONTENT -->
+  <div class="flex-1 flex flex-col lg:ml-64 min-h-screen relative z-10">
+    <header class="lg:hidden h-16 glass flex items-center justify-between px-6 sticky top-0 z-30 border-b" style="border-color:var(--border);">
+      <a href="/index.html" class="flex items-center gap-2 group">
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,#F59000,#FFAA1A);">
+          <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M20 21H4l-2-7h20l-2 7zM4.5 12l1.5-6h12l1.5 6H4.5zM9 6V4h6v2H9z" />
+          </svg>
+        </div>
+        <span class="font-display text-lg font-700 tracking-tight" style="color:var(--text-head);">Swift<span style="color:#F59000;">Ship</span></span>
+      </a>
+      <button id="mobile-menu-toggle" class="p-2 -mr-2" style="color:var(--text-head);">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+      </button>
+    </header>
+
+    <main class="pt-20 lg:pt-10 pb-12 px-6">
+      <div class="max-w-7xl mx-auto">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+          <div>
+            <h1 class="font-display text-4xl font-800 mb-1" style="color:var(--text-head);">Shipments</h1>
+            <p style="color:var(--text-muted);">Browse, filter, and track shipments</p>
+          </div>
+          <a href="/pages/staff/update-shipment.html" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-600 text-white" style="background:#F59000;">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+            Update Status
+          </a>
+        </div>
+
+        <div class="glass rounded-lg border p-4 mb-6" style="border-color:var(--border);">
+          <div class="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+            <input id="search-input" type="text" placeholder="Search by code, sender, receiver or city…" class="filter-input flex-1 w-full" />
+            <select id="filter-status" class="filter-input">
+              <option value="">All Statuses</option>
+              <option value="pending">Pending</option>
+              <option value="in_transit">In Transit</option>
+              <option value="delivered">Delivered</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+            <select id="filter-type" class="filter-input">
+              <option value="">All Types</option>
+              <option value="express">Express</option>
+              <option value="standard">Standard</option>
+            </select>
+            <button id="clear-filters" class="px-4 py-2 rounded-xl text-sm font-600" style="border:1px solid var(--border); color:var(--text-muted);">Clear</button>
+          </div>
+        </div>
+
+        <div class="glass rounded-lg border overflow-hidden" style="border-color:var(--border);">
+          <div class="overflow-x-auto">
+            <table class="ship-table min-w-[900px]">
+              <thead>
+                <tr>
+                  <th>Code</th>
+                  <th>Sender</th>
+                  <th>Receiver</th>
+                  <th>Route</th>
+                  <th>Type</th>
+                  <th>Weight</th>
+                  <th>Cost</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                  <th class="text-center">Action</th>
+                </tr>
+              </thead>
+              <tbody id="shipments-tbody">
+                <tr>
+                  <td colspan="10" class="text-center py-12" style="color:var(--text-muted);">Loading shipments…</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

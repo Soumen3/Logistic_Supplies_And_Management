@@ -209,6 +209,11 @@ function setupFilters() {
 async function loadShipments() {
   try {
     allShipments = await SwiftShipDB.listShipments();
+    allShipments.sort((a, b) => {
+      const aTime = a.updated_at || a.created_at || 0;
+      const bTime = b.updated_at || b.created_at || 0;
+      return bTime - aTime;
+    });
     filtered = [...allShipments];
     renderStats(allShipments);
     renderTable();

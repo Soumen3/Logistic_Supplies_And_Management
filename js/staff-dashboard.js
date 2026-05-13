@@ -40,6 +40,11 @@ async function loadStats() {
 async function loadRecentShipments() {
   try {
     const shipments = await SwiftShipDB.listShipments();
+    shipments.sort((a, b) => {
+      const aTime = a.updated_at || a.created_at || 0;
+      const bTime = b.updated_at || b.created_at || 0;
+      return bTime - aTime;
+    });
     const recent = shipments.slice(0, 5);
 
     const listEl = el('shipments-list');
@@ -104,6 +109,22 @@ async function setupLogout() {
   });
 }
 
+function setupSidebarToggle() {
+  const sidebar = el('sidebar');
+  const overlay = el('sidebar-overlay');
+  const openBtn = el('mobile-menu-toggle');
+  const closeBtn = el('close-sidebar');
+
+  const toggle = () => {
+    sidebar?.classList.toggle('-translate-x-full');
+    overlay?.classList.toggle('hidden');
+  };
+
+  openBtn?.addEventListener('click', toggle);
+  closeBtn?.addEventListener('click', toggle);
+  overlay?.addEventListener('click', toggle);
+}
+
 async function init() {
   // Check if user is staff
   const isNotStaff = await redirectIfNotStaff();
@@ -116,6 +137,7 @@ async function init() {
     }
 
     setupLogout();
+    setupSidebarToggle();
     await loadStats();
     await loadRecentShipments();
   } catch (error) {
