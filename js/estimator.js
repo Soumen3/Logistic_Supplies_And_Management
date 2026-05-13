@@ -229,22 +229,6 @@ const shippingModes = {
         perKgRate: 28,
         daysBuffer: 0,
     },
-    overnight: {
-        label: "Overnight / Priority",
-        speedKmPerDay: 1200,
-        baseFare: 250,
-        pricePerKm: 0.20,
-        perKgRate: 45,
-        daysBuffer: 0,
-    },
-    freight: {
-        label: "Freight / Bulk",
-        speedKmPerDay: 300,
-        baseFare: 200,
-        pricePerKm: 0.05,
-        perKgRate: 10,
-        daysBuffer: 2,
-    },
 };
 
 

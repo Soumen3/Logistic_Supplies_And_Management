@@ -31,52 +31,61 @@ window.addEventListener('DOMContentLoaded', async () => {
   if (userGreeting) userGreeting.textContent = 'Welcome,';
   if (userNameEl) userNameEl.textContent = userName;
 
-  // Load sidebar component and populate user info there
-  const sidebarContainer = document.getElementById('sidebar-container');
-  if (sidebarContainer) {
-    try {
-      const resp = await fetch('/components/sidebar.html');
-      if (resp.ok) {
-        const html = await resp.text();
-        sidebarContainer.innerHTML = html;
+  // Sidebar toggle (mobile)
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  const openBtn = document.getElementById('mobile-menu-toggle');
+  const closeBtn = document.getElementById('close-sidebar');
+  const toggleSidebar = () => {
+    sidebar?.classList.toggle('-translate-x-full');
+    overlay?.classList.toggle('hidden');
+  };
+  openBtn?.addEventListener('click', toggleSidebar);
+  closeBtn?.addEventListener('click', toggleSidebar);
+  overlay?.addEventListener('click', toggleSidebar);
 
-        // Populate sidebar user info and stats
-        const sidebarName = document.getElementById('sidebar-user-name');
-        const sidebarEmail = document.getElementById('sidebar-user-email');
-        const sidebarActive = document.getElementById('sidebar-active-count');
-        const sidebarPending = document.getElementById('sidebar-pending-count');
-        if (sidebarName) sidebarName.textContent = userName;
-        if (sidebarEmail && session && session.email) sidebarEmail.textContent = session.email;
-        if (sidebarActive) sidebarActive.textContent = '3';
-        if (sidebarPending) sidebarPending.textContent = '1';
+  const activeCount = document.getElementById('active-count');
+  const deliveredCount = document.getElementById('delivered-count');
+  const memberSince = document.getElementById('member-since');
+  const recentActivity = document.getElementById('recent-activity');
+
+  const refreshDashboard = async () => {
+    try {
+      const shipments = await SwiftShipDB.listShipmentsByCreator(session.user_id);
+      shipments.sort((a, b) => {
+        const aTime = a.updated_at || a.created_at || 0;
+        const bTime = b.updated_at || b.created_at || 0;
+        return bTime - aTime;
+      });
+
+      const active = shipments.filter(s => s.status !== 'delivered' && s.status !== 'cancelled');
+      const delivered = shipments.filter(s => s.status === 'delivered');
+
+      if (activeCount) activeCount.textContent = String(active.length);
+      if (deliveredCount) deliveredCount.textContent = String(delivered.length);
+
+      if (recentActivity) {
+        if (shipments.length === 0) {
+          recentActivity.textContent = 'No recent activity';
+        } else {
+          const last = shipments[0];
+          const status = last.status ? last.status.replace('_', ' ') : 'updated';
+          recentActivity.textContent = `${last.shipment_code || 'Shipment'} ${status}`;
+        }
+      }
+
+      if (memberSince) {
+        const user = await SwiftShipDB.getUserById(session.user_id);
+        const createdAt = user?.created_at || Date.now();
+        memberSince.textContent = new Date(createdAt).toLocaleDateString();
       }
     } catch (e) {
-      console.warn('Failed to load sidebar component', e);
+      console.warn('Failed to refresh dashboard data', e);
     }
-  }
+  };
 
-  // Mobile menu toggle
-  const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
-  const mobileMenu = document.getElementById('mobile-menu');
-  if (mobileMenuToggle && mobileMenu) {
-    mobileMenuToggle.addEventListener('click', () => {
-      mobileMenu.classList.toggle('hidden');
-    });
-
-    // Close menu when clicking a link
-    const mobileMenuLinks = mobileMenu.querySelectorAll('a');
-    mobileMenuLinks.forEach(link => {
-      link.addEventListener('click', () => {
-        mobileMenu.classList.add('hidden');
-      });
-    });
-  }
-
-  // Populate some demo values
-  const activeCount = document.getElementById('active-count');
-  const memberSince = document.getElementById('member-since');
-  if (activeCount) activeCount.textContent = '3';
-  if (memberSince) memberSince.textContent = new Date(Date.now() - 1000 * 60 * 60 * 24 * 90).toLocaleDateString();
+  await refreshDashboard();
+  setInterval(refreshDashboard, 15000);
 
   // Logout handler: deactivate active sessions and go to login
   const logoutBtn = document.getElementById('logout-btn');

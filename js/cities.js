@@ -296,3 +296,5 @@ export const getCityCoords = (cityName) => {
   }
   return coords;
 };
+
+export const getAvailableCities = () => Object.keys(cityCoordinates);

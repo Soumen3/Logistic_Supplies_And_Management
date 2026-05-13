@@ -141,17 +141,93 @@
       </button>
     </header>
 
-    <main class="p-6 md:p-10 max-w-4xl mx-auto w-full">
+    <main class="p-6 md:p-10 max-w-5xl mx-auto w-full">
       <section class="mb-10">
-        <h1 class="font-display text-4xl font-800 mb-2 text-white">Cost Estimator</h1>
+        <span class="text-xs font-800 uppercase tracking-widest text-[#F59000]">Pricing Tools</span>
+        <h1 class="font-display text-4xl md:text-5xl font-800 mt-1 mb-2 text-white">Cost Estimator</h1>
         <p class="text-base" style="color:#9baac4;">Calculate shipping rates based on dimensions, weight, and destination.</p>
       </section>
 
-      <div class="glass-card rounded-2xl p-6 md:p-8">
-        <div class="space-y-4">
-          <p style="color:#9baac4;">Cost estimation form will appear here.</p>
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Input Form -->
+        <div class="lg:col-span-2">
+          <div class="glass-card rounded-2xl p-6 md:p-8">
+            <form id="estimate-form" class="space-y-6">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="text-xs font-600 uppercase tracking-wider" style="color:#9baac4;">Pickup City</label>
+                  <input id="pickup-city" list="cities-list" class="w-full mt-1 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:border-[#F59000] focus:ring-1 focus:ring-[#F59000] outline-none transition-all" placeholder="Enter city" />
+                </div>
+                <div>
+                  <label class="text-xs font-600 uppercase tracking-wider" style="color:#9baac4;">Delivery City</label>
+                  <input id="delivery-city" list="cities-list" class="w-full mt-1 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:border-[#F59000] focus:ring-1 focus:ring-[#F59000] outline-none transition-all" placeholder="Enter city" />
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="text-xs font-600 uppercase tracking-wider" style="color:#9baac4;">Weight (kg)</label>
+                  <input id="weight" type="number" step="0.1" min="0.1" class="w-full mt-1 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:border-[#F59000] focus:ring-1 focus:ring-[#F59000] outline-none transition-all" placeholder="e.g. 5.5" />
+                </div>
+                <div>
+                  <label class="text-xs font-600 uppercase tracking-wider" style="color:#9baac4;">Shipping Mode</label>
+                  <select id="shipping-mode" class="w-full mt-1 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:border-[#F59000] focus:ring-1 focus:ring-[#F59000] outline-none transition-all">
+                    <option value="standard" class="bg-[#1a1f2e]">Standard Delivery</option>
+                    <option value="express" class="bg-[#1a1f2e]">Express Delivery</option>
+                  </select>
+                </div>
+              </div>
+
+              <button type="submit" class="w-full py-3 rounded-xl text-sm font-600 text-white btn-gradient">
+                Calculate Estimate
+              </button>
+            </form>
+
+            <div id="estimate-msg" class="hidden mt-4 text-sm font-500"></div>
+          </div>
+        </div>
+
+        <!-- Result Card -->
+        <div class="lg:col-span-1">
+          <div id="result-card" class="hidden glass-card rounded-2xl p-6 md:p-8 h-full flex flex-col justify-between">
+            <div>
+              <h3 class="text-lg font-700 mb-6 text-white border-b border-white/10 pb-3">Estimation Result</h3>
+              
+              <div class="space-y-4">
+                <div>
+                  <p class="text-xs font-600 uppercase tracking-wider" style="color:#9baac4;">Distance</p>
+                  <p id="res-distance" class="text-xl font-700 text-white mt-1">—</p>
+                </div>
+                <div>
+                  <p class="text-xs font-600 uppercase tracking-wider" style="color:#9baac4;">Estimated Time</p>
+                  <p id="res-time" class="text-xl font-700 text-[#F59000] mt-1">—</p>
+                </div>
+                <div>
+                  <p class="text-xs font-600 uppercase tracking-wider" style="color:#9baac4;">Total Cost</p>
+                  <p id="res-cost" class="text-3xl font-800 text-white mt-1">—</p>
+                  <p class="text-xs mt-1" style="color:#9baac4;">Inclusive of GST and fuel surcharge</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-6 pt-4 border-t border-white/10 text-xs" style="color:#9baac4;">
+              * Rates are estimates and may vary based on exact address and cargo type.
+            </div>
+          </div>
+
+          <!-- Placeholder when no result -->
+          <div id="result-placeholder" class="glass-card rounded-2xl p-6 md:p-8 h-full flex flex-col items-center justify-center text-center">
+            <div class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-4">
+              <svg class="w-8 h-8 text-[#9baac4]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+            </div>
+            <p class="text-sm font-600 text-white mb-1">No Estimate Yet</p>
+            <p class="text-xs" style="color:#9baac4;">Fill the form and calculate to see shipping rates.</p>
+          </div>
         </div>
       </div>
+
+      <!-- Datalist for cities -->
+      <datalist id="cities-list"></datalist>
     </main>
   </div>
   
@@ -171,6 +247,6 @@
     overlay?.addEventListener('click', toggleSidebar);
   </script>
   
-  <script src="/js/estimator.js"></script>
+  <script type="module" src="/js/customer-cost-estimator.js"></script>
 </body>
 </html>
