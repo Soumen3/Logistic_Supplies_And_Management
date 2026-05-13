@@ -1,4 +1,5 @@
 import { SwiftShipDB } from '../js/db.module.js';
+import { getDashboardStats, getRecentActivity } from './admin-data.js';
 
 function el(id) {
   return document.getElementById(id);
@@ -21,73 +22,30 @@ async function redirectIfNotAdmin() {
 
 // ✅ STATS
 async function loadStats() {
-  try {
-    let shipments = await SwiftShipDB.listShipments();
-    let users = await SwiftShipDB.db.users.toArray();
+  const stats = await getDashboardStats();
 
-    if (!shipments || shipments.length === 0) {
-      shipments = [
-        { status: 'delivered' },
-        { status: 'pending' },
-        { status: 'delivered' },
-        { status: 'pending' }
-      ];
-    }
-
-    if (!users || users.length === 0) {
-      users = [{}, {}, {}];
-    }
-
-    const total = shipments.length;
-    const delivered = shipments.filter(s => s.status === 'delivered').length;
-    const pending = shipments.filter(s => s.status !== 'delivered').length;
-
-    if (el('stat-shipments')) el('stat-shipments').textContent = total;
-    if (el('stat-users')) el('stat-users').textContent = users.length;
-    if (el('stat-transit')) el('stat-transit').textContent = pending;
-    if (el('stat-delivered')) el('stat-delivered').textContent = delivered;
-
-  } catch {
-    if (el('stat-shipments')) el('stat-shipments').textContent = 4;
-    if (el('stat-users')) el('stat-users').textContent = 3;
-    if (el('stat-transit')) el('stat-transit').textContent = 2;
-    if (el('stat-delivered')) el('stat-delivered').textContent = 2;
-  }
+  if (el('stat-shipments')) el('stat-shipments').textContent = stats.totalShipments;
+  if (el('stat-users')) el('stat-users').textContent = stats.activeUsers;
+  if (el('stat-transit')) el('stat-transit').textContent = stats.pendingShipments;
+  if (el('stat-delivered')) el('stat-delivered').textContent = stats.deliveredShipments;
+  if (el('stat-pending-large')) el('stat-pending-large').textContent = stats.pendingShipments;
 }
 
 // ✅ Recent Shipments
 async function loadRecentShipments() {
-  try {
-    const shipments = await SwiftShipDB.listShipments();
-    const listEl = el('shipments-list');
+  const listEl = el('recent-activity-list');
+  if (!listEl) return;
 
-    if (!listEl) return;
+  const activities = await getRecentActivity(3);
 
-    if (!shipments || shipments.length === 0) {
-      listEl.innerHTML =
-        '<tr><td colspan="5" class="text-center px-6 py-4 text-sm">No shipments</td></tr>';
-      return;
-    }
-
-    const recent = shipments.slice(0, 5);
-
-    listEl.innerHTML = recent.map(ship => `
-      <tr>
-        <td>${ship.shipment_code || 'N/A'}</td>
-        <td>${ship.source_city || 'N/A'}</td>
-        <td>${ship.destination_city || 'N/A'}</td>
-        <td>${ship.status || 'pending'}</td>
-        <td>${ship.created_at ? new Date(ship.created_at).toLocaleDateString() : '-'}</td>
-      </tr>
-    `).join('');
-
-  } catch {
-    const listEl = el('shipments-list');
-    if (listEl) {
-      listEl.innerHTML =
-        '<tr><td colspan="5">Failed</td></tr>';
-    }
+  if (!activities || activities.length === 0) {
+    listEl.innerHTML = '<li>No recent activity found</li>';
+    return;
   }
+
+  listEl.innerHTML = activities.map(act => `
+    <li>${act.icon} ${act.text}</li>
+  `).join('');
 }
 
 // ✅ Greeting
@@ -119,8 +77,7 @@ function setupLogout() {
 
 // ✅ ✅ ✅ ADMIN ACTIONS (FIXED FINAL)
 function setupAdminActions() {
-
-  const cards = document.querySelectorAll('.p-6.glass.cursor-pointer');
+  const cards = document.querySelectorAll('.glass-card.cursor-pointer');
 
   cards.forEach(card => {
 
@@ -155,6 +112,59 @@ function setupAdminActions() {
   });
 }
 
+// ✅ Search & Filter Modals
+function setupSearchAndFilter() {
+  const btnSearch = el('open-search');
+  const panelSearch = el('search-panel');
+  const closeSearch = el('close-search');
+  
+  const btnFilter = el('open-filter');
+  const panelFilter = el('filter-panel');
+  const closeFilter = el('close-filter');
+  
+  if (btnSearch && panelSearch) {
+    btnSearch.addEventListener('click', () => {
+      panelSearch.classList.toggle('hidden');
+      if (panelFilter) panelFilter.classList.add('hidden');
+    });
+  }
+
+  if (closeSearch && panelSearch) {
+    closeSearch.addEventListener('click', () => {
+      panelSearch.classList.add('hidden');
+    });
+  }
+
+  if (btnFilter && panelFilter) {
+    btnFilter.addEventListener('click', () => {
+      panelFilter.classList.toggle('hidden');
+      if (panelSearch) panelSearch.classList.add('hidden');
+    });
+  }
+
+  if (closeFilter && panelFilter) {
+    closeFilter.addEventListener('click', () => {
+      panelFilter.classList.add('hidden');
+    });
+  }
+
+  const applySearch = el('apply-search');
+  if (applySearch) {
+    applySearch.addEventListener('click', () => {
+      panelSearch.classList.add('hidden');
+      // Extend with actual search logic here later
+    });
+  }
+
+  const applyFilter = el('apply-filter');
+  if (applyFilter) {
+    applyFilter.addEventListener('click', () => {
+      panelFilter.classList.add('hidden');
+      // Extend with actual filter logic here later
+    });
+  }
+}
+
 // ✅ INIT
 async function init() {
   const blocked = await redirectIfNotAdmin();
@@ -168,6 +178,7 @@ async function init() {
 
     // ✅ IMPORTANT ADDITION
     setupAdminActions();
+    setupSearchAndFilter();
 
     await loadStats();
     await loadRecentShipments();

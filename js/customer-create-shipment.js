@@ -1,5 +1,5 @@
 import { SwiftShipDB } from './db.module.js';
-import { getEstimation } from './estimator.js';
+import { calculateShipmentEstimate } from './estimator.js';
 
 (async function init() {
   // Bind UI elements synchronously first to prevent native form submission race conditions
@@ -73,17 +73,22 @@ import { getEstimation } from './estimator.js';
 
       let isValid = true;
 
-      if (!source_city) { setError('source_city', 'Required'); isValid = false; }
-      if (!source_state) { setError('source_state', 'Required'); isValid = false; }
-      if (!source_pincode) { setError('source_pincode', 'Required'); isValid = false; }
-      if (!source_address) { setError('source_address', 'Required'); isValid = false; }
-      if (!receiver_name) { setError('receiver_name', 'Required'); isValid = false; }
-      if (!destination_city) { setError('destination_city', 'Required'); isValid = false; }
-      if (!destination_state) { setError('destination_state', 'Required'); isValid = false; }
-      if (!destination_pincode) { setError('destination_pincode', 'Required'); isValid = false; }
-      if (!destination_address) { setError('destination_address', 'Required'); isValid = false; }
+      const nameRegex = /^[A-Za-z\s]{2,50}$/;
+      const pinRegex = /^[1-9][0-9]{5}$/;
+      
+      if (!source_city || !nameRegex.test(source_city)) { setError('source_city', 'Enter a valid city name'); isValid = false; }
+      if (!source_state || !nameRegex.test(source_state)) { setError('source_state', 'Enter a valid state name'); isValid = false; }
+      if (!source_pincode || !pinRegex.test(source_pincode)) { setError('source_pincode', 'Must be a 6-digit pincode'); isValid = false; }
+      if (!source_address || source_address.length < 5) { setError('source_address', 'Address is too short'); isValid = false; }
+      
+      if (!receiver_name || !nameRegex.test(receiver_name)) { setError('receiver_name', 'Enter a valid name'); isValid = false; }
+      if (!destination_city || !nameRegex.test(destination_city)) { setError('destination_city', 'Enter a valid city name'); isValid = false; }
+      if (!destination_state || !nameRegex.test(destination_state)) { setError('destination_state', 'Enter a valid state name'); isValid = false; }
+      if (!destination_pincode || !pinRegex.test(destination_pincode)) { setError('destination_pincode', 'Must be a 6-digit pincode'); isValid = false; }
+      if (!destination_address || destination_address.length < 5) { setError('destination_address', 'Address is too short'); isValid = false; }
+      
       if (!type) { setError('package_type', 'Required'); isValid = false; }
-      if (isNaN(weight) || weight <= 0) { setError('package_weight', 'Invalid weight'); isValid = false; }
+      if (isNaN(weight) || weight <= 0 || weight > 2000) { setError('package_weight', 'Invalid weight (max 2000kg)'); isValid = false; }
 
       if (!isValid) return;
 
@@ -91,39 +96,67 @@ import { getEstimation } from './estimator.js';
       submitBtn.disabled = true;
       submitBtn.innerHTML = 'Calculating...';
 
-      // Join address parts for the estimator
-      // Format: "Street, City, State, Pincode"
-      const senderFullAddress = `${source_address}, ${source_city}, ${source_state}, ${source_pincode}`;
-      const receiverFullAddress = `${destination_address}, ${destination_city}, ${destination_state}, ${destination_pincode}`;
-      const isExpress = type === 'express';
+      const pickup = {
+        city: source_city,
+        state: source_state,
+        pincode: source_pincode,
+        street: source_address
+      };
 
-      const estimation = getEstimation(senderFullAddress, receiverFullAddress, weight, isExpress);
+      const delivery = {
+        name: receiver_name,
+        city: destination_city,
+        state: destination_state,
+        pincode: destination_pincode,
+        street: destination_address
+      };
+
+      const estimation = calculateShipmentEstimate(pickup, delivery, weight, type);
 
       const confirmModal = document.getElementById('confirmation-modal');
       const confirmDistance = document.getElementById('confirm-distance');
       const confirmTime = document.getElementById('confirm-time');
       const confirmCost = document.getElementById('confirm-cost');
       const confirmError = document.getElementById('confirm-error');
+      
+      const breakdownBase = document.getElementById('breakdown-base');
+      const breakdownDist = document.getElementById('breakdown-dist');
+      const breakdownWeight = document.getElementById('breakdown-weight');
+      const breakdownTax = document.getElementById('breakdown-tax');
 
-      if (estimation.status === 'Success') {
-        confirmDistance.textContent = estimation.details.distance;
-        confirmTime.textContent = estimation.details.deliveryTime;
-        confirmCost.textContent = estimation.details.totalCost;
+      const cancelBtn = document.getElementById('cancel-confirm-btn');
+      const proceedBtn = document.getElementById('proceed-confirm-btn');
+
+      if (estimation.success) {
+        confirmDistance.textContent = `${estimation.distanceKm} km`;
+        confirmTime.textContent = estimation.time.label;
+        confirmCost.textContent = `₹${estimation.price.total.toLocaleString()}`;
+        
+        breakdownBase.textContent = `₹${estimation.price.baseFare}`;
+        breakdownDist.textContent = `₹${estimation.price.distanceCharge}`;
+        breakdownWeight.textContent = `₹${estimation.price.weightCharge}`;
+        breakdownTax.textContent = `₹${estimation.price.gst + estimation.price.fuelSurcharge}`;
+        
         confirmError.classList.add('hidden');
+        proceedBtn.disabled = false;
+        proceedBtn.classList.remove('opacity-50', 'cursor-not-allowed');
       } else {
         confirmDistance.textContent = 'N/A';
         confirmTime.textContent = 'N/A';
         confirmCost.textContent = 'N/A';
-        confirmError.textContent = `Estimation Warning: ${estimation.message}. (We will calculate offline)`;
+        breakdownBase.textContent = '—';
+        breakdownDist.textContent = '—';
+        breakdownWeight.textContent = '—';
+        breakdownTax.textContent = '—';
+        
+        confirmError.textContent = `Estimation Error: ${estimation.error}`;
         confirmError.classList.remove('hidden');
+        proceedBtn.disabled = true;
+        proceedBtn.classList.add('opacity-50', 'cursor-not-allowed');
       }
 
       // Show Modal
       confirmModal.classList.remove('hidden');
-
-      // Setup Confirmation Buttons
-      const cancelBtn = document.getElementById('cancel-confirm-btn');
-      const proceedBtn = document.getElementById('proceed-confirm-btn');
 
       cancelBtn.onclick = () => {
         confirmModal.classList.add('hidden');
@@ -137,17 +170,17 @@ import { getEstimation } from './estimator.js';
 
         try {
           // Clean up the formatting for DB insertion
-          const rawCost = estimation.status === 'Success' ? parseFloat(estimation.details.totalCost.replace(/[^0-9.]/g, '')) : 0;
-          const rawDistance = estimation.status === 'Success' ? parseFloat(estimation.details.distance.replace(/[^0-9.]/g, '')) : 0;
-          const rawDays = estimation.status === 'Success' ? parseInt(estimation.details.deliveryTime) : 3;
+          const rawCost = estimation.success ? estimation.price.total : 0;
+          const rawDistance = estimation.success ? estimation.distanceKm : 0;
+          const rawDays = estimation.success ? estimation.time.maxDays : 3;
 
           const shipment = {
             created_by: session.user_id,
             sender_name: userName,
-            sender_address: senderFullAddress, // Use the fully joined address
+            sender_address: `${source_address}, ${source_city}, ${source_state}, ${source_pincode}`, 
             source_city: source_city,
             receiver_name: receiver_name,
-            receiver_address: receiverFullAddress, // Use the fully joined address
+            receiver_address: `${destination_address}, ${destination_city}, ${destination_state}, ${destination_pincode}`,
             destination_city: destination_city,
             weight_kg: weight,
             delivery_type: type,

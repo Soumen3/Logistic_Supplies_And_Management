@@ -36,16 +36,26 @@ window.addEventListener('DOMContentLoaded', async () => {
     const email = el('email').value.trim().toLowerCase();
     const password = el('password').value;
 
+    if (window.setLoading) window.setLoading(true);
+
     try {
       const user = await SwiftShipDB.getUserByEmail(email);
       if (!user) {
+        if (window.setLoading) window.setLoading(false);
         msg.textContent = 'Invalid credentials.';
+        msg.classList.remove('hidden');
+        form.classList.add('shake');
+        setTimeout(() => form.classList.remove('shake'), 400);
         return;
       }
 
       const password_hash = await hashPassword(password);
       if (password_hash !== user.password_hash) {
+        if (window.setLoading) window.setLoading(false);
         msg.textContent = 'Invalid credentials.';
+        msg.classList.remove('hidden');
+        form.classList.add('shake');
+        setTimeout(() => form.classList.remove('shake'), 400);
         return;
       }
 
@@ -59,12 +69,15 @@ window.addEventListener('DOMContentLoaded', async () => {
 
       msg.style.color = 'green';
       msg.textContent = 'Login successful — redirecting...';
+      msg.classList.remove('hidden');
       setTimeout(() => {
         window.location.href = getDashboardPathForRole(user.role);
       }, 700);
     } catch (err) {
+      if (window.setLoading) window.setLoading(false);
       console.error(err);
       msg.textContent = 'Login failed.';
+      msg.classList.remove('hidden');
     }
   });
 });

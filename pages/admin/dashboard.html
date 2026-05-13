@@ -1,470 +1,427 @@
 <!DOCTYPE html>
-<html lang="en" class="light">
+<html lang="en" class="dark">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Admin Dashboard — SwiftShip</title>
 
-  <!-- Tailwind CSS CDN -->
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/assets/css/style.css" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet" />
+  <link href="/assets/css/style.css" rel="stylesheet" />
 
   <script>
     tailwind.config = {
       darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            display: ['Syne', 'sans-serif'],
-            body: ['DM Sans', 'sans-serif'],
-          },
-          colors: {
-            brand: {
-              50:  '#FFF8EC',
-              100: '#FFEDC9',
-              200: '#FFD98F',
-              300: '#FFC04A',
-              400: '#FFAA1A',
-              500: '#F59000',
-              600: '#CC6F00',
-              700: '#A35100',
-              800: '#7A3B00',
-              900: '#522700',
-            },
-            navy: {
-              50:  '#EEF1F8',
-              100: '#D4DCEE',
-              200: '#A8B8DC',
-              300: '#7591C6',
-              400: '#4E6EAE',
-              500: '#2E4F93',
-              600: '#1E3575',
-              700: '#142559',
-              800: '#0D183E',
-              900: '#070E24',
-            },
-          },
-        },
-      },
+      theme: { extend: { fontFamily: { display: ['Syne', 'sans-serif'], body: ['DM Sans', 'sans-serif'] } } }
     };
   </script>
+
+  <style>
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #1a1f2e;
+      color: #e8edf5;
+    }
+
+    .glass-panel {
+      background: rgba(26, 31, 46, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .glass-topbar {
+      background: rgba(26, 31, 46, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .glass-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+      border-color: rgba(245, 144, 0, 0.2);
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: #9baac4;
+      transition: all 0.2s;
+    }
+
+    .nav-link:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .nav-link.active {
+      color: #F59000;
+      background: rgba(245, 144, 0, 0.1);
+      border-right: 3px solid #F59000;
+    }
+
+    .btn-gradient {
+      background: linear-gradient(135deg, #F59000, #FFAA1A);
+      box-shadow: 0 4px 15px rgba(245, 144, 0, 0.3);
+      transition: all 0.2s;
+    }
+
+    .btn-gradient:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(245, 144, 0, 0.4);
+    }
+
+    /* Ambient background orbs */
+    .bg-orb-1 {
+      position: fixed;
+      top: -100px;
+      left: 100px;
+      width: 500px;
+      height: 500px;
+      background: #F59000;
+      filter: blur(150px);
+      opacity: 0.05;
+      pointer-events: none;
+    }
+
+    .bg-orb-2 {
+      position: fixed;
+      bottom: -50px;
+      right: -50px;
+      width: 400px;
+      height: 400px;
+      background: #2E4F93;
+      filter: blur(120px);
+      opacity: 0.08;
+      pointer-events: none;
+    }
+  </style>
 
   <script type="module" src="/js/admin-dashboard.js"></script>
 </head>
 
+<body class="min-h-screen relative overflow-x-hidden flex">
 
-<body style="background:var(--bg-page); color:var(--text-body);" class="min-h-screen transition-colors duration-300">
+  <!-- Ambient Orbs -->
+  <div class="bg-orb-1"></div>
+  <div class="bg-orb-2"></div>
 
-  <!-- ════════════════════════════════════════════
-       TOP NAV BAR
-  ════════════════════════════════════════════ -->
+  <!-- ── SIDEBAR (Desktop: fixed left, Mobile: hidden / slide-in) ── -->
+  <aside id="sidebar"
+    class="fixed inset-y-0 left-0 z-50 w-64 glass-panel transform -translate-x-full lg:translate-x-0 transition-transform duration-300 flex flex-col">
 
- <nav class="fixed top-0 inset-x-0 z-50 glass px-6 py-3 flex items-center justify-between border-b"
-     style="border-color:var(--border);">
-
-  <!-- Logo -->
-  <a href="/index.html" class="flex items-center gap-2.5 group">
-    <div class="w-9 h-9 rounded-xl flex items-center justify-center"
-         style="background:linear-gradient(135deg,#F59000,#FFAA1A);">
-      <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M20 21H4l-2-7h20l-2 7zM4.5 12l1.5-6h12l1.5 6H4.5zM9 6V4h6v2H9z"/>
-      </svg>
+    <!-- Logo Area -->
+    <div class="h-16 flex items-center px-6 border-b border-white/10">
+      <a href="/" class="flex items-center gap-3 group">
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center btn-gradient">
+          <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M20 21H4l-2-7h20l-2 7zM4.5 12l1.5-6h12l1.5 6H4.5zM9 6V4h6v2H9z" />
+          </svg>
+        </div>
+        <span class="font-display text-lg font-700 tracking-tight text-white">
+          Swift<span style="color:#F59000;">Ship</span>
+        </span>
+      </a>
+      <button id="close-sidebar" class="ml-auto lg:hidden text-white/50 hover:text-white">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
     </div>
 
-    <span class="font-display text-lg font-700 tracking-tight"
-          style="color:var(--text-head);">
-      Swift<span style="color:#F59000;">Ship</span>
-    </span>
+    <!-- Navigation Links -->
+    <nav class="flex-1 py-6 flex flex-col gap-1">
+      <a href="/pages/admin/dashboard.html" class="px-6 py-3 text-sm font-600 nav-link active">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
+          </path>
+        </svg>
+        Dashboard
+      </a>
+      <a href="/pages/admin/create-shipment.html" class="px-6 py-3 text-sm font-600 nav-link">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2">
+          </path>
+        </svg>
+        Create Shipment
+      </a>
+      <a href="/pages/admin/create-staff.html" class="px-6 py-3 text-sm font-600 nav-link">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+        </svg>
+        Add Staff
+      </a>
+      <a href="/pages/admin/manage-staff.html" class="px-6 py-3 text-sm font-600 nav-link">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+        </svg>
+        Manage Staff
+      </a>
+      <a href="/pages/admin/shipments.html" class="px-6 py-3 text-sm font-600 nav-link">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
+        </svg>
+        Shipments
+      </a>
+    </nav>
 
-    <span class="text-xs font-500 px-2 py-0.5 rounded-full"
-          style="background:#F59000; color:#fff;">
-      Admin
-    </span>
-  </a>
+    <!-- User Section -->
+    <div class="p-6 border-t border-white/10">
+      <div class="mb-4">
+        <div id="user-greeting" class="text-sm font-600 text-white">Welcome!</div>
+        <div id="user-name" class="text-xs" style="color:#9baac4;">Admin</div>
+      </div>
+      <button id="logout-btn"
+        class="w-full py-2 rounded-xl text-sm font-600 text-white btn-gradient flex justify-center items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+        </svg>
+        Logout
+      </button>
+    </div>
+  </aside>
 
-  <!-- ✅ Right side (UPDATED) -->
-  <div class="flex items-center gap-3">
-
-    <!-- 🔍 Search Button -->
-    <button id="open-search"
-      class="w-10 h-10 rounded-lg flex items-center justify-center transition-all hover:opacity-90"
-      style="background:#F59000; color:#fff;">
-      🔍
-    </button>
-
-    <!-- ⚙️ Filter Button -->
-    <button id="open-filter"
-      class="w-10 h-10 rounded-lg flex items-center justify-center transition-all hover:opacity-90"
-      style="background:#2E4F93; color:#fff;">
-      ⚙️
-    </button>
-
-    <!-- Greeting -->
-    <div id="user-greeting" class="text-sm"
-         style="color:var(--text-muted);"></div>
-
-    <!-- Logout -->
-    <button id="logout-btn"
-      class="px-4 py-1.5 text-sm font-500 rounded-lg transition-all duration-200 hover:opacity-90"
-      style="background:#F59000; color:#fff;">
-      Logout
-    </button>
-
+  <!-- Overlay for mobile sidebar -->
+  <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-40 hidden lg:hidden backdrop-blur-sm transition-opacity">
   </div>
 
-</nav>
-<!-- ✅ SEARCH PANEL -->
-<div id="search-panel"
-  class="hidden fixed top-20 right-6 w-80 glass border rounded-lg p-4 z-50"
-  style="border-color:var(--border);">
+  <!-- ── MAIN CONTENT WRAPPER ── -->
+  <div class="flex-1 flex flex-col lg:ml-64 min-h-screen relative z-10">
 
-  <h3 class="mb-2 font-medium">Search</h3>
+    <!-- Mobile Topbar -->
+    <header class="lg:hidden h-16 glass-topbar flex items-center justify-between px-6 sticky top-0 z-30">
+      <a href="/" class="flex items-center gap-2 group">
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center btn-gradient">
+          <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M20 21H4l-2-7h20l-2 7zM4.5 12l1.5-6h12l1.5 6H4.5zM9 6V4h6v2H9z" />
+          </svg>
+        </div>
+        <span class="font-display text-lg font-700 tracking-tight text-white">Swift<span
+            style="color:#F59000;">Ship</span></span>
+      </a>
+      <button id="mobile-menu-toggle" class="p-2 -mr-2 text-white/70 hover:text-white">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+    </header>
 
-  <input id="search-id" type="text"
-    placeholder="Shipment ID"
-    class="w-full mb-2 p-2 border rounded-lg" />
+    <!-- Main Content Area -->
+    <main class="p-6 md:p-10 max-w-7xl w-full mx-auto">
+      <!-- ✅ SEARCH PANEL -->
+      <div id="search-panel"
+        class="hidden fixed top-20 right-6 w-80 glass-panel border border-white/10 rounded-2xl p-4 z-50 shadow-2xl">
 
-  <input id="search-customer" type="text"
-    placeholder="Customer Name"
-    class="w-full p-2 border rounded-lg" />
-    <button id="apply-search"
-  class="mt-3 w-full py-2 rounded-lg"
-  style="background:#F59000; color:white;">
-  Search
-</button>
-</div>
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-medium text-white">Search</h3>
+          <button id="close-search" class="text-white/50 hover:text-white transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
+        </div>
+
+        <input id="search-id" type="text" placeholder="Shipment ID"
+          class="w-full mb-2 p-2 rounded-xl bg-white/5 border text-white" />
+
+        <input id="search-customer" type="text" placeholder="Customer Name"
+          class="w-full p-2 rounded-xl bg-white/5 border text-white" />
+        <button id="apply-search" class="mt-3 w-full py-2 rounded-lg" style="background:#F59000; color:white;">
+          Search
+        </button>
+      </div>
 
 
-<!-- ✅ FILTER PANEL -->
-<div id="filter-panel"
-  class="hidden fixed top-20 right-6 w-80 glass border rounded-lg p-4 z-50"
-  style="border-color:var(--border);">
+      <!-- ✅ FILTER PANEL -->
+      <div id="filter-panel"
+        class="hidden fixed top-20 right-6 w-80 glass-panel border border-white/10 rounded-2xl p-4 z-50 shadow-2xl">
 
-  <h3 class="mb-2 font-medium">Filter</h3>
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-medium text-white">Filter</h3>
+          <button id="close-filter" class="text-white/50 hover:text-white transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
+        </div>
 
-  <select id="filter-status" class="w-full mb-2 p-2 border rounded-lg">
-    <option value="">All Status</option>
-    <option value="delivered">Delivered</option>
-    <option value="pending">Pending</option>
-  </select>
+        <select id="filter-status" class="w-full mb-2 p-2 rounded-xl bg-white/5 border text-white">
+          <option value="">All Status</option>
+          <option value="delivered">Delivered</option>
+          <option value="pending">Pending</option>
+        </select>
 
-  <select id="filter-type" class="w-full p-2 border rounded-lg">
-    <option value="">All Type</option>
-    <option value="express">Express</option>
-    <option value="standard">Standard</option>
-  </select>
-  <button id="apply-filter"
-  class="mt-3 w-full py-2 rounded-lg"
-  style="background:#F59000; color:white;">
-  Apply Filter
-</button>
+        <select id="filter-type" class="w-full p-2 rounded-xl bg-white/5 border text-white">
+          <option value="">All Type</option>
+          <option value="express">Express</option>
+          <option value="standard">Standard</option>
+        </select>
+        <button id="apply-filter" class="mt-3 w-full py-2 rounded-lg" style="background:#F59000; color:white;">
+          Apply Filter
+        </button>
 
-</div>
+      </div>
 
-  <!-- ════════════════════════════════════════════
+      <!-- ════════════════════════════════════════════
        MAIN CONTENT
   ════════════════════════════════════════════ -->
-  <main class="pt-20 pb-12 px-6">
-    <div class="max-w-7xl mx-auto">
 
-      <!-- Welcome section -->
-      <section class="mb-8">
-        <h1 class="font-display text-4xl font-800 mb-2" style="color:var(--text-head);">Admin Dashboard</h1>
-        <p class="text-lg" style="color:var(--text-muted);">Manage shipments, users, and system settings</p>
-      </section>
+      <div class="max-w-7xl mx-auto">
 
- <!-- Stats cards -->
-<section id="admin-cards" class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <!-- Welcome section -->
+        <section class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 class="font-display text-4xl font-800 mb-2" style="color:#fff;">Admin Dashboard</h1>
+            <p class="text-lg" style="color:#9baac4;">Manage shipments, users, and system settings</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <!-- 🔍 Search Button -->
+            <button id="open-search"
+              class="w-10 h-10 rounded-lg flex items-center justify-center transition-all hover:opacity-90"
+              style="background:#F59000; color:#fff;">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+              </svg>
+            </button>
+            <!-- ⚙️ Filter Button -->
+            <button id="open-filter"
+              class="w-10 h-10 rounded-lg flex items-center justify-center transition-all hover:opacity-90"
+              style="background:rgba(255,255,255,0.1); color:#fff; border:1px solid rgba(255,255,255,0.2);">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z">
+                </path>
+              </svg>
+            </button>
+          </div>
+        </section>
 
-  <div class="admin-card p-6 glass rounded-lg border cursor-pointer hover:shadow-lg transition-all"
-       style="border-color:var(--border);" data-key="total">
-    <p class="text-sm font-500 mb-2" style="color:var(--text-muted);">Total Shipments</p>
-    <p class="text-3xl font-700" style="color:#F59000;" id="stat-shipments">24</p>
+        <!-- Stats cards -->
+        <section id="admin-cards" class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+
+          <div class="glass-card rounded-2xl p-6 cursor-pointer" data-key="total">
+            <p class="text-sm font-500 mb-2" style="color:#9baac4;">Total Shipments</p>
+            <p class="text-3xl font-700" style="color:#F59000;" id="stat-shipments">24</p>
+          </div>
+
+          <div class="glass-card rounded-2xl p-6 cursor-pointer" data-key="users">
+            <p class="text-sm font-500 mb-2" style="color:#9baac4;">Active Users</p>
+            <p class="text-3xl font-700" style="color:#F59000;" id="stat-users">10</p>
+          </div>
+
+          <div class="glass-card rounded-2xl p-6 cursor-pointer" data-key="pending">
+            <p class="text-sm font-500 mb-2" style="color:#9baac4;">Pending</p>
+            <p class="text-3xl font-700" style="color:#F59000;" id="stat-transit">6</p>
+          </div>
+
+          <div class="glass-card rounded-2xl p-6 cursor-pointer" data-key="delivered">
+            <p class="text-sm font-500 mb-2" style="color:#9baac4;">Delivered</p>
+            <p class="text-3xl font-700" style="color:#F59000;" id="stat-delivered">18</p>
+          </div>
+
+        </section>
+
+
+        <!-- Additional Analytics -->
+        <section id="admin-extra" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+
+          <div class="glass-card rounded-2xl p-6 cursor-pointer" data-key="pending">
+            <p class="text-sm font-500 mb-2" style="color:#9baac4;">Pending Shipments</p>
+            <p class="text-3xl font-700" style="color:#F59000;" id="stat-pending-large">6</p>
+            <p class="text-sm mt-2" style="color:#9baac4;">Awaiting delivery</p>
+          </div>
+
+          <div class="glass-card rounded-2xl p-6 cursor-pointer" data-key="activity">
+            <p class="text-sm font-500 mb-3" style="color:#9baac4;">Recent Activity</p>
+
+            <ul id="recent-activity-list" class="text-sm space-y-2" style="color:#e8edf5;">
+              <li>Loading recent activity...</li>
+            </ul>
+          </div>
+
+        </section>
+        <!-- ✅ ADMIN ACTIONS (ADDED) -->
+        <section class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+
+          <!-- Add Staff -->
+          <div class="glass-card rounded-2xl p-6 cursor-pointer">
+            <p class="text-sm font-500 mb-2" style="color:#9baac4;">Add Staff</p>
+            <p class="text-lg font-700" style="color:#F59000;">➕ Add New</p>
+            <p class="text-xs mt-2" style="color:#9baac4;">Create staff account</p>
+          </div>
+
+          <!-- Manage Staff -->
+          <div class="glass-card rounded-2xl p-6 cursor-pointer">
+            <p class="text-sm font-500 mb-2" style="color:#9baac4;">Manage Staff</p>
+            <p class="text-lg font-700" style="color:#F59000;">👥 Staff List</p>
+            <p class="text-xs mt-2" style="color:#9baac4;">View & manage staff</p>
+          </div>
+
+          <!-- Manage Shipments -->
+          <div class="glass-card rounded-2xl p-6 cursor-pointer">
+            <p class="text-sm font-500 mb-2" style="color:#9baac4;">Shipments</p>
+            <p class="text-lg font-700" style="color:#F59000;">📦 Manage</p>
+            <p class="text-xs mt-2" style="color:#9baac4;">Track & update</p>
+          </div>
+
+          <!-- Reports -->
+          <div class="glass-card rounded-2xl p-6 cursor-pointer">
+            <p class="text-sm font-500 mb-2" style="color:#9baac4;">Reports</p>
+            <p class="text-lg font-700" style="color:#F59000;">📊 View Reports</p>
+            <p class="text-xs mt-2" style="color:#9baac4;">Analytics & insights</p>
+          </div>
+
+        </section>
+
+        <!-- ✅ DETAILS PANEL -->
+        <div id="admin-details-panel" class="hidden glass rounded-lg border p-6 mb-8">
+
+          <h3 id="admin-details-title" class="text-xl font-display font-700 mb-4" style="color:#fff;">
+          </h3>
+
+          <div id="admin-details-content" class="space-y-2 text-sm"></div>
+
+        </div>
+      </div>
+
+    </main>
   </div>
 
-  <div class="admin-card p-6 glass rounded-lg border cursor-pointer hover:shadow-lg transition-all"
-       style="border-color:var(--border);" data-key="users">
-    <p class="text-sm font-500 mb-2" style="color:var(--text-muted);">Active Users</p>
-    <p class="text-3xl font-700" style="color:#F59000;" id="stat-users">10</p>
-  </div>
+  <script>
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    const openBtn = document.getElementById('mobile-menu-toggle');
+    const closeBtn = document.getElementById('close-sidebar');
 
-  <div class="admin-card p-6 glass rounded-lg border cursor-pointer hover:shadow-lg transition-all"
-       style="border-color:var(--border);" data-key="pending">
-    <p class="text-sm font-500 mb-2" style="color:var(--text-muted);">Pending</p>
-    <p class="text-3xl font-700" style="color:#F59000;" id="stat-transit">6</p>
-  </div>
-
-  <div class="admin-card p-6 glass rounded-lg border cursor-pointer hover:shadow-lg transition-all"
-       style="border-color:var(--border);" data-key="delivered">
-    <p class="text-sm font-500 mb-2" style="color:var(--text-muted);">Delivered</p>
-    <p class="text-3xl font-700" style="color:#F59000;" id="stat-delivered">18</p>
-  </div>
-
-</section>
-
-
-<!-- Additional Analytics -->
-<section id="admin-extra" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-
-  <div class="admin-card p-6 glass rounded-lg border cursor-pointer hover:shadow-lg transition-all"
-       style="border-color:var(--border);" data-key="pending">
-    <p class="text-sm font-500 mb-2" style="color:var(--text-muted);">Pending Shipments</p>
-    <p class="text-3xl font-700" style="color:#F59000;">6</p>
-    <p class="text-sm mt-2" style="color:var(--text-muted);">Awaiting delivery</p>
-  </div>
-
-  <div class="admin-card p-6 glass rounded-lg border cursor-pointer hover:shadow-lg transition-all"
-       style="border-color:var(--border);" data-key="activity">
-    <p class="text-sm font-500 mb-3" style="color:var(--text-muted);">Recent Activity</p>
-
-    <ul class="text-sm space-y-2" style="color:var(--text-body);">
-      <li>📦 SS1024 created — Mumbai → Delhi</li>
-      <li>🚚 SS1031 in transit — Pune → Bangalore</li>
-      <li>✅ SS1019 delivered — Kolkata → Mumbai</li>
-    </ul>
-  </div>
-
-</section>
-<!-- ✅ ADMIN ACTIONS (ADDED) -->
-<section class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-
-  <!-- Add Staff -->
-  <div class="p-6 glass rounded-lg border cursor-pointer hover:shadow-lg transition-all"
-       style="border-color:var(--border);">
-    <p class="text-sm font-500 mb-2" style="color:var(--text-muted);">Add Staff</p>
-    <p class="text-lg font-700" style="color:#F59000;">➕ Add New</p>
-    <p class="text-xs mt-2" style="color:var(--text-muted);">Create staff account</p>
-  </div>
-
-  <!-- Manage Staff -->
-  <div class="p-6 glass rounded-lg border cursor-pointer hover:shadow-lg transition-all"
-       style="border-color:var(--border);">
-    <p class="text-sm font-500 mb-2" style="color:var(--text-muted);">Manage Staff</p>
-    <p class="text-lg font-700" style="color:#F59000;">👥 Staff List</p>
-    <p class="text-xs mt-2" style="color:var(--text-muted);">View & manage staff</p>
-  </div>
-
-  <!-- Manage Shipments -->
-  <div class="p-6 glass rounded-lg border cursor-pointer hover:shadow-lg transition-all"
-       style="border-color:var(--border);">
-    <p class="text-sm font-500 mb-2" style="color:var(--text-muted);">Shipments</p>
-    <p class="text-lg font-700" style="color:#F59000;">📦 Manage</p>
-    <p class="text-xs mt-2" style="color:var(--text-muted);">Track & update</p>
-  </div>
-
-  <!-- Reports -->
-  <div class="p-6 glass rounded-lg border cursor-pointer hover:shadow-lg transition-all"
-       style="border-color:var(--border);">
-    <p class="text-sm font-500 mb-2" style="color:var(--text-muted);">Reports</p>
-    <p class="text-lg font-700" style="color:#F59000;">📊 View Reports</p>
-    <p class="text-xs mt-2" style="color:var(--text-muted);">Analytics & insights</p>
-  </div>
-
-</section>
-
-<!-- ✅ DETAILS PANEL -->
-<div id="admin-details-panel"
-     class="hidden glass rounded-lg border p-6 mb-8"
-     style="border-color:var(--border);">
-
-  <h3 id="admin-details-title"
-      class="text-xl font-display font-700 mb-4"
-      style="color:var(--text-head);">
-  </h3>
-
-  <div id="admin-details-content" class="space-y-2 text-sm"></div>
-
-</div>
-   </div>
-  </main>
-
-  <!-- ✅ SCRIPT MUST BE INSIDE BODY -->
-<script>
-document.addEventListener("DOMContentLoaded", async () => {
-
-  const cards = document.querySelectorAll(".admin-card");
-  const panel = document.getElementById("admin-details-panel");
-  const title = document.getElementById("admin-details-title");
-  const content = document.getElementById("admin-details-content");
-
-  const openSearch = document.getElementById("open-search");
-  const openFilter = document.getElementById("open-filter");
-  const searchPanel = document.getElementById("search-panel");
-  const filterPanel = document.getElementById("filter-panel");
-
-  const applyFilterBtn = document.getElementById("apply-filter");
-  const applySearchBtn = document.getElementById("apply-search");
-
-  // ✅ Toggle Panels
-  if (openSearch && openFilter && searchPanel && filterPanel) {
-    openSearch.addEventListener("click", () => {
-      searchPanel.classList.toggle("hidden");
-      filterPanel.classList.add("hidden");
-    });
-
-    openFilter.addEventListener("click", () => {
-      filterPanel.classList.toggle("hidden");
-      searchPanel.classList.add("hidden");
-    });
-  }
-
-  // ✅ FETCH DATA
-  async function getData() {
-    let shipments = [];
-    let users = [];
-
-    try {
-      shipments = await window.SwiftShipDB.listShipments();
-      users = await window.SwiftShipDB.db.users.toArray();
-    } catch {}
-
-    if (!shipments || shipments.length === 0) {
-      shipments = [
-        { shipment_code: "SS1024", source_city: "Mumbai", destination_city: "Delhi", status: "delivered", type: "express", customer: "Amit Sharma" },
-        { shipment_code: "SS1031", source_city: "Pune", destination_city: "Bangalore", status: "pending", type: "standard", customer: "Priya Singh" },
-        { shipment_code: "SS1055", source_city: "Chennai", destination_city: "Hyderabad", status: "pending", type: "express", customer: "Rahul Verma" },
-        { shipment_code: "SS1019", source_city: "Kolkata", destination_city: "Mumbai", status: "delivered", type: "standard", customer: "Neha Patel" }
-      ];
+    function toggleSidebar() {
+      sidebar.classList.toggle('-translate-x-full');
+      overlay.classList.toggle('hidden');
     }
 
-    if (!users || users.length === 0) {
-      users = [
-        { full_name: "User A" },
-        { full_name: "User B" },
-        { full_name: "User C" }
-      ];
-    }
-
-    return { shipments, users };
-  }
-
-  // ✅ FILTER FUNCTION
-  function applyFilters(shipments) {
-    const id = document.getElementById("search-id")?.value.toLowerCase() || "";
-    const customer = document.getElementById("search-customer")?.value.toLowerCase() || "";
-    const status = document.getElementById("filter-status")?.value || "";
-    const type = document.getElementById("filter-type")?.value || "";
-
-    return shipments.filter(s => {
-      const customerName = (s.customer || "").toLowerCase();
-
-      return (
-        (!id || s.shipment_code.toLowerCase().includes(id)) &&
-        (!customer || customerName.includes(customer)) &&
-        (!status || s.status === status) &&
-        (!type || (s.type || "standard") === type)
-      );
-    });
-  }
-
-  // ✅ SHOW RESULTS
-  async function showFilteredResults() {
-    let data = await getData();
-    const filtered = applyFilters(data.shipments);
-
-    title.textContent = `Search Results (${filtered.length})`;
-
-    content.innerHTML = filtered.length
-      ? filtered.map(s => `
-          <div class="p-3 rounded-lg" style="background:var(--bg-page);">
-            <strong>${s.shipment_code}</strong> — ${s.source_city} → ${s.destination_city}
-            <br/>👤 ${s.customer} • 📦 ${s.status} • 🚚 ${s.type || "standard"}
-          </div>
-        `).join("")
-      : `<p style="color:var(--text-muted)">No matching results</p>`;
-
-    panel.classList.remove("hidden");
-  }
-
-  // ✅ SEARCH (ENTER + BUTTON)
-  const searchIdInput = document.getElementById("search-id");
-  const searchCustomerInput = document.getElementById("search-customer");
-
-  if (searchIdInput) {
-    searchIdInput.addEventListener("keypress", (e) => {
-      if (e.key === "Enter") {
-        showFilteredResults();
-      }
-    });
-  }
-
-  if (searchCustomerInput) {
-    searchCustomerInput.addEventListener("keypress", (e) => {
-      if (e.key === "Enter") {
-        showFilteredResults();
-      }
-    });
-  }
-
-  if (applySearchBtn) {
-    applySearchBtn.addEventListener("click", showFilteredResults);
-  }
-
-  // ✅ FILTER (BUTTON ONLY)
-  if (applyFilterBtn) {
-    applyFilterBtn.addEventListener("click", showFilteredResults);
-  }
-
-  // ✅ CARD CLICK (WITH FILTER)
-  cards.forEach(card => {
-    card.addEventListener("click", async () => {
-
-      const key = card.getAttribute("data-key");
-      let data = await getData();
-      const filtered = applyFilters(data.shipments);
-
-      let items = [];
-      let heading = "";
-
-      if (key === "total") {
-        heading = `All Shipments (${filtered.length})`;
-        items = filtered;
-      }
-      else if (key === "delivered") {
-        const delivered = filtered.filter(s => s.status === "delivered");
-        heading = `Delivered Shipments (${delivered.length})`;
-        items = delivered;
-      }
-      else if (key === "pending") {
-        const pending = filtered.filter(s => s.status !== "delivered");
-        heading = `Pending Shipments (${pending.length})`;
-        items = pending;
-      }
-      else if (key === "users") {
-        heading = `Active Users (${data.users.length})`;
-        items = data.users.map(u => ({
-          text: `👤 <strong>${u.full_name}</strong>`
-        }));
-      }
-      else if (key === "activity") {
-        heading = "Recent Activity";
-        items = filtered;
-      }
-
-      title.textContent = heading;
-
-      content.innerHTML = items.length
-        ? items.map(s => `
-          <div class="p-3 rounded-lg" style="background:var(--bg-page);">
-            ${s.text || `
-              <strong>${s.shipment_code}</strong> — ${s.source_city} → ${s.destination_city}
-              <br/>👤 ${s.customer} • 📦 ${s.status} • 🚚 ${s.type || "standard"}
-            `}
-          </div>
-        `).join("")
-        : `<p style="color:var(--text-muted)">No matching results</p>`;
-
-      panel.classList.remove("hidden");
-    });
-  });
-
-});
-</script>
+    openBtn?.addEventListener('click', toggleSidebar);
+    closeBtn?.addEventListener('click', toggleSidebar);
+    overlay?.addEventListener('click', toggleSidebar);
+  </script>
 </body>
-</html>
 
+</html>

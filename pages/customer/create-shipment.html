@@ -270,9 +270,29 @@
           <span class="text-sm font-600" style="color:#9baac4;">Estimated Delivery</span>
           <span id="confirm-time" class="text-sm font-700 text-white">—</span>
         </div>
-        <div class="flex justify-between items-center p-3 rounded-xl bg-[#F59000]/10 border border-[#F59000]/20">
-          <span class="text-sm font-600 text-[#F59000]">Total Cost</span>
-          <span id="confirm-cost" class="text-lg font-800 text-[#F59000]">—</span>
+        
+        <div class="p-4 rounded-xl bg-[#1E253A] border border-white/5 space-y-2 mt-4">
+          <h4 class="text-xs font-700 text-white uppercase tracking-wider mb-3">Cost Breakdown</h4>
+          <div class="flex justify-between items-center text-xs">
+            <span style="color:#9baac4;">Base Fare</span>
+            <span id="breakdown-base" class="font-600 text-white">—</span>
+          </div>
+          <div class="flex justify-between items-center text-xs">
+            <span style="color:#9baac4;">Distance Charge</span>
+            <span id="breakdown-dist" class="font-600 text-white">—</span>
+          </div>
+          <div class="flex justify-between items-center text-xs">
+            <span style="color:#9baac4;">Weight Charge</span>
+            <span id="breakdown-weight" class="font-600 text-white">—</span>
+          </div>
+          <div class="flex justify-between items-center text-xs pb-2 border-b border-white/10">
+            <span style="color:#9baac4;">Taxes & Fees</span>
+            <span id="breakdown-tax" class="font-600 text-white">—</span>
+          </div>
+          <div class="flex justify-between items-center pt-2">
+            <span class="text-sm font-700 text-[#F59000]">Total Cost</span>
+            <span id="confirm-cost" class="text-lg font-800 text-[#F59000]">—</span>
+          </div>
         </div>
         <p id="confirm-error" class="hidden text-xs text-red-400 text-center font-500 mt-2"></p>
       </div>

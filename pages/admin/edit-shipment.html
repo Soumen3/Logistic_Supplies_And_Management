@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Edit Shipment — SwiftShip</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet" />
+  <link href="/assets/css/style.css" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: { extend: { fontFamily: { display: ['Syne', 'sans-serif'], body: ['DM Sans', 'sans-serif'] } } }
+    };
+  </script>
+
+  <style>
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #1a1f2e;
+      color: #e8edf5;
+    }
+
+    .glass-panel {
+      background: rgba(26, 31, 46, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .glass-topbar {
+      background: rgba(26, 31, 46, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .glass-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+      border-color: rgba(245, 144, 0, 0.2);
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: #9baac4;
+      transition: all 0.2s;
+    }
+
+    .nav-link:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .nav-link.active {
+      color: #F59000;
+      background: rgba(245, 144, 0, 0.1);
+      border-right: 3px solid #F59000;
+    }
+
+    .btn-gradient {
+      background: linear-gradient(135deg, #F59000, #FFAA1A);
+      box-shadow: 0 4px 15px rgba(245, 144, 0, 0.3);
+      transition: all 0.2s;
+    }
+
+    .btn-gradient:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(245, 144, 0, 0.4);
+    }
+
+    /* Ambient background orbs */
+    .bg-orb-1 {
+      position: fixed;
+      top: -100px;
+      left: 100px;
+      width: 500px;
+      height: 500px;
+      background: #F59000;
+      filter: blur(150px);
+      opacity: 0.05;
+      pointer-events: none;
+    }
+
+    .bg-orb-2 {
+      position: fixed;
+      bottom: -50px;
+      right: -50px;
+      width: 400px;
+      height: 400px;
+      background: #2E4F93;
+      filter: blur(120px);
+      opacity: 0.08;
+      pointer-events: none;
+    }
+  </style>
+
+  <script type="module" src="/js/admin-dashboard.js"></script>
+</head>
+<body class="min-h-screen relative overflow-x-hidden flex">
+
+  <!-- Ambient Orbs -->
+  <div class="bg-orb-1"></div>
+  <div class="bg-orb-2"></div>
+
+  <!-- ── SIDEBAR (Desktop: fixed left, Mobile: hidden / slide-in) ── -->
+  <aside id="sidebar"
+    class="fixed inset-y-0 left-0 z-50 w-64 glass-panel transform -translate-x-full lg:translate-x-0 transition-transform duration-300 flex flex-col">
+
+    <!-- Logo Area -->
+    <div class="h-16 flex items-center px-6 border-b border-white/10">
+      <a href="/" class="flex items-center gap-3 group">
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center btn-gradient">
+          <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M20 21H4l-2-7h20l-2 7zM4.5 12l1.5-6h12l1.5 6H4.5zM9 6V4h6v2H9z" />
+          </svg>
+        </div>
+        <span class="font-display text-lg font-700 tracking-tight text-white">
+          Swift<span style="color:#F59000;">Ship</span>
+        </span>
+      </a>
+      <button id="close-sidebar" class="ml-auto lg:hidden text-white/50 hover:text-white">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Navigation Links -->
+    <nav class="flex-1 py-6 flex flex-col gap-1">
+      <a href="/pages/admin/dashboard.html" class="px-6 py-3 text-sm font-600 nav-link">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
+          </path>
+        </svg>
+        Dashboard
+      </a>
+      <a href="/pages/admin/create-shipment.html" class="px-6 py-3 text-sm font-600 nav-link">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2">
+          </path>
+        </svg>
+        Create Shipment
+      </a>
+      <a href="/pages/admin/create-staff.html" class="px-6 py-3 text-sm font-600 nav-link">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+        </svg>
+        Add Staff
+      </a>
+      <a href="/pages/admin/manage-staff.html" class="px-6 py-3 text-sm font-600 nav-link">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+        </svg>
+        Manage Staff
+      </a>
+      <a href="/pages/admin/shipments.html" class="px-6 py-3 text-sm font-600 nav-link">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
+        </svg>
+        Shipments
+      </a>
+    </nav>
+
+    <!-- User Section -->
+    <div class="p-6 border-t border-white/10">
+      <div class="mb-4">
+        <div id="user-greeting" class="text-sm font-600 text-white">Welcome!</div>
+        <div id="user-name" class="text-xs" style="color:#9baac4;">Admin</div>
+      </div>
+      <button id="logout-btn"
+        class="w-full py-2 rounded-xl text-sm font-600 text-white btn-gradient flex justify-center items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+        </svg>
+        Logout
+      </button>
+    </div>
+  </aside>
+
+  <!-- Overlay for mobile sidebar -->
+  <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-40 hidden lg:hidden backdrop-blur-sm transition-opacity">
+  </div>
+
+  <!-- ── MAIN CONTENT WRAPPER ── -->
+  <div class="flex-1 flex flex-col lg:ml-64 min-h-screen relative z-10">
+
+    <!-- Mobile Topbar -->
+    <header class="lg:hidden h-16 glass-topbar flex items-center justify-between px-6 sticky top-0 z-30">
+      <a href="/" class="flex items-center gap-2 group">
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center btn-gradient">
+          <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M20 21H4l-2-7h20l-2 7zM4.5 12l1.5-6h12l1.5 6H4.5zM9 6V4h6v2H9z" />
+          </svg>
+        </div>
+        <span class="font-display text-lg font-700 tracking-tight text-white">Swift<span
+            style="color:#F59000;">Ship</span></span>
+      </a>
+      <button id="mobile-menu-toggle" class="p-2 -mr-2 text-white/70 hover:text-white">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="p-6 md:p-10 max-w-7xl w-full mx-auto">
+    <div class="max-w-6xl mx-auto pt-4">
+        <h1 class="font-display text-4xl font-800 mb-2" style="color:#fff;">Edit Shipment</h1>
+        <p class="text-lg" style="color:#9baac4;">Page under construction.</p>
+        
+        <div class="glass-card rounded-2xl p-10 mt-8 flex justify-center items-center">
+            <p style="color:#6b7fa0;" class="text-lg">Coming soon...</p>
+        </div>
+    
+    </div>
+  </main>
+</div>
+<script>
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  const toggleBtn = document.getElementById('mobile-menu-toggle');
+  const closeBtn = document.getElementById('close-sidebar');
+
+  function toggleSidebar() {
+    sidebar?.classList.toggle('-translate-x-full');
+    overlay?.classList.toggle('hidden');
+  }
+
+  toggleBtn?.addEventListener('click', toggleSidebar);
+  closeBtn?.addEventListener('click', toggleSidebar);
+  overlay?.addEventListener('click', toggleSidebar);
+</script>
+</body>
+</html>

@@ -13,14 +13,21 @@ async function hashPassword(password) {
     .join('');
 }
 
+function validateFullName(name) {
+  console.log("Validating name");
+  const pattern = /^(?=.{3,}$)[A-Za-z]{2,}(?:\s[A-Za-z]{2,})+$/;
+  return pattern.test(name);
+}
+
 function validateEmail(email) {
   const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return pattern.test(email);
 }
 
 function validatePhone(phone) {
-  const pattern = /^\+?[0-9\s\-()]{7,20}$/;
-  return pattern.test(phone);
+  const allowedChars = /^[0-9+\s]+$/;
+  const pattern = /^(?:\+91|91)?\s?[6-9]\d{9}$/;
+  return allowedChars.test(phone) && pattern.test(phone);
 }
 
 function validatePassword(password) {
@@ -34,7 +41,7 @@ function setError(fieldId, message) {
   const inlineError = el('error_' + fieldId);
 
   if (input) input.classList.add('error');
-  
+
   if (inlineError) {
     inlineError.textContent = message;
     inlineError.classList.remove('hidden');
@@ -155,13 +162,13 @@ async function init() {
 
     let isValid = true;
 
-    if (!fullName || fullName.length < 2) {
-      setError('full_name', 'Please enter your full name (2+ characters).');
+    if (!validateFullName(fullName)) {
+      setError('full_name', 'Please enter valid full name (3+ characters).');
       isValid = false;
     }
 
     if (!validatePhone(phone)) {
-      setError('phone', 'Please enter a valid phone number (minimum 7 digits).');
+      setError('phone', 'Please enter a valid phone number (minimum 10 digits).');
       isValid = false;
     }
 
@@ -182,10 +189,18 @@ async function init() {
 
     if (!isValid) return;
 
+    const submitBtn = el('submit-btn');
+    const btnText = el('btn-text');
+    
+    if (submitBtn) submitBtn.disabled = true;
+    if (btnText) btnText.textContent = 'Creating account...';
+
     try {
       const existing = await SwiftShipDB.getUserByEmail(email);
       if (existing) {
         setError('email', 'An account with that email already exists.');
+        if (submitBtn) submitBtn.disabled = false;
+        if (btnText) btnText.textContent = 'Create account';
         return;
       }
 
@@ -211,6 +226,8 @@ async function init() {
         }, 900);
       }
     } catch (error) {
+      if (submitBtn) submitBtn.disabled = false;
+      if (btnText) btnText.textContent = 'Create account';
       console.error(error);
       if (error && error.message === 'phone_required') {
         setError('phone', 'Phone number is required.');
@@ -219,6 +236,7 @@ async function init() {
 
       msg.style.color = 'red';
       msg.textContent = 'Registration failed. Try again.';
+      msg.classList.remove('hidden');
     }
   });
 }

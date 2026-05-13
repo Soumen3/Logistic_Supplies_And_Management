@@ -1,170 +1,333 @@
-/**
- * US-005 & US-006: Delivery Cost and Time Estimator (India Region)
- * Fixed: Alphabetical sorting of state/zone keys to ensure lookup success.
- */
+// /**
+//  * US-005 & US-006: Delivery Cost and Time Estimator (India Region)
+//  * Fixed: Alphabetical sorting of state/zone keys to ensure lookup success.
+//  */
 
-const locationData = {
-    "states": {
-        "Delhi-Maharashtra": 1400,
-        "Karnataka-Maharashtra": 900,
-        "Maharashtra-West Bengal": 1900,
-        "Gujarat-Maharashtra": 500,
-        "Delhi-Karnataka": 2100,
-        "Delhi-West Bengal": 1500,
-        "Delhi-Gujarat": 950,
-        "Karnataka-Tamil Nadu": 350,
-        "Karnataka-Telangana": 570,
-        "Odisha-West Bengal": 450,
-        "Gujarat-Rajasthan": 600,
-        "Maharashtra-Tamil Nadu": 1300,
-        // Added Routes
-        "Delhi-Uttar Pradesh": 500,
-        "Delhi-Haryana": 250,
-        "Delhi-Punjab": 350,
-        "Haryana-Punjab": 200,
-        "Maharashtra-Telangana": 750,
-        "Andhra Pradesh-Telangana": 300,
-        "Andhra Pradesh-Tamil Nadu": 450,
-        "Karnataka-Kerala": 400,
-        "Kerala-Tamil Nadu": 300,
-        "Madhya Pradesh-Maharashtra": 800,
-        "Gujarat-Madhya Pradesh": 650,
-        "Rajasthan-Uttar Pradesh": 600,
-        "Bihar-Uttar Pradesh": 500,
-        "Bihar-West Bengal": 400,
-        "Jharkhand-West Bengal": 350,
-        "Assam-West Bengal": 1000
-    },
-    "postalZones": {
-        "Maharashtra": {
-            "400-411": 150,
-            "400-440": 800,
-            "411-440": 700,
-            "400-422": 170,
-            "411-422": 210
-        },
-        "Delhi": {
-            "110-110": 20
-        },
-        "Karnataka": {
-            "560-575": 350,
-            "560-580": 420,
-            "560-570": 150
-        },
-        "Gujarat": {
-            "380-395": 270,
-            "380-360": 220,
-            "390-395": 150
-        },
-        "Tamil Nadu": {
-            "600-641": 500,
-            "600-625": 460
-        },
-        "West Bengal": {
-            "700-734": 580,
-            "700-713": 160
-        },
-        "Uttar Pradesh": {
-            "201-226": 500,
-            "208-226": 90
-        }
+// const locationData = {
+//     "states": {
+//         "Delhi-Maharashtra": 1400,
+//         "Karnataka-Maharashtra": 900,
+//         "Maharashtra-West Bengal": 1900,
+//         "Gujarat-Maharashtra": 500,
+//         "Delhi-Karnataka": 2100,
+//         "Delhi-West Bengal": 1500,
+//         "Delhi-Gujarat": 950,
+//         "Karnataka-Tamil Nadu": 350,
+//         "Karnataka-Telangana": 570,
+//         "Odisha-West Bengal": 450,
+//         "Gujarat-Rajasthan": 600,
+//         "Maharashtra-Tamil Nadu": 1300,
+//         // Added Routes
+//         "Delhi-Uttar Pradesh": 500,
+//         "Delhi-Haryana": 250,
+//         "Delhi-Punjab": 350,
+//         "Haryana-Punjab": 200,
+//         "Maharashtra-Telangana": 750,
+//         "Andhra Pradesh-Telangana": 300,
+//         "Andhra Pradesh-Tamil Nadu": 450,
+//         "Karnataka-Kerala": 400,
+//         "Kerala-Tamil Nadu": 300,
+//         "Madhya Pradesh-Maharashtra": 800,
+//         "Gujarat-Madhya Pradesh": 650,
+//         "Rajasthan-Uttar Pradesh": 600,
+//         "Bihar-Uttar Pradesh": 500,
+//         "Bihar-West Bengal": 400,
+//         "Jharkhand-West Bengal": 350,
+//         "Assam-West Bengal": 1000
+//     },
+//     "postalZones": {
+//         "Maharashtra": {
+//             "400-411": 150,
+//             "400-440": 800,
+//             "411-440": 700,
+//             "400-422": 170,
+//             "411-422": 210
+//         },
+//         "Delhi": {
+//             "110-110": 20
+//         },
+//         "Karnataka": {
+//             "560-575": 350,
+//             "560-580": 420,
+//             "560-570": 150
+//         },
+//         "Gujarat": {
+//             "380-395": 270,
+//             "380-360": 220,
+//             "390-395": 150
+//         },
+//         "Tamil Nadu": {
+//             "600-641": 500,
+//             "600-625": 460
+//         },
+//         "West Bengal": {
+//             "700-734": 580,
+//             "700-713": 160
+//         },
+//         "Uttar Pradesh": {
+//             "201-226": 500,
+//             "208-226": 90
+//         }
+//     }
+// };
+
+// /**
+//  * Helper: Parses address string to extract State and Pincode.
+//  */
+// function parseAddress(address) {
+//     const parts = address.split(',').map(p => p.trim());
+//     if (parts.length < 2) throw new Error("Invalid Address Format. Use: Street, City, State, Pincode");
+
+//     const pincode = parts[parts.length - 1];
+//     const state = parts[parts.length - 2];
+
+//     if (!state || isNaN(pincode)) {
+//         throw new Error("Could not extract State or Pincode. Ensure address ends with 'State, Pincode'");
+//     }
+
+//     return { state, pincode };
+// }
+
+// /**
+//  * Core Logic: Calculate Distance based on Address components
+//  */
+// function calculateDistance(senderAddr, receiverAddr) {
+//     const sender = parseAddress(senderAddr);
+//     const receiver = parseAddress(receiverAddr);
+
+//     // 1. Same State Logic
+//     if (sender.state.toLowerCase() === receiver.state.toLowerCase()) {
+//         const stateName = sender.state;
+
+//         if (sender.pincode === receiver.pincode) return 10; // Local delivery
+
+//         const zoneKey = [sender.pincode.substring(0, 3), receiver.pincode.substring(0, 3)].sort().join('-');
+
+//         // Find state in data (case-insensitive)
+//         const stateKey = Object.keys(locationData.postalZones).find(s => s.toLowerCase() === stateName.toLowerCase());
+//         const intraDistance = stateKey ? locationData.postalZones[stateKey][zoneKey] : null;
+
+//         return intraDistance || 50;
+//     }
+
+//     // 2. Inter-State Logic (Case-insensitive matching)
+//     // Normalize to Title Case or check case-insensitively
+//     const s1 = sender.state.trim().toLowerCase();
+//     const s2 = receiver.state.trim().toLowerCase();
+//     const sortedStates = [s1, s2].sort();
+
+//     // Find matching key in locationData.states ignoring case
+//     const matchKey = Object.keys(locationData.states).find(key => {
+//         const parts = key.split('-').map(p => p.trim().toLowerCase()).sort();
+//         return parts[0] === sortedStates[0] && parts[1] === sortedStates[1];
+//     });
+
+//     if (matchKey) {
+//         return locationData.states[matchKey];
+//     }
+
+//     // Fallback logic for unsupported routes (Dynamic distance based on names to appear realistic)
+//     const charCodeSum = (s1 + s2).split('').reduce((sum, char) => sum + char.charCodeAt(0), 0);
+//     const fallbackDistance = (charCodeSum % 1500) + 500; // Realistic distance between 500 and 2000 km
+
+//     return fallbackDistance;
+// }
+
+// /**
+//  * US-005 & US-006: Combined Estimator
+//  */
+// export function getEstimation(senderFullAddress, receiverFullAddress, weight, isExpress) {
+//     try {
+//         const distance = calculateDistance(senderFullAddress, receiverFullAddress);
+
+//         // --- COST CALCULATION (US-005) ---
+//         const baseRate = 3.0;
+//         const weightRate = 20;
+//         const expressSurcharge = isExpress ? 500 : 0;
+//         const totalCost = (distance * baseRate) + (weight * weightRate) + expressSurcharge;
+
+//         // --- TIME CALCULATION (US-006) ---
+//         let days = Math.ceil(distance / 400);
+//         if (distance > 1000) days += 1;
+
+//         if (isExpress) {
+//             days = Math.max(1, Math.floor(days * 0.5));
+//         }
+
+//         return {
+//             status: "Success",
+//             details: {
+//                 distance: `${distance} km`,
+//                 totalCost: `₹${totalCost.toFixed(2)}`,
+//                 deliveryTime: `${days} Day(s)`,
+//                 mode: isExpress ? "Express" : "Standard"
+//             }
+//         };
+
+//     } catch (error) {
+//         return { status: "Error", message: error.message };
+//     }
+// }
+
+// ====================================
+//          Haversine Formula
+// ====================================
+
+
+import { getCityCoords } from "./cities.js";
+
+function haversineDistance(city1, city2) {
+
+    const coords1 = getCityCoords(city1);
+    const coords2 = getCityCoords(city2);
+
+    if (!coords1 || !coords2) {
+        throw new Error(`Coordinates not found for: ${!coords1 ? city1 : city2}`);
     }
+
+    const R = 6371 //Earth radius in KM
+    const dLat = toRad(coords2.lat - coords1.lat);
+    const dLon = toRad(coords2.lon - coords1.lon);
+
+    const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(toRad(coords1.lat)) *
+        Math.cos(toRad(coords2.lat)) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const straightLineKm = R * c;
+
+    // Road distance is ~1.3x to 1.4x of straignt line 
+    const roadDistanceKm = straightLineKm * 1.35;
+
+    return Math.round(roadDistanceKm);
+}
+
+function toRad(deg) {
+    return deg * (Math.PI / 180);
+}
+
+// =================================
+//         Time Estimation 
+// =================================
+
+const shippingModes = {
+    standard: {
+        label: "Standard Delivery",
+        speedKmPerDay: 400,
+        baseFare: 80,      // ₹ flat base
+        pricePerKm: 0.08,    // ₹ per km (distance component)
+        perKgRate: 18,      // ₹ per kg
+        daysBuffer: 1,
+    },
+    express: {
+        label: "Express Delivery",
+        speedKmPerDay: 700,
+        baseFare: 150,
+        pricePerKm: 0.12,
+        perKgRate: 28,
+        daysBuffer: 0,
+    },
+    overnight: {
+        label: "Overnight / Priority",
+        speedKmPerDay: 1200,
+        baseFare: 250,
+        pricePerKm: 0.20,
+        perKgRate: 45,
+        daysBuffer: 0,
+    },
+    freight: {
+        label: "Freight / Bulk",
+        speedKmPerDay: 300,
+        baseFare: 200,
+        pricePerKm: 0.05,
+        perKgRate: 10,
+        daysBuffer: 2,
+    },
 };
 
-/**
- * Helper: Parses address string to extract State and Pincode.
- */
-function parseAddress(address) {
-    const parts = address.split(',').map(p => p.trim());
-    if (parts.length < 2) throw new Error("Invalid Address Format. Use: Street, City, State, Pincode");
 
-    const pincode = parts[parts.length - 1];
-    const state = parts[parts.length - 2];
 
-    if (!state || isNaN(pincode)) {
-        throw new Error("Could not extract State or Pincode. Ensure address ends with 'State, Pincode'");
-    }
+function estimateDeliveryTime(distanceKm, mode = "standard") {
+    const config = shippingModes[mode];
+    const days = Math.ceil(distanceKm / config.speedKmPerDay);
 
-    return { state, pincode };
+    const minDays = Math.max(1, days);
+    const maxDays = minDays + 1;
+
+    const deliveryDate = new Date();
+    deliveryDate.setDate(deliveryDate.getDate() + maxDays);
+
+    return {
+        minDays,
+        maxDays,
+        estimatedDate: deliveryDate.toDateString(),
+        label: `${minDays}-${maxDays} business days`,
+    };
 }
 
-/**
- * Core Logic: Calculate Distance based on Address components
- */
-function calculateDistance(senderAddr, receiverAddr) {
-    const sender = parseAddress(senderAddr);
-    const receiver = parseAddress(receiverAddr);
+// ============================
+//         Price Calculation
+// ============================
 
-    // 1. Same State Logic
-    if (sender.state.toLowerCase() === receiver.state.toLowerCase()) {
-        const stateName = sender.state;
-
-        if (sender.pincode === receiver.pincode) return 10; // Local delivery
-
-        const zoneKey = [sender.pincode.substring(0, 3), receiver.pincode.substring(0, 3)].sort().join('-');
-
-        // Find state in data (case-insensitive)
-        const stateKey = Object.keys(locationData.postalZones).find(s => s.toLowerCase() === stateName.toLowerCase());
-        const intraDistance = stateKey ? locationData.postalZones[stateKey][zoneKey] : null;
-
-        return intraDistance || 50;
-    }
-
-    // 2. Inter-State Logic (Case-insensitive matching)
-    // Normalize to Title Case or check case-insensitively
-    const s1 = sender.state.trim().toLowerCase();
-    const s2 = receiver.state.trim().toLowerCase();
-    const sortedStates = [s1, s2].sort();
-
-    // Find matching key in locationData.states ignoring case
-    const matchKey = Object.keys(locationData.states).find(key => {
-        const parts = key.split('-').map(p => p.trim().toLowerCase()).sort();
-        return parts[0] === sortedStates[0] && parts[1] === sortedStates[1];
-    });
-
-    if (matchKey) {
-        return locationData.states[matchKey];
-    }
-
-    // Fallback logic for unsupported routes (Dynamic distance based on names to appear realistic)
-    const charCodeSum = (s1 + s2).split('').reduce((sum, char) => sum + char.charCodeAt(0), 0);
-    const fallbackDistance = (charCodeSum % 1500) + 500; // Realistic distance between 500 and 2000 km
-
-    return fallbackDistance;
+// --- WEIGHT SLAB MULTIPLIER ---
+function getWeightMultiplier(weightKg) {
+    if (weightKg <= 0.5) return 0.5;
+    if (weightKg <= 1) return 1.0;
+    if (weightKg <= 3) return 1.1;
+    if (weightKg <= 5) return 1.2;
+    if (weightKg <= 10) return 1.3;
+    if (weightKg <= 20) return 1.4;
+    if (weightKg <= 50) return 1.5;
+    return 1.7;
 }
 
-/**
- * US-005 & US-006: Combined Estimator
- */
-export function getEstimation(senderFullAddress, receiverFullAddress, weight, isExpress) {
+function calculateShipmentPrice(distanceKm, weightKg, mode = "standard") {
+    const config = shippingModes[mode];
+
+    // Each component is small & realistic
+    const distanceCharge = distanceKm * config.pricePerKm;          // 1400 * 0.12 = ₹168
+    const weightCharge = weightKg * config.perKgRate
+        * getWeightMultiplier(weightKg);          // 8 * 28 * 1.3 = ₹291
+    const subtotal = config.baseFare + distanceCharge + weightCharge;
+    // 150 + 168 + 291 = ₹609
+    const gst = subtotal * 0.18;                          // ₹110
+    const fuelSurcharge = subtotal * 0.04;                          // ₹24
+    const total = Math.round(subtotal + gst + fuelSurcharge);
+    // ≈ ₹743 ✅
+
+    return {
+        baseFare: Math.round(config.baseFare),
+        distanceCharge: Math.round(distanceCharge),
+        weightCharge: Math.round(weightCharge),
+        subtotal: Math.round(subtotal),
+        gst: Math.round(gst),
+        fuelSurcharge: Math.round(fuelSurcharge),
+        total,
+    };
+}
+// =================================
+//         Master Function
+// =================================
+
+export function calculateShipmentEstimate(pickup, delivery, weightKg, mode = "standard") {
     try {
-        const distance = calculateDistance(senderFullAddress, receiverFullAddress);
-
-        // --- COST CALCULATION (US-005) ---
-        const baseRate = 3.0;
-        const weightRate = 20;
-        const expressSurcharge = isExpress ? 500 : 0;
-        const totalCost = (distance * baseRate) + (weight * weightRate) + expressSurcharge;
-
-        // --- TIME CALCULATION (US-006) ---
-        let days = Math.ceil(distance / 400);
-        if (distance > 1000) days += 1;
-
-        if (isExpress) {
-            days = Math.max(1, Math.floor(days * 0.5));
-        }
+        const distanceKm = haversineDistance(pickup.city, delivery.city);
+        const time = estimateDeliveryTime(distanceKm, mode);
+        const price = calculateShipmentPrice(distanceKm, weightKg, mode);
 
         return {
-            status: "Success",
-            details: {
-                distance: `${distance} km`,
-                totalCost: `₹${totalCost.toFixed(2)}`,
-                deliveryTime: `${days} Day(s)`,
-                mode: isExpress ? "Express" : "Standard"
-            }
+            success: true,
+            pickup,
+            delivery,
+            distanceKm,
+            mode: shippingModes[mode].label,
+            time,
+            price
         };
-
-    } catch (error) {
-        return { status: "Error", message: error.message };
+    } catch (err) {
+        return { success: false, error: err.message };
     }
 }
+
