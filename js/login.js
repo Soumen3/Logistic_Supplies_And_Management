@@ -22,6 +22,24 @@ async function redirectIfLoggedIn() {
   return false;
 }
 
+function showError(id, message) {
+  const el = document.getElementById(id);
+  el.textContent = message;
+  el.classList.remove('hidden');
+}
+
+function clearErrors() {
+  ['email-error', 'password-error'].forEach(id => {
+    const el = document.getElementById(id);
+    el.textContent = '';
+    el.classList.add('hidden');
+  });
+}
+
+function validateEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
 window.addEventListener('DOMContentLoaded', async () => {
   await redirectIfLoggedIn();
   const form = el('login-form');
@@ -31,10 +49,34 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
+    
+    clearErrors();
     msg.textContent = '';
 
     const email = el('email').value.trim().toLowerCase();
     const password = el('password').value;
+    let isValid=true;
+    
+    // ✅ Email validation
+    if (!email) {
+      showError('email-error', 'Email is required');
+      isValid = false;
+    } else if (!validateEmail(email)) {
+      showError('email-error', 'Enter valid email');
+      isValid = false;
+    }
+    
+    // ✅ Password validation
+    if (!password) {
+      showError('password-error', 'Password is required');
+      isValid = false;
+    } else if (password.length < 6) {
+      showError('password-error', 'Minimum 6 characters required');
+      isValid = false;
+    }
+
+    // ❌ Stop if invalid
+    if (!isValid) return;
 
     if (window.setLoading) window.setLoading(true);
 

@@ -4,6 +4,18 @@ function el(id) {
   return document.getElementById(id);
 }
 
+function statusBadge(status) {
+  const normalized = (status || 'pending').toString().toLowerCase().replace(/\s+/g, '_');
+  const map = {
+    pending: ['bg-amber-100 text-amber-700', 'Pending'],
+    in_transit: ['bg-blue-100 text-blue-700', 'In Transit'],
+    delivered: ['bg-green-100 text-green-700', 'Delivered'],
+    cancelled: ['bg-red-100 text-red-700', 'Cancelled'],
+  };
+  const [classes, label] = map[normalized] || ['bg-slate-100 text-slate-700', normalized.replace(/_/g, ' ')];
+  return `<span class="px-2.5 py-1 rounded-full text-xs font-600 ${classes}">${label}</span>`;
+}
+
 async function redirectIfNotStaff() {
   try {
     const session = await SwiftShipDB.getActiveSession();
@@ -62,15 +74,7 @@ async function loadRecentShipments() {
         </td>
         <td class="px-6 py-4 text-sm" style="color:var(--text-body);">${ship.source_city || 'N/A'}</td>
         <td class="px-6 py-4 text-sm" style="color:var(--text-body);">${ship.destination_city || 'N/A'}</td>
-        <td class="px-6 py-4 text-sm">
-          <span class="px-2.5 py-1 rounded-full text-xs font-600 ${
-            ship.status === 'delivered' ? 'bg-green-100 text-green-700' :
-            ship.status === 'in_transit' || ship.status === 'in transit' ? 'bg-blue-100 text-blue-700' :
-            'bg-amber-100 text-amber-700'
-          }">
-            ${ship.status || 'pending'}
-          </span>
-        </td>
+        <td class="px-6 py-4 text-sm">${statusBadge(ship.status || 'pending')}</td>
         <td class="px-6 py-4 text-sm" style="color:var(--text-muted);">
           ${new Date(ship.created_at).toLocaleDateString()}
         </td>

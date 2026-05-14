@@ -1,5 +1,17 @@
 import { SwiftShipDB } from './db.module.js';
 
+function statusBadge(status) {
+  const normalized = (status || 'pending').toString().toLowerCase().replace(/\s+/g, '_');
+  const map = {
+    pending: ['bg-amber-100 text-amber-700', 'Pending'],
+    in_transit: ['bg-blue-100 text-blue-700', 'In Transit'],
+    delivered: ['bg-green-100 text-green-700', 'Delivered'],
+    cancelled: ['bg-red-100 text-red-700', 'Cancelled'],
+  };
+  const [classes, label] = map[normalized] || ['bg-slate-100 text-slate-700', normalized.replace(/_/g, ' ')];
+  return `<span class="px-2.5 py-1 rounded-full text-xs font-700 ${classes}">${label}</span>`;
+}
+
 (async function init() {
   const session = await SwiftShipDB.getActiveSession();
   if (!session) {
@@ -78,11 +90,6 @@ import { SwiftShipDB } from './db.module.js';
         const date = new Date(shipment.created_at).toLocaleDateString();
         const type = shipment.delivery_type === 'express' ? '<span class="px-2 py-1 text-xs font-700 bg-red-500/20 text-red-400 rounded-lg">Express</span>' : '<span class="px-2 py-1 text-xs font-700 bg-blue-500/20 text-blue-400 rounded-lg">Standard</span>';
         
-        let statusColor = 'text-gray-400 bg-gray-400/20';
-        if (shipment.status === 'pending') statusColor = 'text-yellow-400 bg-yellow-400/20';
-        if (shipment.status === 'in_transit') statusColor = 'text-blue-400 bg-blue-400/20';
-        if (shipment.status === 'delivered') statusColor = 'text-green-400 bg-green-400/20';
-
         const card = document.createElement('div');
         card.className = 'p-4 md:p-6 bg-white/5 border border-white/5 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 text-left transition-all hover:bg-white/10';
         
@@ -90,7 +97,7 @@ import { SwiftShipDB } from './db.module.js';
           <div class="flex-1 space-y-1">
             <div class="flex items-center gap-3 mb-2">
               <span class="font-display font-800 text-lg text-white">${shipment.shipment_code}</span>
-              <span class="px-2.5 py-1 text-xs font-700 rounded-lg capitalize ${statusColor}">${shipment.status.replace('_', ' ')}</span>
+              ${statusBadge(shipment.status || 'pending')}
               ${type}
             </div>
             <div class="text-sm font-500" style="color:#9baac4;">

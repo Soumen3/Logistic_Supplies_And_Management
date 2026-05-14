@@ -32,17 +32,17 @@ window.addEventListener('DOMContentLoaded', async () => {
   if (userNameEl) userNameEl.textContent = userName;
 
   // Sidebar toggle (mobile)
-  const sidebar = document.getElementById('sidebar');
-  const overlay = document.getElementById('sidebar-overlay');
-  const openBtn = document.getElementById('mobile-menu-toggle');
-  const closeBtn = document.getElementById('close-sidebar');
-  const toggleSidebar = () => {
-    sidebar?.classList.toggle('-translate-x-full');
-    overlay?.classList.toggle('hidden');
-  };
-  openBtn?.addEventListener('click', toggleSidebar);
-  closeBtn?.addEventListener('click', toggleSidebar);
-  overlay?.addEventListener('click', toggleSidebar);
+  // const sidebar = document.getElementById('sidebar');
+  // const overlay = document.getElementById('sidebar-overlay');
+  // const openBtn = document.getElementById('mobile-menu-toggle');
+  // const closeBtn = document.getElementById('close-sidebar');
+  // const toggleSidebar = () => {
+  //   sidebar?.classList.toggle('-translate-x-full');
+  //   overlay?.classList.toggle('hidden');
+  // };
+  // openBtn?.addEventListener('click', toggleSidebar);
+  // closeBtn?.addEventListener('click', toggleSidebar);
+  // overlay?.addEventListener('click', toggleSidebar);
 
   const activeCount = document.getElementById('active-count');
   const deliveredCount = document.getElementById('delivered-count');

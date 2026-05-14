@@ -28,9 +28,12 @@ function validateEmail(email) {
 }
 
 function validatePhone(phone) {
-  const allowedChars = /^[0-9+\s]+$/;
-  const pattern = /^(?:\+91|91)?\s?[6-9]\d{9}$/;
-  return allowedChars.test(phone) && pattern.test(phone);
+  return /^[6-9]\d{9}$/.test(normalizePhone(phone));
+}
+
+function normalizePhone(phone) {
+  const digits = String(phone || '').replace(/\D/g, '');
+  return digits.length >= 10 ? digits.slice(-10) : digits;
 }
 
 function validatePassword(password) {
@@ -102,7 +105,7 @@ async function init() {
 
     const devToken = el('dev_token').value;
     const fullName = el('full_name').value.trim();
-    const phone = el('phone').value.trim();
+    const phone = normalizePhone(el('phone').value.trim());
     const email = el('email').value.trim().toLowerCase();
     const password = el('password').value;
     const passwordConfirm = el('password_confirm').value;

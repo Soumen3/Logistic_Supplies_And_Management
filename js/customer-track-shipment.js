@@ -2,6 +2,18 @@ import { SwiftShipDB } from './db.module.js';
 
 function el(id) { return document.getElementById(id); }
 
+function statusBadge(status) {
+  const normalized = (status || 'pending').toString().toLowerCase().replace(/\s+/g, '_');
+  const map = {
+    pending: ['bg-amber-100 text-amber-700', 'Pending'],
+    in_transit: ['bg-blue-100 text-blue-700', 'In Transit'],
+    delivered: ['bg-green-100 text-green-700', 'Delivered'],
+    cancelled: ['bg-red-100 text-red-700', 'Cancelled'],
+  };
+  const [classes, label] = map[normalized] || ['bg-slate-100 text-slate-700', normalized.replace(/_/g, ' ')];
+  return `<span class="px-2.5 py-1 rounded-full text-xs font-600 ${classes}">${label}</span>`;
+}
+
 function setMessage(text, type = 'info') {
   const msg = el('track-msg');
   if (!msg) return;
@@ -52,8 +64,9 @@ async function trackShipment(code, session) {
 
     el('track-sender').textContent = shipment.sender_name || '—';
     el('track-receiver').textContent = shipment.receiver_name || '—';
+    el('track-receiver-address').textContent = shipment.receiver_address || '—';
     el('track-route').textContent = `${shipment.source_city || '—'} → ${shipment.destination_city || '—'}`;
-    el('track-status').textContent = shipment.status || 'pending';
+    el('track-status').innerHTML = statusBadge(shipment.status || 'pending');
     el('track-details').classList.remove('hidden');
 
     const history = await SwiftShipDB.getShipmentHistory(shipment.id);
@@ -77,7 +90,7 @@ async function trackShipment(code, session) {
           </div>
           <div class="pb-6 flex-1">
             <div class="flex items-center justify-between mb-1">
-              <span class="text-sm font-600 text-white">${item.status || 'pending'}</span>
+              <span>${statusBadge(item.status || 'pending')}</span>
               <span class="text-xs" style="color:#9baac4;">${fmtDateTime(item.timestamp)}</span>
             </div>
             <div class="text-xs" style="color:#9baac4;">${note}</div>
@@ -119,18 +132,6 @@ window.addEventListener('DOMContentLoaded', async () => {
   const userNameEl = document.getElementById('user-name');
   if (userGreeting) userGreeting.textContent = 'Welcome,';
   if (userNameEl) userNameEl.textContent = userName;
-
-  const sidebar = document.getElementById('sidebar');
-  const overlay = document.getElementById('sidebar-overlay');
-  const openBtn = document.getElementById('mobile-menu-toggle');
-  const closeBtn = document.getElementById('close-sidebar');
-  const toggleSidebar = () => {
-    sidebar?.classList.toggle('-translate-x-full');
-    overlay?.classList.toggle('hidden');
-  };
-  openBtn?.addEventListener('click', toggleSidebar);
-  closeBtn?.addEventListener('click', toggleSidebar);
-  overlay?.addEventListener('click', toggleSidebar);
 
   const trackForm = el('track-form');
   trackForm?.addEventListener('submit', (e) => {

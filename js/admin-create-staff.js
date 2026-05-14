@@ -34,22 +34,35 @@ function validatePassword(password) {
   return password && password.length >= 6 && /(?=.*[A-Za-z])(?=.*\d)/.test(password);
 }
 
+// ✅ Phone Normalization - Extract last 10 digits
+function normalizePhone(phone) {
+  const digits = phone.replace(/\D/g, '');
+  return digits.slice(-10);
+}
+
 // ✅ Error UI
 function setError(fieldId, message) {
   const input = el(fieldId);
-  const msg = el('msg');
+  const errEl = el('error_' + fieldId);
 
   if (input) input.classList.add('border-red-500');
-
-  if (msg) {
-    msg.style.color = 'red';
-    msg.textContent = message;
+  
+  if (errEl) {
+    errEl.classList.remove('hidden');
+    errEl.textContent = message;
   }
 }
 
 function clearErrors() {
   ['full_name', 'phone', 'email', 'password', 'password_confirm'].forEach(id => {
-    el(id)?.classList.remove('border-red-500');
+    const input = el(id);
+    const errEl = el('error_' + id);
+    
+    if (input) input.classList.remove('border-red-500');
+    if (errEl) {
+      errEl.classList.add('hidden');
+      errEl.textContent = '';
+    }
   });
 
   const msg = el('msg');
@@ -81,6 +94,118 @@ async function init() {
   const msg = el('msg');
   if (!form || !msg) return;
 
+  // ✅ CLEAR ERRORS ON INPUT
+  ['full_name', 'phone', 'email', 'password', 'password_confirm'].forEach(id => {
+    el(id)?.addEventListener('input', () => {
+      const input = el(id);
+      const errEl = el('error_' + id);
+      if (input) input.classList.remove('border-red-500');
+      if (errEl) {
+        errEl.classList.add('hidden');
+        errEl.textContent = '';
+      }
+      if (msg) msg.textContent = '';
+    });
+  });
+
+  // ✅ PASSWORD TOGGLE
+  const togglePw = el('toggle-pw');
+  const eyeIcon = el('eye-icon');
+  const passwordInput = el('password');
+
+  if (togglePw && passwordInput) {
+    togglePw.addEventListener('click', (e) => {
+      e.preventDefault();
+      const isPassword = passwordInput.type === 'password';
+      passwordInput.type = isPassword ? 'text' : 'password';
+    });
+  }
+
+  const togglePw2 = el('toggle-pw2');
+  const eyeIcon2 = el('eye-icon2');
+  const passwordConfirmInput = el('password_confirm');
+
+  if (togglePw2 && passwordConfirmInput) {
+    togglePw2.addEventListener('click', (e) => {
+      e.preventDefault();
+      const isPassword = passwordConfirmInput.type === 'password';
+      passwordConfirmInput.type = isPassword ? 'text' : 'password';
+    });
+  }
+
+  // ✅ PASSWORD STRENGTH BAR (using register.html formula)
+  const strengthLevels = [
+    { w: '20%', bg: '#ef4444', text: 'Too weak' },
+    { w: '45%', bg: '#f97316', text: 'Weak' },
+    { w: '65%', bg: '#eab308', text: 'Fair' },
+    { w: '85%', bg: '#22c55e', text: 'Strong' },
+    { w: '100%', bg: '#10b981', text: 'Very strong' }
+  ];
+
+  function updatePasswordStrength(password) {
+    const strengthFill = el('strength-fill');
+    const strengthLabel = el('strength-label');
+    if (!strengthFill || !strengthLabel) return;
+
+    if (!password) {
+      strengthFill.style.width = '0%';
+      strengthLabel.textContent = '';
+      return;
+    }
+
+    let score = 0;
+    if (password.length >= 6) score++;
+    if (password.length >= 10) score++;
+    if (/[A-Z]/.test(password)) score++;
+    if (/[0-9]/.test(password)) score++;
+    if (/[^a-zA-Z0-9]/.test(password)) score++;
+
+    const level = strengthLevels[Math.min(score, 4)];
+    strengthFill.style.width = level.w;
+    strengthFill.style.background = level.bg;
+    strengthLabel.textContent = level.text;
+    strengthLabel.style.color = level.bg;
+  }
+
+  if (passwordInput) {
+    passwordInput.addEventListener('input', (e) => {
+      updatePasswordStrength(e.target.value);
+
+      // Also check password match
+      if (passwordConfirmInput && passwordConfirmInput.value) {
+        updatePasswordMatch();
+      }
+    });
+  }
+
+  // ✅ PASSWORD MATCH INDICATOR
+  function updatePasswordMatch() {
+    const matchLabel = el('match-label');
+    if (!matchLabel || !passwordInput || !passwordConfirmInput) return;
+
+    const pw1 = passwordInput.value;
+    const pw2 = passwordConfirmInput.value;
+
+    if (!pw2) {
+      matchLabel.classList.add('hidden');
+      return;
+    }
+
+    if (pw1 === pw2) {
+      matchLabel.classList.remove('hidden');
+      matchLabel.textContent = '✓ Passwords match';
+      matchLabel.style.color = '#10b981';
+    } else {
+      matchLabel.classList.remove('hidden');
+      matchLabel.textContent = '✗ Passwords do not match';
+      matchLabel.style.color = '#ef4444';
+    }
+  }
+
+  if (passwordConfirmInput) {
+    passwordConfirmInput.addEventListener('input', updatePasswordMatch);
+  }
+
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
     clearErrors();
@@ -91,29 +216,40 @@ async function init() {
     const password = el('password')?.value;
     const passwordConfirm = el('password_confirm')?.value;
 
-    // ✅ VALIDATION
+    // ✅ VALIDATION - Check ALL fields and collect errors
+    const errors = {};
+    let hasErrors = false;
+
     if (!validateFullName(fullName)) {
-      setError('full_name', 'Please enter a valid full name (First and Last).');
-      return;
+      errors.full_name = 'Please enter a valid full name (First and Last).';
+      hasErrors = true;
     }
 
     if (!validatePhone(phone)) {
-      setError('phone', 'Please enter a valid Indian phone number.');
-      return;
+      errors.phone = 'Please enter a valid Indian phone number.';
+      hasErrors = true;
     }
 
     if (!validateEmail(email)) {
-      setError('email', 'Please enter a valid email address.');
-      return;
+      errors.email = 'Please enter a valid email address.';
+      hasErrors = true;
     }
 
     if (!validatePassword(password)) {
-      setError('password', 'Password must be 6+ chars and include letters and numbers.');
-      return;
+      errors.password = 'Password must be 6+ chars and include letters and numbers.';
+      hasErrors = true;
     }
 
     if (password !== passwordConfirm) {
-      setError('password_confirm', 'Passwords do not match.');
+      errors.password_confirm = 'Passwords do not match.';
+      hasErrors = true;
+    }
+
+    // ✅ SHOW ALL ERRORS AT ONCE
+    if (hasErrors) {
+      Object.keys(errors).forEach(fieldId => {
+        setError(fieldId, errors[fieldId]);
+      });
       return;
     }
 
@@ -136,12 +272,13 @@ async function init() {
 
       // ✅ SAVE USER
       const passwordHash = await hashPassword(password);
+      const normalizedPhone = normalizePhone(phone);
 
       await SwiftShipDB.addUser({
         email,
         password_hash: passwordHash,
         full_name: fullName,
-        phone,
+        phone: normalizedPhone,
         role: 'staff'
       });
 

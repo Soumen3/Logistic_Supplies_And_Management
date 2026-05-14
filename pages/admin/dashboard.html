@@ -207,6 +207,10 @@
         </svg>
         Manage Staff
       </a>
+      <a href="/pages/admin/users.html" class="px-6 py-3 text-sm font-600 nav-link">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+        Users
+      </a>
       <a href="/pages/admin/shipments.html" class="px-6 py-3 text-sm font-600 nav-link">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -369,8 +373,8 @@
             <p class="text-3xl font-700" style="color:#F59000;" id="stat-shipments">24</p>
           </div>
 
-          <div class="glass-card rounded-2xl p-6 cursor-pointer" data-key="users" data-action="show-users">
-            <p class="text-sm font-500 mb-2" style="color:#9baac4;">Active Users</p>
+          <div class="glass-card rounded-2xl p-6 cursor-pointer" data-key="users" data-href="/pages/admin/users.html">
+            <p class="text-sm font-500 mb-2" style="color:#9baac4;">Users Directory</p>
             <p class="text-3xl font-700" style="color:#F59000;" id="stat-users">10</p>
           </div>
 
@@ -455,7 +459,7 @@
   <!-- ── USERS MODAL ── -->
   <div id="users-modal" class="fixed inset-0 z-50 hidden" style="background:rgba(0,0,0,0.65); backdrop-filter:blur(4px);">
     <div class="flex items-center justify-center min-h-screen p-4">
-      <div class="w-full max-w-lg rounded-2xl p-6" style="background:#1e2338; border:1px solid rgba(255,255,255,0.1); box-shadow:0 24px 60px rgba(0,0,0,0.5);">
+      <div class="w-full max-w-3xl rounded-2xl p-6" style="background:#1e2338; border:1px solid rgba(255,255,255,0.1); box-shadow:0 24px 60px rgba(0,0,0,0.5);">
 
         <!-- Header -->
         <div class="flex items-center justify-between mb-5">
@@ -473,9 +477,9 @@
 
         <!-- Footer -->
         <div class="mt-5 pt-4 border-t border-white/10">
-          <a href="/pages/admin/manage-staff.html"
+          <a href="/pages/admin/users.html"
              class="block text-center text-sm font-600 py-2 rounded-xl btn-gradient text-white">
-            Manage Staff →
+            Open Users Directory →
           </a>
         </div>
 

@@ -20,7 +20,7 @@ import { calculateShipmentEstimate } from './estimator.js';
   }
 
   function clearErrors() {
-    const fields = ['source_city', 'source_state', 'source_pincode', 'source_address', 'receiver_name', 'destination_city', 'destination_state', 'destination_pincode', 'destination_address', 'package_type', 'package_weight'];
+    const fields = ['source_city', 'source_state', 'source_pincode', 'source_address', 'sender_phone', 'receiver_name', 'receiver_phone', 'destination_city', 'destination_state', 'destination_pincode', 'destination_address', 'package_type', 'package_weight'];
     fields.forEach(id => {
       const input = document.getElementById(id);
       const err = document.getElementById('error_' + id);
@@ -39,6 +39,11 @@ import { calculateShipmentEstimate } from './estimator.js';
   // Session state to be loaded
   let session = null;
   let userName = 'Customer';
+
+  function normalizePhone(phone) {
+    const digits = String(phone || '').replace(/\D/g, '');
+    return digits.length >= 10 ? digits.slice(-10) : digits;
+  }
 
   // Attach form listener synchronously
   if (form) {
@@ -61,8 +66,10 @@ import { calculateShipmentEstimate } from './estimator.js';
       const source_state = document.getElementById('source_state').value.trim();
       const source_pincode = document.getElementById('source_pincode').value.trim();
       const source_address = document.getElementById('source_address').value.trim();
+      const sender_phone = normalizePhone(document.getElementById('sender_phone').value.trim());
 
       const receiver_name = document.getElementById('receiver_name').value.trim();
+      const receiver_phone = normalizePhone(document.getElementById('receiver_phone').value.trim());
       const destination_city = document.getElementById('destination_city').value.trim();
       const destination_state = document.getElementById('destination_state').value.trim();
       const destination_pincode = document.getElementById('destination_pincode').value.trim();
@@ -75,13 +82,16 @@ import { calculateShipmentEstimate } from './estimator.js';
 
       const nameRegex = /^[A-Za-z\s]{2,50}$/;
       const pinRegex = /^[1-9][0-9]{5}$/;
+      const phoneRegex = /^[6-9]\d{9}$/;
       
       if (!source_city || !nameRegex.test(source_city)) { setError('source_city', 'Enter a valid city name'); isValid = false; }
       if (!source_state || !nameRegex.test(source_state)) { setError('source_state', 'Enter a valid state name'); isValid = false; }
       if (!source_pincode || !pinRegex.test(source_pincode)) { setError('source_pincode', 'Must be a 6-digit pincode'); isValid = false; }
       if (!source_address || source_address.length < 5) { setError('source_address', 'Address is too short'); isValid = false; }
+      if (sender_phone && !phoneRegex.test(sender_phone)) { setError('sender_phone', 'Enter valid Indian phone number'); isValid = false; }
       
       if (!receiver_name || !nameRegex.test(receiver_name)) { setError('receiver_name', 'Enter a valid name'); isValid = false; }
+      if (!receiver_phone || !phoneRegex.test(receiver_phone)) { setError('receiver_phone', 'Enter valid Indian phone number'); isValid = false; }
       if (!destination_city || !nameRegex.test(destination_city)) { setError('destination_city', 'Enter a valid city name'); isValid = false; }
       if (!destination_state || !nameRegex.test(destination_state)) { setError('destination_state', 'Enter a valid state name'); isValid = false; }
       if (!destination_pincode || !pinRegex.test(destination_pincode)) { setError('destination_pincode', 'Must be a 6-digit pincode'); isValid = false; }
@@ -177,9 +187,11 @@ import { calculateShipmentEstimate } from './estimator.js';
           const shipment = {
             created_by: session.user_id,
             sender_name: userName,
+            sender_phone: sender_phone || null,
             sender_address: `${source_address}, ${source_city}, ${source_state}, ${source_pincode}`, 
             source_city: source_city,
             receiver_name: receiver_name,
+            receiver_phone: receiver_phone,
             receiver_address: `${destination_address}, ${destination_city}, ${destination_state}, ${destination_pincode}`,
             destination_city: destination_city,
             weight_kg: weight,
@@ -254,6 +266,10 @@ import { calculateShipmentEstimate } from './estimator.js';
     const user = await SwiftShipDB.getUserById(session.user_id);
     if (user && user.full_name) {
       userName = user.full_name.split(' ')[0];
+    }
+    const senderPhoneInput = document.getElementById('sender_phone');
+    if (senderPhoneInput && user && user.phone) {
+      senderPhoneInput.value = user.phone;
     }
   } catch (error) {
     console.warn('Failed to fetch user:', error);

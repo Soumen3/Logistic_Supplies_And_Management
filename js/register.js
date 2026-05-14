@@ -25,9 +25,12 @@ function validateEmail(email) {
 }
 
 function validatePhone(phone) {
-  const allowedChars = /^[0-9+\s]+$/;
-  const pattern = /^(?:\+91|91)?\s?[6-9]\d{9}$/;
-  return allowedChars.test(phone) && pattern.test(phone);
+  return /^[6-9]\d{9}$/.test(normalizePhone(phone));
+}
+
+function normalizePhone(phone) {
+  const digits = String(phone || '').replace(/\D/g, '');
+  return digits.length >= 10 ? digits.slice(-10) : digits;
 }
 
 function validatePassword(password) {
@@ -163,7 +166,7 @@ async function init() {
     let isValid = true;
 
     if (!validateFullName(fullName)) {
-      setError('full_name', 'Please enter valid full name (3+ characters).');
+      setError('full_name', 'Please enter your full name .');
       isValid = false;
     }
 
@@ -205,11 +208,12 @@ async function init() {
       }
 
       const passwordHash = await hashPassword(password);
+      const normalizedPhone = normalizePhone(phone);
       await SwiftShipDB.addUser({
         email,
         password_hash: passwordHash,
         full_name: fullName,
-        phone,
+        phone: normalizedPhone,
         role: 'customer',
       });
 

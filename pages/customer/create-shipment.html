@@ -179,6 +179,12 @@
                 <textarea id="source_address" required rows="2" class="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:border-[#F59000] focus:ring-1 focus:ring-[#F59000] outline-none transition-all resize-none" placeholder="123 Main St..."></textarea>
                 <p id="error_source_address" class="text-xs mt-1 hidden" style="color:#ef4444;"></p>
               </div>
+
+              <div>
+                <label for="sender_phone" class="block text-xs font-600 text-[#9baac4] mb-1">Sender Contact (Optional)</label>
+                <input id="sender_phone" type="text" class="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:border-[#F59000] focus:ring-1 focus:ring-[#F59000] outline-none transition-all" placeholder="e.g. 9876543210">
+                <p id="error_sender_phone" class="text-xs mt-1 hidden" style="color:#ef4444;"></p>
+              </div>
             </div>
 
             <!-- Destination Details -->
@@ -189,6 +195,20 @@
                 <label for="receiver_name" class="block text-xs font-600 text-[#9baac4] mb-1">Receiver Name *</label>
                 <input id="receiver_name" type="text" required class="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:border-[#F59000] focus:ring-1 focus:ring-[#F59000] outline-none transition-all" placeholder="John Doe">
                 <p id="error_receiver_name" class="text-xs mt-1 hidden" style="color:#ef4444;"></p>
+              </div>
+              <div>
+                <label for="receiver_phone" class="block text-xs font-600 text-[#9baac4] mb-1">
+                  Receiver Contact *
+                </label>
+                <input 
+                  id="receiver_phone"
+                  type="text"
+                  required
+                  class="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 
+                  focus:border-[#F59000] focus:ring-1 focus:ring-[#F59000] outline-none transition-all"
+                  placeholder="e.g. 9876543210"
+                >
+                <p id="error_receiver_phone" class="text-xs mt-1 hidden" style="color:#ef4444;"></p>
               </div>
 
               <div class="grid grid-cols-2 gap-4">

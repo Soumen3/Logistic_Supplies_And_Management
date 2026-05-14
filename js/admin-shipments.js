@@ -32,7 +32,7 @@ async function setupGreeting() {
     if (!session) return;
     const user = await SwiftShipDB.getUserById(session.user_id);
     if (user && el('user-greeting')) el('user-greeting').textContent = `Welcome, ${user.full_name}`;
-  } catch {}
+  } catch { }
 }
 
 function setupLogout() {
@@ -44,13 +44,14 @@ function setupLogout() {
 
 // ── Badge ─────────────────────────────────────────────────────────────────────
 function statusBadge(status) {
+  const normalized = (status || 'pending').toString().toLowerCase().replace(/\s+/g, '_');
   const map = {
-    pending:    ['badge-pending',    '🕐 Pending'],
+    pending: ['badge-pending', '🕐 Pending'],
     in_transit: ['badge-in_transit', '🚚 In Transit'],
-    delivered:  ['badge-delivered',  '✅ Delivered'],
-    cancelled:  ['badge-cancelled',  '❌ Cancelled'],
+    delivered: ['badge-delivered', '✅ Delivered'],
+    cancelled: ['badge-cancelled', '❌ Cancelled'],
   };
-  const [cls, label] = map[status] || ['badge-pending', status];
+  const [cls, label] = map[normalized] || ['badge-pending', normalized.replace(/_/g, ' ')];
   return `<span class="badge ${cls}">${label}</span>`;
 }
 
@@ -82,9 +83,9 @@ function fmtCost(c) {
 
 // ── Stats ─────────────────────────────────────────────────────────────────────
 function renderStats(ships) {
-  el('s-total').textContent     = ships.length;
-  el('s-pending').textContent   = ships.filter(s => s.status === 'pending').length;
-  el('s-transit').textContent   = ships.filter(s => s.status === 'in_transit').length;
+  el('s-total').textContent = ships.length;
+  el('s-pending').textContent = ships.filter(s => s.status === 'pending').length;
+  el('s-transit').textContent = ships.filter(s => s.status === 'in_transit').length;
   el('s-delivered').textContent = ships.filter(s => s.status === 'delivered').length;
 }
 
@@ -121,7 +122,12 @@ function renderTable() {
       <td>${statusBadge(s.status || 'pending')}</td>
       <td class="hidden lg:table-cell" style="color:#9baac4;">${fmtDate(s.created_at)}</td>
       <td>
-        <div class="flex items-center justify-center gap-2">
+        <div class="flex items-center justify-center gap-2">   
+        <button
+            class="view-btn px-3 py-1.5 rounded-lg text-xs font-600 border border-blue-400/40 text-blue-300 hover:bg-blue-500/10 transition-all"
+            data-id="${s.id}">
+            View
+          </button>
           <button
             class="update-btn px-3 py-1.5 rounded-lg text-xs font-600 border border-white/10 text-white/70 hover:text-white hover:border-F59000 transition-all"
             data-id="${s.id}" data-code="${s.shipment_code || s.id}">
@@ -163,13 +169,19 @@ function renderTable() {
       openDeleteModal(btn.dataset.id, btn.dataset.code);
     });
   });
+  document.querySelectorAll('.view-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openViewModal(btn.dataset.id);
+    });
+  });
 }
 
 // ── Filters ───────────────────────────────────────────────────────────────────
 function applyFilters() {
-  const q      = (el('search-input').value || '').toLowerCase().trim();
+  const q = (el('search-input').value || '').toLowerCase().trim();
   const status = el('filter-status').value;
-  const type   = el('filter-type').value;
+  const type = el('filter-type').value;
 
   filtered = allShipments.filter(s => {
     const matchQ = !q || [
@@ -178,7 +190,7 @@ function applyFilters() {
     ].some(v => (v || '').toLowerCase().includes(q));
 
     const matchStatus = !status || s.status === status;
-    const matchType   = !type   || s.delivery_type === type;
+    const matchType = !type || s.delivery_type === type;
 
     return matchQ && matchStatus && matchType;
   });
@@ -229,7 +241,12 @@ function openStatusModal(id, code) {
   el('modal-shipment-code').textContent = `Shipment: ${code}`;
   // pre-select current status
   const ship = allShipments.find(s => s.id === id);
+  const delivered = (ship?.status || '').toString().toLowerCase().replace(/\s+/g, '_') === 'delivered';
   if (ship) el('modal-status-select').value = ship.status || 'pending';
+  el('modal-status-select').disabled = delivered;
+  el('modal-notes').disabled = delivered;
+  el('modal-confirm').disabled = delivered;
+  el('modal-confirm').textContent = delivered ? 'Delivered' : 'Update Status';
   el('modal-notes').value = '';
   el('status-modal').classList.remove('hidden');
 }
@@ -246,6 +263,7 @@ function setupStatusModal() {
   el('modal-confirm').addEventListener('click', async () => {
     if (!pendingStatusUpdate) return;
     const btn = el('modal-confirm');
+    if (btn.disabled) return;
     btn.textContent = 'Updating…';
     btn.disabled = true;
 
@@ -260,7 +278,7 @@ function setupStatusModal() {
       await loadShipments();
     } catch (err) {
       console.error('Status update failed:', err);
-      alert('Failed to update status. Please try again.');
+      alert(err?.message === 'shipment_delivered_locked' ? 'Delivered shipments can no longer be updated.' : 'Failed to update status. Please try again.');
     } finally {
       btn.textContent = 'Update Status';
       btn.disabled = false;
@@ -353,6 +371,61 @@ function setupHistoryModal() {
   });
 }
 
+function openViewModal(id) {
+  const modal = el('view-modal');
+  const container = el('view-details');
+  const shipment = allShipments.find(s => s.id === id);
+
+  if (!shipment) return;
+
+  container.innerHTML = `
+    <div style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1rem; margin-bottom: 1rem;">
+      <p style="color:#F59000; font-weight:600; margin-bottom:0.5rem;">Shipment Info</p>
+      <p><b>Code:</b> ${shipment.shipment_code || '—'}</p>
+      <p><b>Status:</b> ${statusBadge(shipment.status || 'pending')}</p>
+      <p><b>Type:</b> ${shipment.delivery_type || '—'}</p>
+      <p><b>Created:</b> ${fmtDateTime(shipment.created_at)}</p>
+    </div>
+
+    <div style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1rem; margin-bottom: 1rem;">
+      <p style="color:#F59000; font-weight:600; margin-bottom:0.5rem;">Sender Details</p>
+      <p><b>Name:</b> ${shipment.sender_name || '—'}</p>
+      <p><b>Phone:</b> ${shipment.sender_phone || '—'}</p>
+      <p><b>Address:</b> ${shipment.sender_address || '—'}</p>
+      <p><b>City:</b> ${shipment.source_city || '—'}</p>
+    </div>
+
+    <div style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1rem; margin-bottom: 1rem;">
+      <p style="color:#F59000; font-weight:600; margin-bottom:0.5rem;">Receiver Details</p>
+      <p><b>Name:</b> ${shipment.receiver_name || '—'}</p>
+      <p><b>Phone:</b> ${shipment.receiver_phone || '—'}</p>
+      <p><b>Address:</b> ${shipment.receiver_address || '—'}</p>
+      <p><b>City:</b> ${shipment.destination_city || '—'}</p>
+    </div>
+
+    <div>
+      <p style="color:#F59000; font-weight:600; margin-bottom:0.5rem;">Shipment Details</p>
+      <p><b>Weight:</b> ${shipment.weight_kg || '—'} kg</p>
+      <p><b>Distance:</b> ${shipment.distance_km || '—'} km</p>
+      <p><b>Estimated Days:</b> ${shipment.estimated_days || '—'}</p>
+      <p><b>Cost:</b> ${fmtCost(shipment.estimated_cost)}</p>
+    </div>
+  `;
+
+  modal.classList.remove('hidden');
+}
+
+function closeViewModal() {
+  el('view-modal')?.classList.add('hidden');
+}
+
+function setupViewModal() {
+  el('view-close')?.addEventListener('click', closeViewModal);
+  el('view-modal')?.addEventListener('click', (e) => {
+    if (e.target === el('view-modal')) closeViewModal();
+  });
+}
+
 // ── Init ──────────────────────────────────────────────────────────────────────
 async function init() {
   const blocked = await redirectIfNotAdmin();
@@ -364,6 +437,7 @@ async function init() {
   setupStatusModal();
   setupDeleteModal();
   setupHistoryModal();
+  setupViewModal();
   await loadShipments();
 }
 

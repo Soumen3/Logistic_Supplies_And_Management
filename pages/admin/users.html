@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Users — SwiftShip Admin</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="/assets/css/style.css" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: { extend: { fontFamily: { display: ['Syne', 'sans-serif'], body: ['DM Sans', 'sans-serif'] } } }
+    };
+  </script>
+
+  <style>
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #1a1f2e;
+      color: #e8edf5;
+    }
+
+    .glass-panel {
+      background: rgba(26, 31, 46, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .glass-topbar {
+      background: rgba(26, 31, 46, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .glass-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+      border-color: rgba(245, 144, 0, 0.2);
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: #9baac4;
+      transition: all 0.2s;
+    }
+
+    .nav-link:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .nav-link.active {
+      color: #F59000;
+      background: rgba(245, 144, 0, 0.1);
+      border-right: 3px solid #F59000;
+    }
+
+    .btn-gradient {
+      background: linear-gradient(135deg, #F59000, #FFAA1A);
+      box-shadow: 0 4px 15px rgba(245, 144, 0, 0.3);
+      transition: all 0.2s;
+    }
+
+    .btn-gradient:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(245, 144, 0, 0.4);
+    }
+
+    .bg-orb-1 {
+      position: fixed;
+      top: -100px;
+      left: 100px;
+      width: 500px;
+      height: 500px;
+      background: #F59000;
+      filter: blur(150px);
+      opacity: 0.05;
+      pointer-events: none;
+    }
+
+    .bg-orb-2 {
+      position: fixed;
+      bottom: -50px;
+      right: -50px;
+      width: 400px;
+      height: 400px;
+      background: #2E4F93;
+      filter: blur(120px);
+      opacity: 0.08;
+      pointer-events: none;
+    }
+
+    .panel-input {
+      width: 100%;
+      padding: 0.6rem 0.875rem;
+      border-radius: 0.75rem;
+      background: #1e2438;
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #e8edf5;
+      font-size: 0.875rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .panel-input::placeholder { color: rgba(255,255,255,0.25); }
+    .panel-input:focus { border-color: #F59000; }
+
+    .panel-select {
+      width: 100%;
+      padding: 0.6rem 0.875rem;
+      border-radius: 0.75rem;
+      background: #1e2438;
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #e8edf5;
+      font-size: 0.875rem;
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .table-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 1rem;
+      overflow: hidden;
+    }
+
+    .table-scroll {
+      overflow-x: auto;
+    }
+
+    .users-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .users-table th,
+    .users-table td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .users-table th {
+      color: #9baac4;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+      background: rgba(255,255,255,0.02);
+    }
+
+    .users-table td {
+      color: #e8edf5;
+      font-size: 0.8rem;
+    }
+
+    @media (max-width: 768px) {
+      .users-table th,
+      .users-table td {
+        padding: 0.5rem 0.375rem;
+      }
+
+      .users-table th {
+        font-size: 0.65rem;
+      }
+
+      .users-table td {
+        font-size: 0.75rem;
+      }
+
+      .users-table .hide-on-mobile {
+        display: none;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .users-table th,
+      .users-table td {
+        padding: 0.4rem 0.25rem;
+      }
+
+      .users-table th {
+        font-size: 0.6rem;
+      }
+
+      .users-table td {
+        font-size: 0.7rem;
+      }
+    }
+  </style>
+
+  <script type="module" src="/js/admin-users.js"></script>
+</head>
+<body class="min-h-screen relative overflow-x-hidden flex">
+
+  <div class="bg-orb-1"></div>
+  <div class="bg-orb-2"></div>
+
+  <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 glass-panel transform -translate-x-full lg:translate-x-0 transition-transform duration-300 flex flex-col">
+    <div class="h-16 flex items-center px-6 border-b border-white/10">
+      <a href="/" class="flex items-center gap-3 group">
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center btn-gradient">
+          <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M20 21H4l-2-7h20l-2 7zM4.5 12l1.5-6h12l1.5 6H4.5zM9 6V4h6v2H9z" />
+          </svg>
+        </div>
+        <span class="font-display text-lg font-700 tracking-tight text-white">Swift<span style="color:#F59000;">Ship</span></span>
+      </a>
+      <button id="close-sidebar" class="ml-auto lg:hidden text-white/50 hover:text-white">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
+    </div>
+
+    <nav class="flex-1 py-6 flex flex-col gap-1">
+      <a href="/pages/admin/dashboard.html" class="px-6 py-3 text-sm font-600 nav-link">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+        Dashboard
+      </a>
+      <a href="/pages/admin/create-staff.html" class="px-6 py-3 text-sm font-600 nav-link">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
+        Add Staff
+      </a>
+      <a href="/pages/admin/manage-staff.html" class="px-6 py-3 text-sm font-600 nav-link">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+        Manage Staff
+      </a>
+      <a href="/pages/admin/users.html" class="px-6 py-3 text-sm font-600 nav-link active">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+        Users
+      </a>
+      <a href="/pages/admin/shipments.html" class="px-6 py-3 text-sm font-600 nav-link">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>
+        Shipments
+      </a>
+      <a href="/pages/admin/reports.html" class="px-6 py-3 text-sm font-600 nav-link">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h10M4 14h16M4 18h7"></path></svg>
+        Reports
+      </a>
+    </nav>
+
+    <div class="p-6 border-t border-white/10">
+      <div class="mb-4">
+        <div id="user-greeting" class="text-sm font-600 text-white">Welcome!</div>
+        <div id="user-name" class="text-xs" style="color:#9baac4;">Admin</div>
+      </div>
+      <button id="logout-btn" class="w-full py-2 rounded-xl text-sm font-600 text-white btn-gradient flex justify-center items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+        Logout
+      </button>
+    </div>
+  </aside>
+
+  <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-40 hidden lg:hidden backdrop-blur-sm transition-opacity"></div>
+
+  <div class="flex-1 flex flex-col lg:ml-64 min-h-screen relative z-10">
+    <header class="lg:hidden h-16 glass-topbar flex items-center justify-between px-6 sticky top-0 z-30">
+      <a href="/" class="flex items-center gap-2 group">
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center btn-gradient">
+          <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M20 21H4l-2-7h20l-2 7zM4.5 12l1.5-6h12l1.5 6H4.5zM9 6V4h6v2H9z" /></svg>
+        </div>
+        <span class="font-display text-lg font-700 tracking-tight text-white">Swift<span style="color:#F59000;">Ship</span></span>
+      </a>
+      <button id="mobile-menu-toggle" class="p-2 -mr-2 text-white/70 hover:text-white">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+      </button>
+    </header>
+
+    <main class="p-4 sm:p-6 md:p-8 lg:p-10 max-w-7xl mx-auto w-full">
+      <section class="mb-6 sm:mb-8">
+        <span class="text-xs font-800 uppercase tracking-widest text-[#F59000]">User Directory</span>
+        <h1 class="font-display text-2xl sm:text-3xl md:text-4xl font-800 mt-1 mb-2 text-white">All Users</h1>
+        <p class="text-sm sm:text-base" style="color:#9baac4;">Search, filter, and inspect every registered account.</p>
+      </section>
+
+      <section class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 md:gap-4 mb-6">
+        <div class="glass-card rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5">
+          <p class="text-xs sm:text-sm font-500 mb-1 sm:mb-2" style="color:#9baac4;">Total Users</p>
+          <p id="stat-total" class="text-xl sm:text-2xl md:text-3xl font-700 text-white">0</p>
+        </div>
+        <div class="glass-card rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5">
+          <p class="text-xs sm:text-sm font-500 mb-1 sm:mb-2" style="color:#9baac4;">Admins</p>
+          <p id="stat-admin" class="text-xl sm:text-2xl md:text-3xl font-700 text-white">0</p>
+        </div>
+        <div class="glass-card rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5">
+          <p class="text-xs sm:text-sm font-500 mb-1 sm:mb-2" style="color:#9baac4;">Staff</p>
+          <p id="stat-staff" class="text-xl sm:text-2xl md:text-3xl font-700 text-white">0</p>
+        </div>
+        <div class="glass-card rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5">
+          <p class="text-xs sm:text-sm font-500 mb-1 sm:mb-2" style="color:#9baac4;">Customers</p>
+          <p id="stat-customer" class="text-xl sm:text-2xl md:text-3xl font-700 text-white">0</p>
+        </div>
+      </section>
+
+      <section class="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 mb-6">
+        <div class="flex flex-col gap-3 md:gap-2">
+          <div class="flex flex-col sm:flex-row gap-3 md:gap-2">
+            <div class="flex-1">
+              <label class="text-xs font-600 uppercase tracking-wider" style="color:#9baac4;">Search</label>
+              <input id="search-input" class="panel-input mt-1" placeholder="Search by name, email, phone, id, or role" />
+            </div>
+            <div class="w-full sm:w-40 md:w-48">
+              <label class="text-xs font-600 uppercase tracking-wider" style="color:#9baac4;">Role</label>
+              <select id="filter-role" class="panel-select mt-1">
+                <option value="">All Roles</option>
+                <option value="admin">Admin</option>
+                <option value="staff">Staff</option>
+                <option value="customer">Customer</option>
+              </select>
+            </div>
+          </div>
+          <div class="flex flex-col sm:flex-row gap-3 md:gap-2">
+            <div class="w-full sm:w-40 md:w-48">
+              <label class="text-xs font-600 uppercase tracking-wider" style="color:#9baac4;">Sort</label>
+              <select id="sort-by" class="panel-select mt-1">
+                <option value="created_desc">Newest first</option>
+                <option value="created_asc">Oldest first</option>
+                <option value="name_asc">Name A-Z</option>
+                <option value="name_desc">Name Z-A</option>
+              </select>
+            </div>
+            <button id="clear-filters" class="px-4 sm:px-5 py-2 sm:py-3 rounded-lg sm:rounded-xl text-xs sm:text-sm font-600 text-white btn-gradient mt-auto">
+              Clear
+            </button>
+          </div>
+        </div>
+        <div id="users-count" class="mt-2 sm:mt-3 text-xs" style="color:#9baac4;"></div>
+      </section>
+
+      <section class="table-card">
+        <div class="table-scroll">
+          <table class="users-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th class="hide-on-mobile">Email</th>
+                <th class="hide-on-mobile">Phone</th>
+                <th class="hidden sm:table-cell">Role</th>
+                <th class="hide-on-mobile">Created</th>
+                <th class="text-center text-xs">Action</th>
+              </tr>
+            </thead>
+            <tbody id="users-tbody">
+              <tr>
+                <td colspan="6" class="text-center py-8 sm:py-12" style="color:#9baac4;">Loading users…</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="user-modal" class="fixed inset-0 z-50 hidden" style="background:rgba(0,0,0,0.65); backdrop-filter:blur(4px); padding: 1rem;">
+    <div class="flex items-center justify-center min-h-screen">
+      <div class="w-full max-w-2xl rounded-lg sm:rounded-2xl p-4 sm:p-6" style="background:#1e2338; border:1px solid rgba(255,255,255,0.1); box-shadow:0 24px 60px rgba(0,0,0,0.5); max-height: 90vh; overflow-y: auto;">
+        <div class="flex items-center justify-between mb-4 sm:mb-5">
+          <div class="flex-1 pr-4">
+            <h2 id="user-modal-title" class="font-display text-lg sm:text-xl font-700 text-white break-words">User Details</h2>
+          </div>
+          <button id="close-user-modal" class="text-white/40 hover:text-white transition-colors flex-shrink-0">
+            <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
+        </div>
+
+        <div id="user-modal-content" class="space-y-2 text-xs sm:text-sm"></div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

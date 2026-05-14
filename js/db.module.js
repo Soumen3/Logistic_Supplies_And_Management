@@ -6,7 +6,7 @@ const db = new Dexie('SwiftShipDB_New');
 db.version(1).stores({
   sessions: '++id, user_id, is_active, expires_at, role',
   users: 'id,&email,phone,full_name,role,created_at,last_login,recovery_codes',
-  shipments: 'id, shipment_code, sender_name, sender_address, receiver_name, receiver_address, source_city, destination_city, weight_kg, distance_km, delivery_type, estimated_cost, estimated_days, status, created_by, created_at, updated_at',
+  shipments: 'id, shipment_code, sender_name, sender_address,sender_phone, receiver_name, receiver_address, receiver_phone, source_city, destination_city, weight_kg, distance_km, delivery_type, estimated_cost, estimated_days, status, created_by, created_at, updated_at',
   status_history: '++id, shipment_id, status, updated_by, notes, timestamp',
 });
 
@@ -165,6 +165,16 @@ async function getShipmentHistory(shipment_id) {
 
 async function updateShipmentStatus(shipment_id, status, { updated_by = null, notes = null } = {}) {
   return db.transaction('rw', db.shipments, db.status_history, async () => {
+    const shipment = await db.shipments.get(shipment_id);
+    if (!shipment) {
+      throw new Error('shipment_not_found');
+    }
+
+    const currentStatus = (shipment.status || 'pending').toString().toLowerCase().replace(/\s+/g, '_');
+    if (currentStatus === 'delivered') {
+      throw new Error('shipment_delivered_locked');
+    }
+
     await db.shipments.update(shipment_id, { status, updated_at: Date.now() });
     await addStatusHistory({ shipment_id, status, updated_by, notes });
   });
